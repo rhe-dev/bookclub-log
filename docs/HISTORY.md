@@ -2,8 +2,15 @@
 
 > 최신이 위. 형식: 날짜 — 무엇을, 왜(필요 시), 특이사항.
 
+## 2026-07-27
+
+- 프론트 API 타입 체계(D-020): shared/types/ 도메인별 파일(common·member·club·book·comment)에 수동 정의, 사용처는 import 강제. memberStore도 타입 재사용으로 리팩터링. tertiary filled 톤 한 단계 진하게 조정.
+- CommonButton에 tertiary(비강조 톤) 추가 — 연회색 fill + 서브틀 보더 + 진회색 텍스트(실측 기반, grayScale 토큰 매핑). filled/outlined 모두 지원.
+- 토스트를 스택형 큐로 재구현: 새 토스트가 아래에 붙고 기존 토스트가 위로 쌓임. 다크 필 + 타입별 아이콘 원 + slideIn/Out 300ms, 수동 닫기 지원. 상태는 zustand 큐(toasts[] + isExiting).
+
 ## 2026-07-26
 
+- 프론트 기반 세팅(D-019, 공통 부품 → 화면 순서): 스위트북 팔레트 실측(#2B6CB0·#B0662C) → 컬러·타이포 토큰 + Typo → MUI 9 테마(토큰 파생) → axiosClient(X-Member-Id 자동, 전역 에러 토스트) → memberStore·toastStore → CommonButton(3색×filled/outlined)·CommonInput·CommonModal·CommonToast → 쇼케이스 페이지로 검증. Pretendard 적용.
 - 글자수 제한 조정: 코멘트 2,000→10,000자, 인용 500→1,000자 — 책 감상은 장문이 자연스럽고 그게 문집의 콘텐츠. 상한 자체는 유지(페이로드 방어·문집 조판·스레드 가독성).
 - 코드 리뷰 반영: 전역 예외 필터 + ErrorMessage enum(D-018), 목록 API 페이지네이션(items+meta), 삭제 코멘트는 답글 있을 때만 자리 유지, null로 선택값(날짜·앵커) 해제, 빈 PATCH no-op, 기간 교차 검증. 기간 미입력 책 최상단 정렬은 '설정 미완 발견' 의도로 유지.
 - 공통 코드 폴더 규칙(프/백 공통): src/shared/ 아래 기능 단위(dto·constants·filters) — backend common/ → shared/ 재편.

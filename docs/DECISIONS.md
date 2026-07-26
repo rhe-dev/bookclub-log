@@ -127,3 +127,17 @@
 - 결정: 전역 필터가 모든 에러를 `{ statusCode, messages: string[], timestamp, path }`로 통일. 사용자 노출 메시지는 `shared/constants/error-message.ts`의 ErrorMessage enum을 단일 소스로 삼아 도메인 예외와 DTO 검증 메시지가 공유. 예상 못한 500은 스택을 서버 로그로 남기고 일반 메시지만 노출
 - 이유: 프론트 에러 처리(Lv3 루브릭 '입력 검증 메시지·실패 화면')가 한 가지 포맷만 다루면 됨. 메시지가 코드 곳곳에 흩어지면 문구 수정·톤 통일이 어려움
 - 연결: CLAUDE.md 컨벤션, QA 루브릭 ③, Lv3
+
+## D-019 프론트 공통 기반: 디자인 토큰 + 공통컴포넌트 우선 구축 (2026-07-26)
+
+- 선택지: 페이지부터 만들고 공통화는 나중에 / 의존성 낮은 공통 부품(토큰→공통컴포넌트)을 먼저 만들고 화면을 조립
+- 결정: 팔레트 실측(스위트북 메인 #2B6CB0·포인트 #B0662C) → 컬러·타이포 토큰(colorChips, text_{weight}_{size}) → MUI 테마(토큰 파생) → axiosClient 래퍼 → 공통컴포넌트(Typo·CommonButton·CommonInput·CommonModal·CommonToast) 순으로 기반을 먼저 구축. 색은 colorChips만, 텍스트는 Typo만 사용
+- 이유: 과제사 서비스 톤을 이어받으면서(도입 파트너 서비스라는 설정) 화면 구현 단계에서 스타일 결정을 반복하지 않게 함. 토큰 단일 소스는 톤 일관성·수정 비용 절감
+- 연결: CLAUDE.md 컨벤션, Lv3 루브릭(일관된 상태·문구 표시), README §4·§5
+
+## D-020 프론트 API 타입: Swagger 기반 codegen + shared/types 단일 폴더 (2026-07-27)
+
+- 선택지: shared/types 수동 정의 유지 / npm 워크스페이스 공유 타입 패키지 / OpenAPI(Swagger) 스펙 + codegen 자동 생성
+- 결정: 백엔드에 Swagger(OpenAPI) 스펙을 붙이고 codegen 스크립트로 프론트 `shared/types`에 타입을 자동 생성. 생성물이든 수동 보조 타입이든 사용처는 shared/types에서만 import(로컬 재정의 금지)
+- 이유: 프-백 타입 어긋남을 구조적으로 차단하는 검증된 방식. 모노레포라 스펙 파일을 레포 안에서 바로 참조할 수 있어 세팅 비용이 낮음
+- 연결: CLAUDE.md 컨벤션, D-011, TODO

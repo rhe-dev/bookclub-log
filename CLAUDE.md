@@ -36,6 +36,10 @@
 ## 컨벤션
 
 - 프론트: 서버 상태는 TanStack Query, 클라이언트 상태는 Zustand. 컴포넌트는 MUI 우선
+- 프론트 디자인 토큰: 색상은 `shared/styles/colors.ts`의 colorChips만 사용(임의 hex 금지), 텍스트는 `Typo` 컴포넌트 + 타이포 토큰(text_{weight}_{size}). MUI 테마 팔레트도 colorChips에서 파생
+- 프론트 공통 UI: `shared/components/ui/`의 Common* 컴포넌트(단일 .tsx, 배럴 없음) 우선 사용. 토스트는 `toast.success()/error()/info()` 전역 헬퍼
+- 프론트 API 호출: `shared/api/axiosClient`(get/post/patch/del 래퍼)만 사용 — X-Member-Id 자동 첨부, 전역 에러 토스트(인라인 표시는 skipErrorToast)
+- 프론트 API 타입: `shared/types/`(도메인별 파일 — common·member·club·book·comment)에만 정의하고 반드시 import해서 사용. 컴포넌트·훅에서 API 타입 로컬 재정의 금지. 백엔드 응답 형태 변경 시 이 폴더를 함께 갱신 (D-020)
 - Next 16은 학습 데이터와 API·컨벤션이 다를 수 있음 — 프론트 구현 전 `frontend/node_modules/next/dist/docs/`의 해당 가이드를 먼저 확인
 - 백엔드: Controller → Service → Prisma 레이어링, DTO 검증(class-validator)
 - 주문 상태 전이는 반드시 서버에서 검증 — 순방향 8단계(접수→확인→제작→제작완료→배송시작→배송중→배송완료→구매확정) + 허용된 분기만: 취소(접수·확인에서, 주문자·관리자) / 환불요청(배송완료, 주문자)→환불완료(관리자) / 재제작요청(배송완료, 주문자)→제작 재진입(관리자). 종결: 구매확정·취소·환불완료. 주문제작 상품이라 단순 변심 환불·교환 없음 — 하자 시에만 (PLAN §5 전이 맵)
