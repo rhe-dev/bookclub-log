@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" role="img" aria-label="북클럽 로그">
+  <rect width="128" height="128" rx="28" fill="#2B6CB0"/>
+  <!-- 펼친 책 -->
+  <path d="M62 42 C54 34 42 31 26 33 V92 C42 90 54 93 62 100 Z" fill="#FFFFFF"/>
+  <path d="M66 42 C74 34 86 31 102 33 V92 C86 90 74 93 66 100 Z" fill="#F5F7FA"/>
+  <!-- 책갈피 리본 -->
+  <path d="M78 18 H92 V50 L85 43 L78 50 Z" fill="#B0662C"/>
+</svg>

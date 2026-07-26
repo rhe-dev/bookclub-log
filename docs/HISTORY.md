@@ -4,6 +4,7 @@
 
 ## 2026-07-27
 
+- 서비스 로고(logo.svg — 펼친 책 + 책갈피 리본, 팔레트 컬러) + 파비콘(favicon.ico·icon.svg) 제작, 스캐폴드 잔여 에셋 5종 정리, 메타데이터(타이틀 템플릿·OG) 업데이트.
 - API 타입 codegen 구축(D-020): 백엔드에 Swagger 플러그인 + 응답 DTO 클래스(도메인별 *.response.ts) → `openapi:gen`으로 openapi.json 추출 → 프론트 `codegen`(openapi-typescript)으로 shared/types/api.generated.ts 생성 → 도메인 파일은 생성 타입 재노출로 전환. Swagger UI(/api/docs)도 함께 제공.
 - 프론트 API 타입 체계(D-020): shared/types/ 도메인별 파일(common·member·club·book·comment)에 수동 정의, 사용처는 import 강제. memberStore도 타입 재사용으로 리팩터링. tertiary filled 톤 한 단계 진하게 조정.
 - CommonButton에 tertiary(비강조 톤) 추가 — 연회색 fill + 서브틀 보더 + 진회색 텍스트(실측 기반, grayScale 토큰 매핑). filled/outlined 모두 지원.
