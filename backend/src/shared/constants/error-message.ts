@@ -1,0 +1,35 @@
+/**
+ * 사용자 노출 에러 메시지 단일 소스 (D-018)
+ * — 도메인 예외와 DTO 검증 메시지가 모두 이 enum을 사용한다.
+ */
+export enum ErrorMessage {
+  // 공통
+  INTERNAL_ERROR = '서버 오류가 발생했습니다. 잠시 후 다시 시도해 주세요.',
+  MEMBER_HEADER_REQUIRED = 'X-Member-Id 헤더가 필요합니다.',
+  MEMBER_NOT_FOUND = '멤버를 찾을 수 없습니다.',
+
+  // 모임
+  CLUB_NOT_FOUND = '모임을 찾을 수 없습니다.',
+  CLUB_MEMBER_ONLY = '모임 멤버만 할 수 있습니다.',
+  LEADER_ONLY = '모임장만 할 수 있습니다.',
+
+  // 책
+  BOOK_NOT_FOUND = '책을 찾을 수 없습니다.',
+  BOOK_TITLE_REQUIRED = '책 제목을 입력해 주세요.',
+  BOOK_AUTHOR_REQUIRED = '저자를 입력해 주세요.',
+  BOOK_COVER_COLOR_FORMAT = '표지 색상은 #RRGGBB 형식이어야 합니다.',
+  BOOK_PERIOD_INVALID = '기간 종료일은 시작일보다 빠를 수 없습니다.',
+  BOOK_PARTICIPANT_NOT_IN_CLUB = '참여 회원 목록에 이 모임의 멤버가 아닌 사람이 있습니다.',
+
+  // 코멘트
+  COMMENT_NOT_FOUND = '코멘트를 찾을 수 없습니다.',
+  COMMENT_AUTHOR_ONLY = '작성자만 할 수 있습니다.',
+  COMMENT_CONTENT_REQUIRED = '내용을 입력해 주세요.',
+  COMMENT_CONTENT_TOO_LONG = '코멘트는 10,000자 이내로 작성해 주세요.',
+  COMMENT_PAGE_MIN = '페이지는 1 이상이어야 합니다.',
+  COMMENT_QUOTE_TOO_LONG = '인용은 1,000자 이내로 입력해 주세요.',
+  REPLY_TARGET_NOT_FOUND = '답글 대상 코멘트를 찾을 수 없습니다.',
+  REPLY_TO_OTHER_BOOK = '다른 책의 코멘트에는 답글을 달 수 없습니다.',
+  REPLY_DEPTH_EXCEEDED = '답글에는 답글을 달 수 없습니다.',
+  REPLY_TO_DELETED = '삭제된 코멘트에는 답글을 달 수 없습니다.',
+}
