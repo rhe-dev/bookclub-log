@@ -17,3 +17,7 @@ build/
 
 # local claude settings
 .claude/settings.local.json
+
+# local-only reference (과제 안내문 요약 — 커밋 금지)
+docs/ASSIGNMENT_BRIEF.md
+*.pdf
