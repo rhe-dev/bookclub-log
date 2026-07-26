@@ -4,6 +4,13 @@
 
 ## 2026-07-26
 
+- 주문 상태 최종 확정(D-013): 과제사 스위트북(POD 인쇄) 비즈니스 조사 후 '교환' 대신 '재제작(REMAKE_REQUESTED)' 채택 — 주문제작 상품은 단순 변심 환불·교환 없음, 하자 시 환불 또는 재제작. init 마이그레이션 재생성·클린 기동 재검증.
+- 문서 배치 기준 확정(D-016: 전역은 루트 docs, 앱 국한은 앱 docs, 지엽 컨벤션 문서는 안 만듦). 프론트에 Prettier 추가 + format 스크립트, src 포맷 적용. 프/백 .prettierrc 동일 설정으로 통일(탭 2칸·80자·세미콜론·싱글쿼트·LF 등 명시).
+- 스키마 구조 개편(사용자 결정 3건): 주문 상태에 취소·환불·재제작 분기 4개 추가(D-013), 노출 모델에 publicId(cuid) 도입(D-014), 회원-모임 다대다(Member 전역 + ClubMember)로 재구조화(D-015). init 마이그레이션 새로 생성, 시드·클린 기동 재검증 완료.
+- 스키마를 도메인별 멀티 파일(prisma/schema/ — schema.prisma + 모델명 대문자 파일 Club·Member·Book·Comment·Order)로 분리. 전 모델·주요 필드에 /// 문서 주석(설계 근거 D-번호 연결 포함). VS Code Prisma 확장의 DATABASE_URL 경고는 루트 .env 추가로 해결(패키지 문제 아님).
+- Prisma 스키마(PLAN §5 전체 모델) + init 마이그레이션 + 시드 완성: 모임 1, 멤버 6, 책 6(읽는 중 1·예정 1·완료 4), 코멘트·답글 38(수정 1·소프트 딜리트 1 사례 포함).
+- 컨테이너 기동 시 migrate deploy → 시드(멱등, 데이터 있으면 스킵) → 앱 시작 자동화 (D-012). down -v 후 클린 기동으로 심사자 시나리오 검증 완료.
+- 프론트 CLAUDE.md·AGENTS.md 삭제, Next 16 문서 참조 안내는 루트 CLAUDE.md 컨벤션으로 흡수.
 - 모노레포 스캐폴드: frontend(Next 16.2, App Router, src 디렉터리) + backend(NestJS 11) 생성. 워크스페이스 없이 폴더 분리 (D-011).
 - docker-compose 골격 완성: db(postgres:16-alpine, 헬스체크) + backend(:4000) + frontend(:3000) 3개 컨테이너 기동 확인. 포트·DB 접속정보는 .env로 오버라이드 가능(.env.example 제공).
 - Dockerfile은 멀티스테이지 프로덕션 빌드(Next는 standalone 출력). NEXT_PUBLIC_API_URL은 빌드 아규먼트로 주입.

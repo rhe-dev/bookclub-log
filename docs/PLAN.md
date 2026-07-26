@@ -57,32 +57,39 @@ _(커뮤니티는 로드맵 보류 — §8)_
 ## 5. 데이터 모델 초안
 
 ```
-Club               (id, name, description, inviteCode, createdAt)
-Member             (id, clubId, name, avatarEmoji, color, role: LEADER | MEMBER)
-Book               (id, clubId, title, author, publisher?,
+Member             (id, publicId, name, avatarEmoji, color)            ← 전역 회원
+Club               (id, publicId, name, description, inviteCode, createdAt)
+ClubMember         (clubId, memberId, role: LEADER | MEMBER, joinedAt) ← 가입(다대다)·모임별 역할
+Book               (id, publicId, clubId, title, author, publisher?,
                     coverColor, coverEmoji,
                     meetingDate?, periodFrom?, periodTo?,
                     status: UPCOMING | READING | DONE,
                     createdAt, updatedAt, deletedAt?)
 BookParticipant    (bookId, memberId)
-Comment            (id, bookId, memberId, parentId?, page?, quote?, content,
+Comment            (id, publicId, bookId, memberId, parentId?, page?, quote?, content,
                     createdAt, updatedAt, deletedAt?)
-Order              (id, clubId, memberId(주문자), title, copies,
+Order              (id, publicId, clubId, memberId(주문자), title, copies,
                     status: OrderStatus, createdAt)
 OrderBook          (orderId, bookId)
-OrderStatusHistory (id, orderId, fromStatus, toStatus, changedAt, actor: USER | ADMIN)
+OrderStatusHistory (id, orderId, fromStatus?, toStatus, changedAt, actor: USER | ADMIN)
 
-OrderStatus (8단계):
+OrderStatus — 순방향 8단계:
   RECEIVED(주문 접수) → CONFIRMED(주문 확인) → IN_PRODUCTION(문집 제작)
   → PRODUCED(제작 완료) → SHIPPED(배송 시작) → IN_TRANSIT(배송 중)
   → DELIVERED(배송 완료) → PURCHASE_CONFIRMED(구매 확정)
++ 분기 4 (D-013):
+  CANCELED(취소)            ← 접수·확인에서만, 주문자·관리자
+  REFUND_REQUESTED(환불 요청) ← 배송완료에서, 주문자 → REFUNDED(환불 완료, 관리자)
+  REMAKE_REQUESTED(재제작 요청) ← 배송완료에서, 주문자 → 승인 시 IN_PRODUCTION 재진입(관리자)
+  종결 상태: PURCHASE_CONFIRMED · CANCELED · REFUNDED
 ```
 
 - **토론 스레드**: `parentId` 1단계(코멘트 → 답글). 페이지·인용 문장은 선택 입력 앵커. 코멘트는 작성자가 **수정(updatedAt)·삭제 가능**하며, 답글이 달린 코멘트를 지워도 스레드가 끊기지 않도록 '삭제된 코멘트'로 자리를 유지한다.
 - **소프트 딜리트 원칙**: 삭제는 `deletedAt` 마킹을 기본으로 한다(Comment·Book). 토론 무결성과 문집 수록 이력을 보존하고, 하드 딜리트는 하지 않는다.
-- **주문 상태**: 8단계 **순방향 전이만** 허용, 역행·건너뛰기는 서버에서 거부. 단계 진행(주문 확인~배송 완료)은 운영자(ADMIN), **구매 확정은 주문자(USER)만** 가능. 모든 전이는 날짜와 함께 이력으로 남겨 마이페이지·관리자에서 단계별 날짜를 확인할 수 있다.
+- **주문 상태**: 순방향 8단계 + **명시된 분기만** 허용(위 전이 맵), 그 외 역행·건너뛰기는 서버에서 거부. 단계 진행·환불 처리·재제작 승인은 운영자(ADMIN), **취소(제작 전)·구매 확정·환불/재제작 요청은 주문자(USER)만** 가능. 모든 전이는 날짜와 함께 이력으로 남겨 마이페이지·관리자에서 단계별 날짜를 확인할 수 있다. 문집은 주문 제작(POD) 상품이므로 단순 변심 환불·교환은 없고(전자상거래법 §17 청약철회 제한), 배송 후 하자 시에만 환불 또는 재제작 — POD에는 재고 교환이 없어 구제책이 '재제작'이다 (D-013).
+- **식별자 전략**: 모든 노출 모델에 publicId(cuid, unique)를 두고 **API 경로·응답에는 publicId만 사용**. 내부 PK·FK는 자동증가 int로 유지해 조인 성능·디버깅 편의를 지킨다 (D-014).
 - **배송은 상태로만 표현**: 주소 입력·택배 연동 등 실제 배송 기능은 구현하지 않는다(안내문 제외 대상). 실물 제작 서비스의 주문 라이프사이클을 상태 머신으로 반영하는 것이 목적.
-- **모델은 Club 단위로 설계**(멀티 모임 확장 대비)하되, 데모는 시드 모임 1개로 보여준다.
+- **회원-모임은 다대다**: Member는 전역 회원이고 소속·역할은 ClubMember(가입)로 관리한다 — 한 회원이 여러 모임에 가입 가능한 구조(로드맵 §8 대비, D-015). 데모·UI는 §7 비목표대로 시드 모임 1개만 보여준다.
 
 ## 6. 레벨별 범위와 완료 기준
 
@@ -117,7 +124,7 @@ OrderStatus (8단계):
 | 안 만드는 것                   | 이유                                                                                                                                                                                                     |
 | ------------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | 비밀번호 로그인/회원 인증      | 과제 안내상 인증은 구현 대상 아님 + "실행 직후 바로 확인" 요건. **프로필 선택 입장**으로 멤버 관점(작성자·마이페이지)은 유지하고 인증 비용만 제거. 제품 비전에는 가입/로그인이 있으나 과제 범위에서 제외 |
-| 멀티 모임 UI                   | 데이터 모델은 Club 단위로 확장 대비하되, 데모는 시드 모임 1개로 충분                                                                                                                                     |
+| 멀티 모임 UI                   | 데이터 모델은 회원-모임 다대다(ClubMember)로 확장 대비하되(D-015), 데모·UI는 시드 모임 1개로 충분                                                                                                        |
 | 커뮤니티(모임 간 소통)         | 코어(모임 책방) 완성이 우선 — §8 로드맵으로 보류                                                                                                                                                         |
 | 결제·배송 기능(주소·택배 연동)·실물 제작·인쇄용 PDF | 과제 안내에서 명시적으로 제외. 배송은 주문 상태(라벨·날짜 이력)로만 표현                                                                                                                                                                            |
 | 외부 도서 검색 API             | 외부 의존 배제 요건. 수동 등록 + 색/이모지 표지 — '우리 모임 책방' 감성과도 어울림                                                                                                                       |
