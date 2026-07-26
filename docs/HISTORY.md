@@ -4,6 +4,9 @@
 
 ## 2026-07-27
 
+- 입장 화면을 /entry 라우트로 분리(루트 /는 리다이렉트 전용), EntrySkeleton을 라우트 하위 components/로 파일 분리 — 페이지 전용 컴포넌트 co-location 컨벤션 등재.
+- CommonContainer(layout) 신설 — Stack 기반, 가운데 정렬 + 양옆 패딩 20px 고정, maxWidth prop. Header·입장·책방 스텁 모두 전환(MUI Container 직접 사용 금지 컨벤션). 루트 레이아웃 Header+Footer 공통화는 TODO 등록.
+- 입장 화면 구현: 서비스 한 줄 소개 + 모임 카드(이름·소개·멤버 수) + 프로필 그리드(아바타·이름·모임장 뱃지) → 선택 시 멤버 저장 후 책방 이동. 이미 입장한 멤버는 자동 리다이렉트. 로딩 스켈레톤·실패 재시도 포함(QA 루브릭 ①③). 책방 스텁 라우트, clubApi 쿼리 훅·queryKeys 신설. 임시 쇼케이스 제거.
 - 공통 Header(shared/components/layout) — 로고+워드마크(책방 이동), 현재 멤버 칩(아바타·이름·모임장 뱃지) + 멤버 변경 메뉴. 반응형: 모바일 56px/데스크탑 64px, 모바일은 아바타만 남기고 이름·역할은 메뉴 상단으로. 라우트 상수(shared/constants/routes.ts) 신설.
 - 서비스 로고(logo.svg — 펼친 책 + 책갈피 리본, 팔레트 컬러) + 파비콘(favicon.ico·icon.svg) 제작, 스캐폴드 잔여 에셋 5종 정리, 메타데이터(타이틀 템플릿·OG) 업데이트.
 - API 타입 codegen 구축(D-020): 백엔드에 Swagger 플러그인 + 응답 DTO 클래스(도메인별 *.response.ts) → `openapi:gen`으로 openapi.json 추출 → 프론트 `codegen`(openapi-typescript)으로 shared/types/api.generated.ts 생성 → 도메인 파일은 생성 타입 재노출로 전환. Swagger UI(/api/docs)도 함께 제공.
