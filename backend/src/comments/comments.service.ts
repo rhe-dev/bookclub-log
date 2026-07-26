@@ -7,6 +7,8 @@ import {
 import { Prisma } from '@prisma/client';
 import { BooksService } from '../books/books.service';
 import { ClubsService } from '../clubs/clubs.service';
+import { ErrorMessage } from '../shared/constants/error-message';
+import { PaginationQuery, toPageMeta } from '../shared/dto/pagination.query';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateCommentDto } from './dto/create-comment.dto';
 import { UpdateCommentDto } from './dto/update-comment.dto';
@@ -27,23 +29,40 @@ export class CommentsService {
     private readonly booksService: BooksService,
   ) {}
 
-  async listForBook(bookPublicId: string) {
+  async listForBook(bookPublicId: string, query: PaginationQuery) {
     const book = await this.booksService.getBookOrThrow(bookPublicId);
-    const threads = await this.prisma.comment.findMany({
-      where: { bookId: book.id, parentId: null },
-      orderBy: { createdAt: 'asc' },
-      include: {
-        member: memberSummary,
-        replies: {
-          orderBy: { createdAt: 'asc' },
-          include: { member: memberSummary },
+    const page = query.page ?? 1;
+    const limit = query.limit ?? 20;
+    // 삭제된 코멘트는 답글(비삭제)이 남아 있을 때만 '자리 유지'로 노출 (D-010)
+    const where: Prisma.CommentWhereInput = {
+      bookId: book.id,
+      parentId: null,
+      OR: [{ deletedAt: null }, { replies: { some: { deletedAt: null } } }],
+    };
+    const [totalCount, threads] = await this.prisma.$transaction([
+      this.prisma.comment.count({ where }),
+      this.prisma.comment.findMany({
+        where,
+        orderBy: { createdAt: 'asc' },
+        skip: (page - 1) * limit,
+        take: limit,
+        include: {
+          member: memberSummary,
+          replies: {
+            where: { deletedAt: null },
+            orderBy: { createdAt: 'asc' },
+            include: { member: memberSummary },
+          },
         },
-      },
-    });
-    return threads.map((comment) => ({
-      ...this.toDto(comment),
-      replies: comment.replies.map((reply) => this.toDto(reply)),
-    }));
+      }),
+    ]);
+    return {
+      items: threads.map((comment) => ({
+        ...this.toDto(comment),
+        replies: comment.replies.map((reply) => this.toDto(reply)),
+      })),
+      meta: toPageMeta(page, limit, totalCount),
+    };
   }
 
   async create(
@@ -63,17 +82,13 @@ export class CommentsService {
         where: { publicId: dto.parentId },
       });
       if (!parent)
-        throw new NotFoundException('답글 대상 코멘트를 찾을 수 없습니다.');
+        throw new NotFoundException(ErrorMessage.REPLY_TARGET_NOT_FOUND);
       if (parent.bookId !== book.id)
-        throw new BadRequestException(
-          '다른 책의 코멘트에는 답글을 달 수 없습니다.',
-        );
+        throw new BadRequestException(ErrorMessage.REPLY_TO_OTHER_BOOK);
       if (parent.parentId !== null)
-        throw new BadRequestException('답글에는 답글을 달 수 없습니다.');
+        throw new BadRequestException(ErrorMessage.REPLY_DEPTH_EXCEEDED);
       if (parent.deletedAt)
-        throw new BadRequestException(
-          '삭제된 코멘트에는 답글을 달 수 없습니다.',
-        );
+        throw new BadRequestException(ErrorMessage.REPLY_TO_DELETED);
       parentInternalId = parent.id;
     }
 
@@ -100,13 +115,17 @@ export class CommentsService {
       commentPublicId,
       memberPublicId,
     );
+
+    const data: Prisma.CommentUpdateInput = {};
+    if (dto.content != null) data.content = dto.content;
+    if (dto.page !== undefined) data.page = dto.page;
+    if (dto.quote !== undefined) data.quote = dto.quote;
+    // 변경 필드가 없으면 updatedAt을 건드리지 않는다 — 빈 PATCH가 '수정됨'을 만들지 않게
+    if (Object.keys(data).length === 0) return this.toDto(comment);
+
     const updated = await this.prisma.comment.update({
       where: { id: comment.id },
-      data: {
-        ...(dto.content !== undefined && { content: dto.content }),
-        ...(dto.page !== undefined && { page: dto.page }),
-        ...(dto.quote !== undefined && { quote: dto.quote }),
-      },
+      data,
       include: { member: memberSummary },
     });
     return this.toDto(updated);
@@ -134,9 +153,9 @@ export class CommentsService {
       include: { member: memberSummary },
     });
     if (!comment || comment.deletedAt)
-      throw new NotFoundException('코멘트를 찾을 수 없습니다.');
+      throw new NotFoundException(ErrorMessage.COMMENT_NOT_FOUND);
     if (comment.memberId !== member.id)
-      throw new ForbiddenException('작성자만 할 수 있습니다.');
+      throw new ForbiddenException(ErrorMessage.COMMENT_AUTHOR_ONLY);
     return comment;
   }
 

@@ -5,6 +5,7 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { ClubRole } from '@prisma/client';
+import { ErrorMessage } from '../shared/constants/error-message';
 import { PrismaService } from '../prisma/prisma.service';
 
 @Injectable()
@@ -44,18 +45,18 @@ export class ClubsService {
 
   async getClubOrThrow(publicId: string) {
     const club = await this.prisma.club.findUnique({ where: { publicId } });
-    if (!club) throw new NotFoundException('모임을 찾을 수 없습니다.');
+    if (!club) throw new NotFoundException(ErrorMessage.CLUB_NOT_FOUND);
     return club;
   }
 
   // 무인증 환경의 현재 멤버 식별 — X-Member-Id 헤더의 publicId 사용 (D-017)
   async getMemberOrThrow(memberPublicId?: string) {
     if (!memberPublicId)
-      throw new BadRequestException('X-Member-Id 헤더가 필요합니다.');
+      throw new BadRequestException(ErrorMessage.MEMBER_HEADER_REQUIRED);
     const member = await this.prisma.member.findUnique({
       where: { publicId: memberPublicId },
     });
-    if (!member) throw new NotFoundException('멤버를 찾을 수 없습니다.');
+    if (!member) throw new NotFoundException(ErrorMessage.MEMBER_NOT_FOUND);
     return member;
   }
 
@@ -64,7 +65,8 @@ export class ClubsService {
     const membership = await this.prisma.clubMember.findUnique({
       where: { clubId_memberId: { clubId, memberId: member.id } },
     });
-    if (!membership) throw new ForbiddenException('모임 멤버만 할 수 있습니다.');
+    if (!membership)
+      throw new ForbiddenException(ErrorMessage.CLUB_MEMBER_ONLY);
     return { member, membership };
   }
 
@@ -74,7 +76,7 @@ export class ClubsService {
       memberPublicId,
     );
     if (membership.role !== ClubRole.LEADER)
-      throw new ForbiddenException('모임장만 할 수 있습니다.');
+      throw new ForbiddenException(ErrorMessage.LEADER_ONLY);
     return member;
   }
 }

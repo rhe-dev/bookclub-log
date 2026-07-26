@@ -7,7 +7,9 @@ import {
   Param,
   Patch,
   Post,
+  Query,
 } from '@nestjs/common';
+import { PaginationQuery } from '../shared/dto/pagination.query';
 import { CommentsService } from './comments.service';
 import { CreateCommentDto } from './dto/create-comment.dto';
 import { UpdateCommentDto } from './dto/update-comment.dto';
@@ -17,8 +19,8 @@ export class CommentsController {
   constructor(private readonly commentsService: CommentsService) {}
 
   @Get('books/:bookId/comments')
-  list(@Param('bookId') bookId: string) {
-    return this.commentsService.listForBook(bookId);
+  list(@Param('bookId') bookId: string, @Query() query: PaginationQuery) {
+    return this.commentsService.listForBook(bookId, query);
   }
 
   @Post('books/:bookId/comments')

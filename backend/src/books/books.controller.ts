@@ -20,7 +20,7 @@ export class BooksController {
 
   @Get('clubs/:clubId/books')
   list(@Param('clubId') clubId: string, @Query() query: ListBooksQuery) {
-    return this.booksService.list(clubId, query.status);
+    return this.booksService.list(clubId, query);
   }
 
   @Post('clubs/:clubId/books')
