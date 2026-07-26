@@ -36,6 +36,7 @@
 ## 컨벤션
 
 - 프론트: 서버 상태는 TanStack Query, 클라이언트 상태는 Zustand. 컴포넌트는 MUI 우선
+- Next 16은 학습 데이터와 API·컨벤션이 다를 수 있음 — 프론트 구현 전 `frontend/node_modules/next/dist/docs/`의 해당 가이드를 먼저 확인
 - 백엔드: Controller → Service → Prisma 레이어링, DTO 검증(class-validator)
 - 주문 상태 전이는 반드시 서버에서 검증 — 8단계 순방향만(접수→확인→제작→제작완료→배송시작→배송중→배송완료→구매확정). 단계 진행은 관리자, 구매 확정은 주문자만
 - 삭제는 소프트 딜리트(deletedAt)가 기본 — Comment·Book 하드 딜리트 금지

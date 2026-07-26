@@ -2,6 +2,12 @@
 
 > 최신이 위. 형식: 날짜 — 무엇을, 왜(필요 시), 특이사항.
 
+## 2026-07-26
+
+- 모노레포 스캐폴드: frontend(Next 16.2, App Router, src 디렉터리) + backend(NestJS 11) 생성. 워크스페이스 없이 폴더 분리 (D-011).
+- docker-compose 골격 완성: db(postgres:16-alpine, 헬스체크) + backend(:4000) + frontend(:3000) 3개 컨테이너 기동 확인. 포트·DB 접속정보는 .env로 오버라이드 가능(.env.example 제공).
+- Dockerfile은 멀티스테이지 프로덕션 빌드(Next는 standalone 출력). NEXT_PUBLIC_API_URL은 빌드 아규먼트로 주입.
+
 ## 2026-07-25
 
 - 프로젝트 시작. 주제를 '독서모임 기록 서비스(북클럽 로그)'로 확정 (D-001).

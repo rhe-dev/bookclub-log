@@ -17,10 +17,10 @@
 - [x] 레포 준비 (생성·클론·환경 설정)
 - [x] 기획 문서 세트 작성 (PLAN/DECISIONS/TODO/HISTORY/AI_LOG/QA/CLAUDE.md)
 - [x] 기획 개정: 모임 책방 + 토론 스레드 중심 (D-007)
-- [ ] 첫 push 확인
-- [ ] Docker Desktop 업데이트
-- [ ] 모노레포 스캐폴드 (frontend: Next / backend: NestJS)
-- [ ] docker-compose 골격: db + backend + frontend 3개 컨테이너 기동
+- [x] 첫 push 확인
+- [x] Docker Desktop 업데이트
+- [x] 모노레포 스캐폴드 (frontend: Next / backend: NestJS)
+- [x] docker-compose 골격: db + backend + frontend 3개 컨테이너 기동
 - [ ] Prisma 스키마 + 마이그레이션 + 시드(모임 1, 멤버 5~6, 책 5~6, 코멘트·답글 30+)
 
 ## Lv1 — 모임 책방
