@@ -1,14 +1,7 @@
 'use client';
 
 import KeyboardArrowDownRoundedIcon from '@mui/icons-material/KeyboardArrowDownRounded';
-import {
-  Box,
-  ButtonBase,
-  Container,
-  Divider,
-  Menu,
-  MenuItem,
-} from '@mui/material';
+import { Box, ButtonBase, Divider, Menu, MenuItem } from '@mui/material';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
@@ -17,6 +10,7 @@ import { ROUTES } from '@/shared/constants/routes';
 import { useMemberStore } from '@/shared/stores/memberStore';
 import { colorChips } from '@/shared/styles/colors';
 import { Typo } from '../ui/Typo';
+import { CommonContainer } from './CommonContainer';
 
 /**
  * 공통 헤더 — 로고(책방 이동) + 현재 멤버 칩(멤버 변경 메뉴).
@@ -46,11 +40,10 @@ export const Header = () => {
         borderBottom: `1px solid ${colorChips.grayScale[200]}`,
       }}
     >
-      <Container
-        maxWidth="lg"
+      <CommonContainer
+        direction="row"
         sx={{
           height: { xs: 56, md: 64 },
-          display: 'flex',
           alignItems: 'center',
           justifyContent: 'space-between',
           gap: 1,
@@ -162,7 +155,7 @@ export const Header = () => {
             </Menu>
           </>
         )}
-      </Container>
+      </CommonContainer>
     </Box>
   );
 };
