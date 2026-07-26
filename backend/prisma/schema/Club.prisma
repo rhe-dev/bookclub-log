@@ -1,0 +1,32 @@
+/// 독서모임 — 책방(아카이브)·주문의 소유 단위. 데모는 시드 모임 1개 (PLAN §7)
+model Club {
+  id          Int      @id @default(autoincrement())
+  publicId    String   @unique @default(cuid()) /// API 경로·응답용 식별자 — 내부 id는 노출 금지 (D-014)
+  name        String
+  description String /// 입장 화면·책방 헤더에 노출되는 모임 소개
+  inviteCode  String   @unique /// 초대코드 가입 플로우(스트레치)용
+  createdAt   DateTime @default(now())
+
+  members ClubMember[]
+  books   Book[]
+  orders  Order[]
+}
+
+/// 소속·역할은 가입(멤버십) 단위 — 한 회원이 여러 모임에 가입 가능
+enum ClubRole {
+  LEADER /// 모임장 — 책 등록·모임 관리
+  MEMBER
+}
+
+/// 회원의 모임 가입 — 모임별 역할·가입일 관리 (다대다, D-015)
+model ClubMember {
+  clubId   Int
+  memberId Int
+  role     ClubRole @default(MEMBER)
+  joinedAt DateTime @default(now())
+
+  club   Club   @relation(fields: [clubId], references: [id])
+  member Member @relation(fields: [memberId], references: [id])
+
+  @@id([clubId, memberId])
+}

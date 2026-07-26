@@ -1,0 +1,65 @@
+/// 순방향 8단계 + 분기(취소·환불·재제작). 허용 전이는 서버(Service) 전이 맵에서 검증:
+///   접수·확인 → 취소(주문자·관리자) / 배송완료 → 구매확정·환불요청·재제작요청(주문자)
+///   환불요청 → 환불완료(관리자) / 재제작요청 → 문집제작 재진입(관리자 승인)
+///   종결 상태: 구매확정·취소·환불완료
+/// 주문제작 상품이므로 단순 변심 환불·교환은 없다 — 배송 후 하자(인쇄불량·파손) 시에만 환불 또는 재제작 (D-013)
+enum OrderStatus {
+  RECEIVED
+  CONFIRMED
+  IN_PRODUCTION
+  PRODUCED
+  SHIPPED
+  IN_TRANSIT
+  DELIVERED
+  PURCHASE_CONFIRMED
+  CANCELED /// 제작 시작 전 취소
+  REFUND_REQUESTED /// 배송 후 하자 환불 요청
+  REFUNDED /// 환불 완료
+  REMAKE_REQUESTED /// 배송 후 하자 재제작 요청 → 승인 시 제작 재진입
+}
+
+/// 상태 전이의 주체 — 주문자(USER) / 운영자(ADMIN)
+enum ActorType {
+  USER
+  ADMIN
+}
+
+/// 문집(실물 책) 주문 — 모임의 책·토론을 묶어 제작. 상태 변경은 반드시 서버 전이 검증을 거친다
+model Order {
+  id        Int         @id @default(autoincrement())
+  publicId  String      @unique @default(cuid()) /// API 경로·응답용 식별자 (D-014)
+  clubId    Int
+  memberId  Int /// 주문자 — 구매 확정·취소·환불/재제작 요청 권한자
+  title     String /// 문집 제목
+  copies    Int /// 인쇄 부수
+  status    OrderStatus @default(RECEIVED)
+  createdAt DateTime    @default(now()) /// 주문일
+
+  club    Club                 @relation(fields: [clubId], references: [id])
+  member  Member               @relation(fields: [memberId], references: [id])
+  books   OrderBook[]
+  history OrderStatusHistory[]
+}
+
+/// 문집에 수록된 책 (다대다)
+model OrderBook {
+  orderId Int
+  bookId  Int
+
+  order Order @relation(fields: [orderId], references: [id])
+  book  Book  @relation(fields: [bookId], references: [id])
+
+  @@id([orderId, bookId])
+}
+
+/// 상태 전이 이력 — 마이페이지·관리자에서 단계별 날짜 표시에 사용
+model OrderStatusHistory {
+  id         Int          @id @default(autoincrement())
+  orderId    Int
+  fromStatus OrderStatus? /// 최초 접수 기록은 null
+  toStatus   OrderStatus
+  changedAt  DateTime     @default(now())
+  actor      ActorType
+
+  order Order @relation(fields: [orderId], references: [id])
+}

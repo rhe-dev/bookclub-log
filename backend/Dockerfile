@@ -3,6 +3,7 @@ WORKDIR /app
 COPY package*.json ./
 RUN npm ci
 COPY . .
+RUN npx prisma generate
 RUN npm run build
 RUN npm prune --omit=dev
 
@@ -11,6 +12,9 @@ WORKDIR /app
 ENV NODE_ENV=production
 COPY --from=build /app/node_modules ./node_modules
 COPY --from=build /app/dist ./dist
+COPY --from=build /app/prisma ./prisma
 COPY package.json ./
+# npm prune이 생성된 클라이언트(node_modules/.prisma)를 지울 수 있어 런타임 단계에서 재생성
+RUN npx prisma generate
 EXPOSE 4000
-CMD ["node", "dist/main.js"]
+CMD ["sh", "-c", "npx prisma migrate deploy && node prisma/seed.js && node dist/main.js"]

@@ -1,0 +1,41 @@
+/// 책방(홈)의 필터 기준 — 읽을 예정 / 지금 읽는 중 / 완독
+enum BookStatus {
+  UPCOMING
+  READING
+  DONE
+}
+
+/// 모임이 함께 읽(은/는) 책 — 책방의 콘텐츠 단위이자 토론 스레드의 부모
+model Book {
+  id          Int        @id @default(autoincrement())
+  publicId    String     @unique @default(cuid()) /// API 경로·응답용 식별자 (D-014)
+  clubId      Int
+  title       String
+  author      String
+  publisher   String?
+  coverColor  String /// 표지 배경색(HEX) — 이미지 업로드 대신 색+이모지 표지 (PLAN §7)
+  coverEmoji  String
+  meetingDate DateTime? /// 모임(토론) 일시
+  periodFrom  DateTime? /// 함께 읽는 기간 시작
+  periodTo    DateTime? /// 함께 읽는 기간 끝
+  status      BookStatus @default(UPCOMING)
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+  deletedAt   DateTime? /// 소프트 딜리트 — 하드 딜리트 금지 (D-010)
+
+  club         Club              @relation(fields: [clubId], references: [id])
+  participants BookParticipant[]
+  comments     Comment[]
+  orderBooks   OrderBook[]
+}
+
+/// 책별 참여 회원 (다대다) — 책 상세의 '함께 읽는 멤버' 표시용
+model BookParticipant {
+  bookId   Int
+  memberId Int
+
+  book   Book   @relation(fields: [bookId], references: [id])
+  member Member @relation(fields: [memberId], references: [id])
+
+  @@id([bookId, memberId])
+}
