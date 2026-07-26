@@ -9,17 +9,31 @@ import {
   Post,
   Query,
 } from '@nestjs/common';
+import { ApiHeader } from '@nestjs/swagger';
+import { DeletedResponse } from '../shared/dto/deleted.response';
 import { PaginationQuery } from '../shared/dto/pagination.query';
 import { CommentsService } from './comments.service';
+import {
+  CommentResponse,
+  PaginatedCommentsResponse,
+} from './dto/comment.response';
 import { CreateCommentDto } from './dto/create-comment.dto';
 import { UpdateCommentDto } from './dto/update-comment.dto';
 
+@ApiHeader({
+  name: 'X-Member-Id',
+  required: false,
+  description: '현재 멤버의 publicId — 쓰기 요청에 필요 (D-017)',
+})
 @Controller()
 export class CommentsController {
   constructor(private readonly commentsService: CommentsService) {}
 
   @Get('books/:bookId/comments')
-  list(@Param('bookId') bookId: string, @Query() query: PaginationQuery) {
+  list(
+    @Param('bookId') bookId: string,
+    @Query() query: PaginationQuery,
+  ): Promise<PaginatedCommentsResponse> {
     return this.commentsService.listForBook(bookId, query);
   }
 
@@ -28,7 +42,7 @@ export class CommentsController {
     @Param('bookId') bookId: string,
     @Headers('x-member-id') memberId: string | undefined,
     @Body() dto: CreateCommentDto,
-  ) {
+  ): Promise<CommentResponse> {
     return this.commentsService.create(bookId, memberId, dto);
   }
 
@@ -37,7 +51,7 @@ export class CommentsController {
     @Param('commentId') commentId: string,
     @Headers('x-member-id') memberId: string | undefined,
     @Body() dto: UpdateCommentDto,
-  ) {
+  ): Promise<CommentResponse> {
     return this.commentsService.update(commentId, memberId, dto);
   }
 
@@ -45,7 +59,7 @@ export class CommentsController {
   remove(
     @Param('commentId') commentId: string,
     @Headers('x-member-id') memberId: string | undefined,
-  ) {
+  ): Promise<DeletedResponse> {
     return this.commentsService.remove(commentId, memberId);
   }
 }
