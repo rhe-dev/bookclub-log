@@ -42,6 +42,9 @@
 - API 경로·응답 식별자는 publicId(cuid)만 사용 — 내부 int id는 노출하지 않는다
 - 삭제는 소프트 딜리트(deletedAt)가 기본 — Comment·Book 하드 딜리트 금지
 - 문서 배치: 프/백 공통·기획·프로세스 문서는 루트 `docs/`, 한쪽 앱에만 해당하는 문서는 그 앱의 `docs/`(backend/docs 등)에 둔다. 지엽적 컨벤션 문서는 만들지 않는다 — 기존 코드가 컨벤션의 기준 (D-016)
+- 폴더 구조(프/백 공통): 여러 도메인이 함께 쓰는 코드는 `src/shared/` 아래 기능 단위(dto·constants·filters·utils 등)로 배치. 도메인 폴더에는 그 도메인 전용 코드만
+- 에러 처리(백): 사용자 노출 메시지는 `shared/constants/error-message.ts`의 ErrorMessage enum이 단일 소스 — 도메인 예외·DTO 검증 메시지 모두 여기서 가져온다. 응답 포맷은 전역 필터가 `{ statusCode, messages[], timestamp, path }`로 통일 (D-018)
+- 목록 API는 페이지네이션 기본: `?page=&limit=`(기본 20, 최대 100) → `{ items, meta: { page, limit, totalCount, hasNext } }`
 
 ## 범위 규칙
 
