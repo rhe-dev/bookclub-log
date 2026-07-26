@@ -7,7 +7,8 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "format": "prettier --write \"src/**/*.{ts,tsx,css}\""
+    "format": "prettier --write \"src/**/*.{ts,tsx,css}\"",
+    "codegen": "openapi-typescript ../backend/openapi.json -o src/shared/types/api.generated.ts"
   },
   "dependencies": {
     "@emotion/cache": "^11.14.0",
@@ -30,6 +31,7 @@
     "@types/react-dom": "^19",
     "eslint": "^9",
     "eslint-config-next": "16.2.12",
+    "openapi-typescript": "^7.13.0",
     "prettier": "^3.9.6",
     "typescript": "^5"
   }

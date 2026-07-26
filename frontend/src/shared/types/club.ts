@@ -1,18 +1,9 @@
-import type { MemberSummary } from './member';
-
-export type ClubRole = 'LEADER' | 'MEMBER';
+import type { components } from './api.generated';
 
 /** GET /clubs 항목 */
-export interface Club {
-  publicId: string;
-  name: string;
-  description: string;
-  memberCount: number;
-  createdAt: string;
-}
+export type Club = components['schemas']['ClubResponse'];
 
 /** GET /clubs/:id/members 항목 — 입장 화면 프로필 선택용 */
-export interface ClubMember extends MemberSummary {
-  role: ClubRole;
-  joinedAt: string;
-}
+export type ClubMember = components['schemas']['ClubMemberResponse'];
+
+export type ClubRole = ClubMember['role'];

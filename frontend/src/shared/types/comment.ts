@@ -1,37 +1,16 @@
-import type { MemberSummary } from './member';
+import type { components } from './api.generated';
 
 /**
  * 코멘트·답글 공통 형태.
  * deleted=true(답글이 남아 자리만 유지된 삭제 코멘트)면 member·content가 null.
  */
-export interface Comment {
-  publicId: string;
-  deleted: boolean;
-  member: MemberSummary | null;
-  page: number | null;
-  quote: string | null;
-  content: string | null;
-  createdAt: string;
-  updatedAt: string | null;
-  isEdited: boolean;
-}
+export type Comment = components['schemas']['CommentResponse'];
 
 /** GET /books/:id/comments 항목 — 코멘트 + 답글 1단계 */
-export interface CommentThread extends Comment {
-  replies: Comment[];
-}
+export type CommentThread = components['schemas']['CommentThreadResponse'];
 
 /** POST /books/:id/comments 바디 */
-export interface CreateCommentBody {
-  content: string;
-  page?: number | null;
-  quote?: string | null;
-  parentId?: string;
-}
+export type CreateCommentBody = components['schemas']['CreateCommentDto'];
 
 /** PATCH /comments/:id 바디 — null은 앵커 해제 */
-export interface UpdateCommentBody {
-  content?: string;
-  page?: number | null;
-  quote?: string | null;
-}
+export type UpdateCommentBody = components['schemas']['UpdateCommentDto'];

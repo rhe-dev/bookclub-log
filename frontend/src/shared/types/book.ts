@@ -1,38 +1,12 @@
-import type { MemberSummary } from './member';
-
-export type BookStatus = 'UPCOMING' | 'READING' | 'DONE';
+import type { components } from './api.generated';
 
 /** GET /clubs/:id/books 항목 · GET /books/:id 응답 */
-export interface Book {
-  publicId: string;
-  title: string;
-  author: string;
-  publisher: string | null;
-  coverColor: string;
-  coverEmoji: string;
-  status: BookStatus;
-  meetingDate: string | null;
-  periodFrom: string | null;
-  periodTo: string | null;
-  createdAt: string;
-  updatedAt: string;
-  participants: MemberSummary[];
-  commentCount: number;
-}
+export type Book = components['schemas']['BookResponse'];
+
+export type BookStatus = Book['status'];
 
 /** POST /clubs/:id/books 바디 */
-export interface CreateBookBody {
-  title: string;
-  author: string;
-  publisher?: string | null;
-  coverColor: string;
-  coverEmoji: string;
-  status?: BookStatus;
-  meetingDate?: string | null;
-  periodFrom?: string | null;
-  periodTo?: string | null;
-  participantIds?: string[];
-}
+export type CreateBookBody = components['schemas']['CreateBookDto'];
 
 /** PATCH /books/:id 바디 — null은 해당 값 해제 */
-export type UpdateBookBody = Partial<CreateBookBody>;
+export type UpdateBookBody = components['schemas']['UpdateBookDto'];
