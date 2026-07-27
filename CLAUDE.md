@@ -49,6 +49,7 @@
 - 프론트 API 타입은 codegen(D-020): 백엔드 DTO·컨트롤러 수정 → backend `npm run openapi:gen`(openapi.json 갱신) → frontend `npm run codegen`(shared/types/api.generated.ts 재생성). 사용처는 `shared/types/` 도메인별 재노출 파일(common·member·club·book·comment)에서만 import — 로컬 재정의·api.generated 직접 import 금지
 - Next 16은 학습 데이터와 API·컨벤션이 다를 수 있음 — 프론트 구현 전 `frontend/node_modules/next/dist/docs/`의 해당 가이드를 먼저 확인
 - 백엔드: Controller → Service → Prisma 레이어링, DTO 검증(class-validator)
+- 백엔드 앱 구조: `src/apps/apis`(서비스)와 `src/apps/admin`(운영자)을 분리하고, 두 앱이 공유하는 것(도메인 공통 로직·prisma·dto·상수)은 `src/shared`에 둔다 — 한 DB를 공유하되 서버 분리가 가능한 경계 (D-023)
 - 주문 상태 전이는 반드시 서버에서 검증 — 순방향 8단계(접수→확인→제작→제작완료→배송시작→배송중→배송완료→구매확정) + 허용된 분기만: 취소(접수·확인에서, 주문자·관리자) / 환불요청(배송완료, 주문자)→환불완료(관리자) / 재제작요청(배송완료, 주문자)→제작 재진입(관리자). 종결: 구매확정·취소·환불완료. 주문제작 상품이라 단순 변심 환불·교환 없음 — 하자 시에만 (PLAN §5 전이 맵)
 - API 경로·응답 식별자는 publicId(cuid)만 사용 — 내부 int id는 노출하지 않는다
 - 삭제는 소프트 딜리트(deletedAt)가 기본 — Comment·Book 하드 딜리트 금지

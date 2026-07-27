@@ -4,6 +4,8 @@
 
 ## 2026-07-27
 
+- 백엔드 앱 분리(D-023): src/apps/apis(서비스)·src/apps/admin(운영자) + src/shared(공유) 구조로 재편. 주문은 공통 로직(전이 실행·페이지네이션·매퍼)을 shared/orders의 OrdersSharedService로 두고 앱별 서비스는 역할별 유스케이스만. prisma 모듈도 shared로 이동. 라우트·스펙 변화 없음(빌드·테스트 25개 재통과).
+- Lv2 Order API: 전이 맵 단일 소스(order-transitions.ts) + 순수 함수 검증 → 유닛 테스트 24개(순방향·역행·건너뛰기·권한·종결). 주문 생성(수록 책 검증·최초 이력)·내 주문·관리자 목록·주문자/관리자 전이 분리(/orders vs /admin/orders)·CSV(BOM+한글 라벨). 시드 주문 3건(완결·배송중·접수). curl 8개 시나리오 검증.
 - 루트 레이아웃 공통화: AppShell(Header+main+Footer, sticky footer)을 루트 레이아웃에 배치하고 페이지별 Header 렌더 제거. Footer 신규 — 로고·서비스 소개·사업자 정보 플레이스홀더·카피라이트, 반응형 여백(링크 컬럼은 범위 제외).
 - 리팩토링(커밋 전 자체 리뷰): 중복 추출 — MemberAvatar(4곳)·ErrorView(3곳)·BookCover(4곳)·BookSchedule(2곳)·useRequireMember 훅(2곳)·lineClamp 믹스인·백엔드 memberSummarySelect 공통화. BookStatusTag를 shared/components/book으로 이동(크로스 라우트 import 해소), 중복 import 정리.
 - 코멘트 공감 기능(D-021): CommentLike 스키마+마이그레이션, 토글 API(POST /comments/:id/like), 응답에 likeCount·likedByMe(조회 헤더 선택적), 시드 공감 31개. UI는 하트 토글.
