@@ -21,6 +21,16 @@ export enum ErrorMessage {
   BOOK_PERIOD_INVALID = '기간 종료일은 시작일보다 빠를 수 없습니다.',
   BOOK_PARTICIPANT_NOT_IN_CLUB = '참여 회원 목록에 이 모임의 멤버가 아닌 사람이 있습니다.',
 
+  // 주문
+  ORDER_NOT_FOUND = '주문을 찾을 수 없습니다.',
+  ORDER_TITLE_REQUIRED = '문집 제목을 입력해 주세요.',
+  ORDER_COPIES_MIN = '부수는 1부 이상이어야 합니다.',
+  ORDER_BOOKS_REQUIRED = '수록할 책을 한 권 이상 선택해 주세요.',
+  ORDER_BOOK_INVALID = '수록 목록에 이 모임의 책이 아닌 항목이 있습니다.',
+  ORDER_INVALID_TRANSITION = '현재 상태에서는 불가능한 변경입니다.',
+  ORDER_ADMIN_ONLY_TRANSITION = '운영자만 진행할 수 있는 단계입니다.',
+  ORDER_ORDERER_ONLY = '주문자만 할 수 있습니다.',
+
   // 코멘트
   COMMENT_NOT_FOUND = '코멘트를 찾을 수 없습니다.',
   COMMENT_AUTHOR_ONLY = '작성자만 할 수 있습니다.',
