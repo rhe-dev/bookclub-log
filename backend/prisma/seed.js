@@ -234,8 +234,74 @@ async function main() {
     }
   }
 
+  // 문집 주문 — 완결·진행 중·접수 직후 3가지 상태를 시연
+  const ORDERS = [
+    {
+      by: 'jiwon',
+      title: '페이지 너머 문집 Vol.1 — 상반기의 기록',
+      copies: 6,
+      books: ['almond', 'library', 'pachinko'],
+      history: [
+        ['RECEIVED', '2026-06-16T10:00:00', 'USER'],
+        ['CONFIRMED', '2026-06-16T15:30:00', 'ADMIN'],
+        ['IN_PRODUCTION', '2026-06-18T09:00:00', 'ADMIN'],
+        ['PRODUCED', '2026-06-24T17:00:00', 'ADMIN'],
+        ['SHIPPED', '2026-06-25T11:00:00', 'ADMIN'],
+        ['IN_TRANSIT', '2026-06-26T08:30:00', 'ADMIN'],
+        ['DELIVERED', '2026-06-27T14:20:00', 'ADMIN'],
+        ['PURCHASE_CONFIRMED', '2026-06-28T20:10:00', 'USER'],
+      ],
+    },
+    {
+      by: 'minjun',
+      title: '여름 소책자 — 불편한 편의점 편',
+      copies: 3,
+      books: ['store'],
+      history: [
+        ['RECEIVED', '2026-07-14T21:00:00', 'USER'],
+        ['CONFIRMED', '2026-07-15T10:00:00', 'ADMIN'],
+        ['IN_PRODUCTION', '2026-07-16T09:30:00', 'ADMIN'],
+        ['PRODUCED', '2026-07-22T18:00:00', 'ADMIN'],
+        ['SHIPPED', '2026-07-23T10:00:00', 'ADMIN'],
+        ['IN_TRANSIT', '2026-07-24T07:40:00', 'ADMIN'],
+      ],
+    },
+    {
+      by: 'jiwon',
+      title: '가을 문집 준비호 — 물고기 스페셜',
+      copies: 6,
+      books: ['fish'],
+      history: [['RECEIVED', '2026-07-26T22:40:00', 'USER']],
+    },
+  ];
+  for (const orderDef of ORDERS) {
+    const historyRows = orderDef.history.map(([toStatus, at, actor], i) => ({
+      fromStatus: i === 0 ? null : orderDef.history[i - 1][0],
+      toStatus,
+      actor,
+      changedAt: kst(at),
+    }));
+    const last = orderDef.history[orderDef.history.length - 1];
+    await prisma.order.create({
+      data: {
+        clubId: club.id,
+        memberId: members[orderDef.by].id,
+        title: orderDef.title,
+        copies: orderDef.copies,
+        status: last[0],
+        createdAt: kst(orderDef.history[0][1]),
+        books: {
+          create: orderDef.books.map((bookKey) => ({
+            bookId: books[bookKey].id,
+          })),
+        },
+        history: { create: historyRows },
+      },
+    });
+  }
+
   console.log(
-    `[seed] 완료 — 모임 1, 멤버 ${MEMBERS.length}, 책 ${BOOKS.length}, 코멘트·답글 ${COMMENTS.length}, 공감 ${likeCount}`,
+    `[seed] 완료 — 모임 1, 멤버 ${MEMBERS.length}, 책 ${BOOKS.length}, 코멘트·답글 ${COMMENTS.length}, 공감 ${likeCount}, 주문 ${ORDERS.length}`,
   );
 }
 
