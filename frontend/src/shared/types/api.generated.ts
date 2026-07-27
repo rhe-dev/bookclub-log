@@ -4,601 +4,926 @@
  */
 
 export interface paths {
-  '/api/health': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
+    "/api/health": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["AppController_getHealth"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
     };
-    get: operations['AppController_getHealth'];
-    put?: never;
-    post?: never;
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  '/api/clubs': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
+    "/api/clubs": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["ClubsController_findAll"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
     };
-    get: operations['ClubsController_findAll'];
-    put?: never;
-    post?: never;
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  '/api/clubs/{clubId}/members': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
+    "/api/clubs/{clubId}/members": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["ClubsController_findMembers"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
     };
-    get: operations['ClubsController_findMembers'];
-    put?: never;
-    post?: never;
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  '/api/clubs/{clubId}/books': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
+    "/api/clubs/{clubId}/books": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["BooksController_list"];
+        put?: never;
+        post: operations["BooksController_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
     };
-    get: operations['BooksController_list'];
-    put?: never;
-    post: operations['BooksController_create'];
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  '/api/books/{bookId}': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
+    "/api/books/{bookId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["BooksController_detail"];
+        put?: never;
+        post?: never;
+        delete: operations["BooksController_remove"];
+        options?: never;
+        head?: never;
+        patch: operations["BooksController_update"];
+        trace?: never;
     };
-    get: operations['BooksController_detail'];
-    put?: never;
-    post?: never;
-    delete: operations['BooksController_remove'];
-    options?: never;
-    head?: never;
-    patch: operations['BooksController_update'];
-    trace?: never;
-  };
-  '/api/books/{bookId}/comments': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
+    "/api/books/{bookId}/comments": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["CommentsController_list"];
+        put?: never;
+        post: operations["CommentsController_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
     };
-    get: operations['CommentsController_list'];
-    put?: never;
-    post: operations['CommentsController_create'];
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  '/api/comments/{commentId}': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
+    "/api/comments/{commentId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete: operations["CommentsController_remove"];
+        options?: never;
+        head?: never;
+        patch: operations["CommentsController_update"];
+        trace?: never;
     };
-    get?: never;
-    put?: never;
-    post?: never;
-    delete: operations['CommentsController_remove'];
-    options?: never;
-    head?: never;
-    patch: operations['CommentsController_update'];
-    trace?: never;
-  };
-  '/api/comments/{commentId}/like': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
+    "/api/comments/{commentId}/like": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["CommentsController_toggleLike"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
     };
-    get?: never;
-    put?: never;
-    post: operations['CommentsController_toggleLike'];
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
+    "/api/clubs/{clubId}/orders": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["OrdersController_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/orders/mine": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["OrdersController_listMine"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/orders/{orderId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["OrdersController_getOne"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/orders/{orderId}/transition": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["OrdersController_transition"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/orders": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["AdminOrdersController_listAll"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/orders/csv": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["AdminOrdersController_csv"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/orders/{orderId}/transition": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["AdminOrdersController_transition"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
-  schemas: {
-    ClubResponse: {
-      publicId: string;
-      name: string;
-      description: string;
-      memberCount: number;
-      /** Format: date-time */
-      createdAt: string;
+    schemas: {
+        ClubResponse: {
+            publicId: string;
+            name: string;
+            description: string;
+            memberCount: number;
+            /** Format: date-time */
+            createdAt: string;
+        };
+        ClubMemberResponse: {
+            /** @enum {string} */
+            role: "LEADER" | "MEMBER";
+            publicId: string;
+            name: string;
+            avatarEmoji: string;
+            color: string;
+            /** Format: date-time */
+            joinedAt: string;
+        };
+        MemberSummaryResponse: {
+            publicId: string;
+            name: string;
+            avatarEmoji: string;
+            color: string;
+        };
+        BookResponse: {
+            /** @enum {string} */
+            status: "UPCOMING" | "READING" | "DONE";
+            publicId: string;
+            title: string;
+            author: string;
+            publisher: string | null;
+            coverColor: string;
+            coverEmoji: string;
+            /** Format: date-time */
+            meetingDate: string | null;
+            /** Format: date-time */
+            periodFrom: string | null;
+            /** Format: date-time */
+            periodTo: string | null;
+            /** Format: date-time */
+            createdAt: string;
+            /** Format: date-time */
+            updatedAt: string;
+            participants: components["schemas"]["MemberSummaryResponse"][];
+            commentCount: number;
+        };
+        PageMetaResponse: {
+            page: number;
+            limit: number;
+            totalCount: number;
+            hasNext: boolean;
+        };
+        PaginatedBooksResponse: {
+            items: components["schemas"]["BookResponse"][];
+            meta: components["schemas"]["PageMetaResponse"];
+        };
+        CreateBookDto: {
+            title: string;
+            author: string;
+            publisher?: string | null;
+            coverColor: string;
+            coverEmoji: string;
+            /** @enum {string} */
+            status?: "UPCOMING" | "READING" | "DONE";
+            meetingDate?: string | null;
+            periodFrom?: string | null;
+            periodTo?: string | null;
+            participantIds?: string[];
+        };
+        UpdateBookDto: {
+            title?: string;
+            author?: string;
+            publisher?: string | null;
+            coverColor?: string;
+            coverEmoji?: string;
+            /** @enum {string} */
+            status?: "UPCOMING" | "READING" | "DONE";
+            meetingDate?: string | null;
+            periodFrom?: string | null;
+            periodTo?: string | null;
+            participantIds?: string[];
+        };
+        DeletedResponse: {
+            publicId: string;
+            deleted: boolean;
+        };
+        CommentResponse: {
+            publicId: string;
+            deleted: boolean;
+            member: components["schemas"]["MemberSummaryResponse"] | null;
+            page: number | null;
+            quote: string | null;
+            content: string | null;
+            /** Format: date-time */
+            createdAt: string;
+            /** Format: date-time */
+            updatedAt: string | null;
+            isEdited: boolean;
+            likeCount: number;
+            likedByMe: boolean;
+        };
+        CommentThreadResponse: {
+            replies: components["schemas"]["CommentResponse"][];
+            publicId: string;
+            deleted: boolean;
+            member: components["schemas"]["MemberSummaryResponse"] | null;
+            page: number | null;
+            quote: string | null;
+            content: string | null;
+            /** Format: date-time */
+            createdAt: string;
+            /** Format: date-time */
+            updatedAt: string | null;
+            isEdited: boolean;
+            likeCount: number;
+            likedByMe: boolean;
+        };
+        PaginatedCommentsResponse: {
+            items: components["schemas"]["CommentThreadResponse"][];
+            meta: components["schemas"]["PageMetaResponse"];
+        };
+        CreateCommentDto: {
+            content: string;
+            page?: number | null;
+            quote?: string | null;
+            parentId?: string;
+        };
+        UpdateCommentDto: {
+            content?: string;
+            page?: number | null;
+            quote?: string | null;
+        };
+        CommentLikeResponse: {
+            liked: boolean;
+            likeCount: number;
+        };
+        CreateOrderDto: {
+            title: string;
+            copies: number;
+            bookIds: string[];
+        };
+        OrderBookSummaryResponse: {
+            publicId: string;
+            title: string;
+            author: string;
+            coverColor: string;
+            coverEmoji: string;
+        };
+        OrderHistoryResponse: {
+            /** @enum {string|null} */
+            fromStatus: "RECEIVED" | "CONFIRMED" | "IN_PRODUCTION" | "PRODUCED" | "SHIPPED" | "IN_TRANSIT" | "DELIVERED" | "PURCHASE_CONFIRMED" | "CANCELED" | "REFUND_REQUESTED" | "REFUNDED" | "REMAKE_REQUESTED" | null;
+            /** @enum {string} */
+            toStatus: "RECEIVED" | "CONFIRMED" | "IN_PRODUCTION" | "PRODUCED" | "SHIPPED" | "IN_TRANSIT" | "DELIVERED" | "PURCHASE_CONFIRMED" | "CANCELED" | "REFUND_REQUESTED" | "REFUNDED" | "REMAKE_REQUESTED";
+            /** @enum {string} */
+            actor: "USER" | "ADMIN";
+            /** Format: date-time */
+            changedAt: string;
+        };
+        OrderResponse: {
+            /** @enum {string} */
+            status: "RECEIVED" | "CONFIRMED" | "IN_PRODUCTION" | "PRODUCED" | "SHIPPED" | "IN_TRANSIT" | "DELIVERED" | "PURCHASE_CONFIRMED" | "CANCELED" | "REFUND_REQUESTED" | "REFUNDED" | "REMAKE_REQUESTED";
+            publicId: string;
+            title: string;
+            copies: number;
+            /** Format: date-time */
+            createdAt: string;
+            member: components["schemas"]["MemberSummaryResponse"];
+            books: components["schemas"]["OrderBookSummaryResponse"][];
+            history: components["schemas"]["OrderHistoryResponse"][];
+        };
+        PaginatedOrdersResponse: {
+            items: components["schemas"]["OrderResponse"][];
+            meta: components["schemas"]["PageMetaResponse"];
+        };
+        TransitionOrderDto: {
+            /** @enum {string} */
+            toStatus: "RECEIVED" | "CONFIRMED" | "IN_PRODUCTION" | "PRODUCED" | "SHIPPED" | "IN_TRANSIT" | "DELIVERED" | "PURCHASE_CONFIRMED" | "CANCELED" | "REFUND_REQUESTED" | "REFUNDED" | "REMAKE_REQUESTED";
+        };
     };
-    ClubMemberResponse: {
-      /** @enum {string} */
-      role: 'LEADER' | 'MEMBER';
-      publicId: string;
-      name: string;
-      avatarEmoji: string;
-      color: string;
-      /** Format: date-time */
-      joinedAt: string;
-    };
-    MemberSummaryResponse: {
-      publicId: string;
-      name: string;
-      avatarEmoji: string;
-      color: string;
-    };
-    BookResponse: {
-      /** @enum {string} */
-      status: 'UPCOMING' | 'READING' | 'DONE';
-      publicId: string;
-      title: string;
-      author: string;
-      publisher: string | null;
-      coverColor: string;
-      coverEmoji: string;
-      /** Format: date-time */
-      meetingDate: string | null;
-      /** Format: date-time */
-      periodFrom: string | null;
-      /** Format: date-time */
-      periodTo: string | null;
-      /** Format: date-time */
-      createdAt: string;
-      /** Format: date-time */
-      updatedAt: string;
-      participants: components['schemas']['MemberSummaryResponse'][];
-      commentCount: number;
-    };
-    PageMetaResponse: {
-      page: number;
-      limit: number;
-      totalCount: number;
-      hasNext: boolean;
-    };
-    PaginatedBooksResponse: {
-      items: components['schemas']['BookResponse'][];
-      meta: components['schemas']['PageMetaResponse'];
-    };
-    CreateBookDto: {
-      title: string;
-      author: string;
-      publisher?: string | null;
-      coverColor: string;
-      coverEmoji: string;
-      /** @enum {string} */
-      status?: 'UPCOMING' | 'READING' | 'DONE';
-      meetingDate?: string | null;
-      periodFrom?: string | null;
-      periodTo?: string | null;
-      participantIds?: string[];
-    };
-    UpdateBookDto: {
-      title?: string;
-      author?: string;
-      publisher?: string | null;
-      coverColor?: string;
-      coverEmoji?: string;
-      /** @enum {string} */
-      status?: 'UPCOMING' | 'READING' | 'DONE';
-      meetingDate?: string | null;
-      periodFrom?: string | null;
-      periodTo?: string | null;
-      participantIds?: string[];
-    };
-    DeletedResponse: {
-      publicId: string;
-      deleted: boolean;
-    };
-    CommentResponse: {
-      publicId: string;
-      deleted: boolean;
-      member: components['schemas']['MemberSummaryResponse'] | null;
-      page: number | null;
-      quote: string | null;
-      content: string | null;
-      /** Format: date-time */
-      createdAt: string;
-      /** Format: date-time */
-      updatedAt: string | null;
-      isEdited: boolean;
-      likeCount: number;
-      likedByMe: boolean;
-    };
-    CommentThreadResponse: {
-      replies: components['schemas']['CommentResponse'][];
-      publicId: string;
-      deleted: boolean;
-      member: components['schemas']['MemberSummaryResponse'] | null;
-      page: number | null;
-      quote: string | null;
-      content: string | null;
-      /** Format: date-time */
-      createdAt: string;
-      /** Format: date-time */
-      updatedAt: string | null;
-      isEdited: boolean;
-      likeCount: number;
-      likedByMe: boolean;
-    };
-    PaginatedCommentsResponse: {
-      items: components['schemas']['CommentThreadResponse'][];
-      meta: components['schemas']['PageMetaResponse'];
-    };
-    CreateCommentDto: {
-      content: string;
-      page?: number | null;
-      quote?: string | null;
-      parentId?: string;
-    };
-    UpdateCommentDto: {
-      content?: string;
-      page?: number | null;
-      quote?: string | null;
-    };
-    CommentLikeResponse: {
-      liked: boolean;
-      likeCount: number;
-    };
-  };
-  responses: never;
-  parameters: never;
-  requestBodies: never;
-  headers: never;
-  pathItems: never;
+    responses: never;
+    parameters: never;
+    requestBodies: never;
+    headers: never;
+    pathItems: never;
 }
 export type $defs = Record<string, never>;
 export interface operations {
-  AppController_getHealth: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    requestBody?: never;
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown;
+    AppController_getHealth: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
         };
-        content?: never;
-      };
-    };
-  };
-  ClubsController_findAll: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    requestBody?: never;
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown;
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
         };
-        content: {
-          'application/json': components['schemas']['ClubResponse'][];
+    };
+    ClubsController_findAll: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
         };
-      };
-    };
-  };
-  ClubsController_findMembers: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path: {
-        clubId: string;
-      };
-      cookie?: never;
-    };
-    requestBody?: never;
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown;
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ClubResponse"][];
+                };
+            };
         };
-        content: {
-          'application/json': components['schemas']['ClubMemberResponse'][];
+    };
+    ClubsController_findMembers: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                clubId: string;
+            };
+            cookie?: never;
         };
-      };
-    };
-  };
-  BooksController_list: {
-    parameters: {
-      query?: {
-        status?: 'UPCOMING' | 'READING' | 'DONE';
-        page?: number;
-        limit?: number;
-      };
-      header?: {
-        /** @description 현재 멤버의 publicId — 쓰기 요청에 필요 (D-017) */
-        'X-Member-Id'?: string;
-      };
-      path: {
-        clubId: string;
-      };
-      cookie?: never;
-    };
-    requestBody?: never;
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown;
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ClubMemberResponse"][];
+                };
+            };
         };
-        content: {
-          'application/json': components['schemas']['PaginatedBooksResponse'];
+    };
+    BooksController_list: {
+        parameters: {
+            query?: {
+                status?: "UPCOMING" | "READING" | "DONE";
+                page?: number;
+                limit?: number;
+            };
+            header?: {
+                /** @description 현재 멤버의 publicId — 쓰기 요청에 필요 (D-017) */
+                "X-Member-Id"?: string;
+            };
+            path: {
+                clubId: string;
+            };
+            cookie?: never;
         };
-      };
-    };
-  };
-  BooksController_create: {
-    parameters: {
-      query?: never;
-      header?: {
-        /** @description 현재 멤버의 publicId — 쓰기 요청에 필요 (D-017) */
-        'X-Member-Id'?: string;
-      };
-      path: {
-        clubId: string;
-      };
-      cookie?: never;
-    };
-    requestBody: {
-      content: {
-        'application/json': components['schemas']['CreateBookDto'];
-      };
-    };
-    responses: {
-      201: {
-        headers: {
-          [name: string]: unknown;
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PaginatedBooksResponse"];
+                };
+            };
         };
-        content: {
-          'application/json': components['schemas']['BookResponse'];
+    };
+    BooksController_create: {
+        parameters: {
+            query?: never;
+            header?: {
+                /** @description 현재 멤버의 publicId — 쓰기 요청에 필요 (D-017) */
+                "X-Member-Id"?: string;
+            };
+            path: {
+                clubId: string;
+            };
+            cookie?: never;
         };
-      };
-    };
-  };
-  BooksController_detail: {
-    parameters: {
-      query?: never;
-      header?: {
-        /** @description 현재 멤버의 publicId — 쓰기 요청에 필요 (D-017) */
-        'X-Member-Id'?: string;
-      };
-      path: {
-        bookId: string;
-      };
-      cookie?: never;
-    };
-    requestBody?: never;
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown;
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CreateBookDto"];
+            };
         };
-        content: {
-          'application/json': components['schemas']['BookResponse'];
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["BookResponse"];
+                };
+            };
         };
-      };
     };
-  };
-  BooksController_remove: {
-    parameters: {
-      query?: never;
-      header?: {
-        /** @description 현재 멤버의 publicId — 쓰기 요청에 필요 (D-017) */
-        'X-Member-Id'?: string;
-      };
-      path: {
-        bookId: string;
-      };
-      cookie?: never;
-    };
-    requestBody?: never;
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown;
+    BooksController_detail: {
+        parameters: {
+            query?: never;
+            header?: {
+                /** @description 현재 멤버의 publicId — 쓰기 요청에 필요 (D-017) */
+                "X-Member-Id"?: string;
+            };
+            path: {
+                bookId: string;
+            };
+            cookie?: never;
         };
-        content: {
-          'application/json': components['schemas']['DeletedResponse'];
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["BookResponse"];
+                };
+            };
         };
-      };
     };
-  };
-  BooksController_update: {
-    parameters: {
-      query?: never;
-      header?: {
-        /** @description 현재 멤버의 publicId — 쓰기 요청에 필요 (D-017) */
-        'X-Member-Id'?: string;
-      };
-      path: {
-        bookId: string;
-      };
-      cookie?: never;
-    };
-    requestBody: {
-      content: {
-        'application/json': components['schemas']['UpdateBookDto'];
-      };
-    };
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown;
+    BooksController_remove: {
+        parameters: {
+            query?: never;
+            header?: {
+                /** @description 현재 멤버의 publicId — 쓰기 요청에 필요 (D-017) */
+                "X-Member-Id"?: string;
+            };
+            path: {
+                bookId: string;
+            };
+            cookie?: never;
         };
-        content: {
-          'application/json': components['schemas']['BookResponse'];
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DeletedResponse"];
+                };
+            };
         };
-      };
     };
-  };
-  CommentsController_list: {
-    parameters: {
-      query?: {
-        page?: number;
-        limit?: number;
-      };
-      header?: {
-        /** @description 현재 멤버의 publicId — 쓰기 요청에 필요 (D-017) */
-        'X-Member-Id'?: string;
-      };
-      path: {
-        bookId: string;
-      };
-      cookie?: never;
-    };
-    requestBody?: never;
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown;
+    BooksController_update: {
+        parameters: {
+            query?: never;
+            header?: {
+                /** @description 현재 멤버의 publicId — 쓰기 요청에 필요 (D-017) */
+                "X-Member-Id"?: string;
+            };
+            path: {
+                bookId: string;
+            };
+            cookie?: never;
         };
-        content: {
-          'application/json': components['schemas']['PaginatedCommentsResponse'];
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["UpdateBookDto"];
+            };
         };
-      };
-    };
-  };
-  CommentsController_create: {
-    parameters: {
-      query?: never;
-      header?: {
-        /** @description 현재 멤버의 publicId — 쓰기 요청에 필요 (D-017) */
-        'X-Member-Id'?: string;
-      };
-      path: {
-        bookId: string;
-      };
-      cookie?: never;
-    };
-    requestBody: {
-      content: {
-        'application/json': components['schemas']['CreateCommentDto'];
-      };
-    };
-    responses: {
-      201: {
-        headers: {
-          [name: string]: unknown;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["BookResponse"];
+                };
+            };
         };
-        content: {
-          'application/json': components['schemas']['CommentResponse'];
+    };
+    CommentsController_list: {
+        parameters: {
+            query?: {
+                page?: number;
+                limit?: number;
+            };
+            header?: {
+                /** @description 현재 멤버의 publicId — 쓰기 요청에 필요 (D-017) */
+                "X-Member-Id"?: string;
+            };
+            path: {
+                bookId: string;
+            };
+            cookie?: never;
         };
-      };
-    };
-  };
-  CommentsController_remove: {
-    parameters: {
-      query?: never;
-      header?: {
-        /** @description 현재 멤버의 publicId — 쓰기 요청에 필요 (D-017) */
-        'X-Member-Id'?: string;
-      };
-      path: {
-        commentId: string;
-      };
-      cookie?: never;
-    };
-    requestBody?: never;
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown;
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PaginatedCommentsResponse"];
+                };
+            };
         };
-        content: {
-          'application/json': components['schemas']['DeletedResponse'];
+    };
+    CommentsController_create: {
+        parameters: {
+            query?: never;
+            header?: {
+                /** @description 현재 멤버의 publicId — 쓰기 요청에 필요 (D-017) */
+                "X-Member-Id"?: string;
+            };
+            path: {
+                bookId: string;
+            };
+            cookie?: never;
         };
-      };
-    };
-  };
-  CommentsController_update: {
-    parameters: {
-      query?: never;
-      header?: {
-        /** @description 현재 멤버의 publicId — 쓰기 요청에 필요 (D-017) */
-        'X-Member-Id'?: string;
-      };
-      path: {
-        commentId: string;
-      };
-      cookie?: never;
-    };
-    requestBody: {
-      content: {
-        'application/json': components['schemas']['UpdateCommentDto'];
-      };
-    };
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown;
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CreateCommentDto"];
+            };
         };
-        content: {
-          'application/json': components['schemas']['CommentResponse'];
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CommentResponse"];
+                };
+            };
         };
-      };
     };
-  };
-  CommentsController_toggleLike: {
-    parameters: {
-      query?: never;
-      header?: {
-        /** @description 현재 멤버의 publicId — 쓰기 요청에 필요 (D-017) */
-        'X-Member-Id'?: string;
-      };
-      path: {
-        commentId: string;
-      };
-      cookie?: never;
-    };
-    requestBody?: never;
-    responses: {
-      201: {
-        headers: {
-          [name: string]: unknown;
+    CommentsController_remove: {
+        parameters: {
+            query?: never;
+            header?: {
+                /** @description 현재 멤버의 publicId — 쓰기 요청에 필요 (D-017) */
+                "X-Member-Id"?: string;
+            };
+            path: {
+                commentId: string;
+            };
+            cookie?: never;
         };
-        content: {
-          'application/json': components['schemas']['CommentLikeResponse'];
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DeletedResponse"];
+                };
+            };
         };
-      };
     };
-  };
+    CommentsController_update: {
+        parameters: {
+            query?: never;
+            header?: {
+                /** @description 현재 멤버의 publicId — 쓰기 요청에 필요 (D-017) */
+                "X-Member-Id"?: string;
+            };
+            path: {
+                commentId: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["UpdateCommentDto"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CommentResponse"];
+                };
+            };
+        };
+    };
+    CommentsController_toggleLike: {
+        parameters: {
+            query?: never;
+            header?: {
+                /** @description 현재 멤버의 publicId — 쓰기 요청에 필요 (D-017) */
+                "X-Member-Id"?: string;
+            };
+            path: {
+                commentId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CommentLikeResponse"];
+                };
+            };
+        };
+    };
+    OrdersController_create: {
+        parameters: {
+            query?: never;
+            header?: {
+                /** @description 현재 멤버의 publicId — 주문·전이 요청에 필요 (D-017) */
+                "X-Member-Id"?: string;
+            };
+            path: {
+                clubId: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CreateOrderDto"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["OrderResponse"];
+                };
+            };
+        };
+    };
+    OrdersController_listMine: {
+        parameters: {
+            query?: {
+                page?: number;
+                limit?: number;
+            };
+            header?: {
+                /** @description 현재 멤버의 publicId — 주문·전이 요청에 필요 (D-017) */
+                "X-Member-Id"?: string;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PaginatedOrdersResponse"];
+                };
+            };
+        };
+    };
+    OrdersController_getOne: {
+        parameters: {
+            query?: never;
+            header?: {
+                /** @description 현재 멤버의 publicId — 주문·전이 요청에 필요 (D-017) */
+                "X-Member-Id"?: string;
+            };
+            path: {
+                orderId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["OrderResponse"];
+                };
+            };
+        };
+    };
+    OrdersController_transition: {
+        parameters: {
+            query?: never;
+            header?: {
+                /** @description 현재 멤버의 publicId — 주문·전이 요청에 필요 (D-017) */
+                "X-Member-Id"?: string;
+            };
+            path: {
+                orderId: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["TransitionOrderDto"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["OrderResponse"];
+                };
+            };
+        };
+    };
+    AdminOrdersController_listAll: {
+        parameters: {
+            query?: {
+                page?: number;
+                limit?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PaginatedOrdersResponse"];
+                };
+            };
+        };
+    };
+    AdminOrdersController_csv: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": string;
+                };
+            };
+        };
+    };
+    AdminOrdersController_transition: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                orderId: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["TransitionOrderDto"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["OrderResponse"];
+                };
+            };
+        };
+    };
 }

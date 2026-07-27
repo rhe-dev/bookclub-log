@@ -546,6 +546,299 @@
           "Comments"
         ]
       }
+    },
+    "/api/clubs/{clubId}/orders": {
+      "post": {
+        "operationId": "OrdersController_create",
+        "parameters": [
+          {
+            "name": "X-Member-Id",
+            "in": "header",
+            "description": "현재 멤버의 publicId — 주문·전이 요청에 필요 (D-017)",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "clubId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateOrderDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OrderResponse"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Orders"
+        ]
+      }
+    },
+    "/api/orders/mine": {
+      "get": {
+        "operationId": "OrdersController_listMine",
+        "parameters": [
+          {
+            "name": "X-Member-Id",
+            "in": "header",
+            "description": "현재 멤버의 publicId — 주문·전이 요청에 필요 (D-017)",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "minimum": 1,
+              "default": 1,
+              "type": "number"
+            }
+          },
+          {
+            "name": "limit",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "minimum": 1,
+              "maximum": 100,
+              "default": 20,
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PaginatedOrdersResponse"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Orders"
+        ]
+      }
+    },
+    "/api/orders/{orderId}": {
+      "get": {
+        "operationId": "OrdersController_getOne",
+        "parameters": [
+          {
+            "name": "X-Member-Id",
+            "in": "header",
+            "description": "현재 멤버의 publicId — 주문·전이 요청에 필요 (D-017)",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "orderId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OrderResponse"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Orders"
+        ]
+      }
+    },
+    "/api/orders/{orderId}/transition": {
+      "post": {
+        "operationId": "OrdersController_transition",
+        "parameters": [
+          {
+            "name": "X-Member-Id",
+            "in": "header",
+            "description": "현재 멤버의 publicId — 주문·전이 요청에 필요 (D-017)",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "orderId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TransitionOrderDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OrderResponse"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Orders"
+        ]
+      }
+    },
+    "/api/admin/orders": {
+      "get": {
+        "operationId": "AdminOrdersController_listAll",
+        "parameters": [
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "minimum": 1,
+              "default": 1,
+              "type": "number"
+            }
+          },
+          {
+            "name": "limit",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "minimum": 1,
+              "maximum": 100,
+              "default": 20,
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PaginatedOrdersResponse"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "AdminOrders"
+        ]
+      }
+    },
+    "/api/admin/orders/csv": {
+      "get": {
+        "operationId": "AdminOrdersController_csv",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "AdminOrders"
+        ]
+      }
+    },
+    "/api/admin/orders/{orderId}/transition": {
+      "post": {
+        "operationId": "AdminOrdersController_transition",
+        "parameters": [
+          {
+            "name": "orderId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TransitionOrderDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OrderResponse"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "AdminOrders"
+        ]
+      }
     }
   },
   "info": {
@@ -1099,6 +1392,219 @@
         "required": [
           "liked",
           "likeCount"
+        ]
+      },
+      "CreateOrderDto": {
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": "string",
+            "maxLength": 100
+          },
+          "copies": {
+            "type": "number",
+            "minimum": 1,
+            "maximum": 100
+          },
+          "bookIds": {
+            "minItems": 1,
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "required": [
+          "title",
+          "copies",
+          "bookIds"
+        ]
+      },
+      "OrderBookSummaryResponse": {
+        "type": "object",
+        "properties": {
+          "publicId": {
+            "type": "string"
+          },
+          "title": {
+            "type": "string"
+          },
+          "author": {
+            "type": "string"
+          },
+          "coverColor": {
+            "type": "string"
+          },
+          "coverEmoji": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "publicId",
+          "title",
+          "author",
+          "coverColor",
+          "coverEmoji"
+        ]
+      },
+      "OrderHistoryResponse": {
+        "type": "object",
+        "properties": {
+          "fromStatus": {
+            "nullable": true,
+            "enum": [
+              "RECEIVED",
+              "CONFIRMED",
+              "IN_PRODUCTION",
+              "PRODUCED",
+              "SHIPPED",
+              "IN_TRANSIT",
+              "DELIVERED",
+              "PURCHASE_CONFIRMED",
+              "CANCELED",
+              "REFUND_REQUESTED",
+              "REFUNDED",
+              "REMAKE_REQUESTED"
+            ],
+            "type": "string"
+          },
+          "toStatus": {
+            "enum": [
+              "RECEIVED",
+              "CONFIRMED",
+              "IN_PRODUCTION",
+              "PRODUCED",
+              "SHIPPED",
+              "IN_TRANSIT",
+              "DELIVERED",
+              "PURCHASE_CONFIRMED",
+              "CANCELED",
+              "REFUND_REQUESTED",
+              "REFUNDED",
+              "REMAKE_REQUESTED"
+            ],
+            "type": "string"
+          },
+          "actor": {
+            "enum": [
+              "USER",
+              "ADMIN"
+            ],
+            "type": "string"
+          },
+          "changedAt": {
+            "format": "date-time",
+            "type": "string"
+          }
+        },
+        "required": [
+          "fromStatus",
+          "toStatus",
+          "actor",
+          "changedAt"
+        ]
+      },
+      "OrderResponse": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "enum": [
+              "RECEIVED",
+              "CONFIRMED",
+              "IN_PRODUCTION",
+              "PRODUCED",
+              "SHIPPED",
+              "IN_TRANSIT",
+              "DELIVERED",
+              "PURCHASE_CONFIRMED",
+              "CANCELED",
+              "REFUND_REQUESTED",
+              "REFUNDED",
+              "REMAKE_REQUESTED"
+            ],
+            "type": "string"
+          },
+          "publicId": {
+            "type": "string"
+          },
+          "title": {
+            "type": "string"
+          },
+          "copies": {
+            "type": "number"
+          },
+          "createdAt": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "member": {
+            "$ref": "#/components/schemas/MemberSummaryResponse"
+          },
+          "books": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/OrderBookSummaryResponse"
+            }
+          },
+          "history": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/OrderHistoryResponse"
+            }
+          }
+        },
+        "required": [
+          "status",
+          "publicId",
+          "title",
+          "copies",
+          "createdAt",
+          "member",
+          "books",
+          "history"
+        ]
+      },
+      "PaginatedOrdersResponse": {
+        "type": "object",
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/OrderResponse"
+            }
+          },
+          "meta": {
+            "$ref": "#/components/schemas/PageMetaResponse"
+          }
+        },
+        "required": [
+          "items",
+          "meta"
+        ]
+      },
+      "TransitionOrderDto": {
+        "type": "object",
+        "properties": {
+          "toStatus": {
+            "enum": [
+              "RECEIVED",
+              "CONFIRMED",
+              "IN_PRODUCTION",
+              "PRODUCED",
+              "SHIPPED",
+              "IN_TRANSIT",
+              "DELIVERED",
+              "PURCHASE_CONFIRMED",
+              "CANCELED",
+              "REFUND_REQUESTED",
+              "REFUNDED",
+              "REMAKE_REQUESTED"
+            ],
+            "type": "string"
+          }
+        },
+        "required": [
+          "toStatus"
         ]
       }
     }
