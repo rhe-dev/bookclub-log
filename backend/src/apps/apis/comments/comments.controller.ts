@@ -10,8 +10,8 @@ import {
   Query,
 } from '@nestjs/common';
 import { ApiHeader } from '@nestjs/swagger';
-import { DeletedResponse } from '../shared/dto/deleted.response';
-import { PaginationQuery } from '../shared/dto/pagination.query';
+import { DeletedResponse } from '../../../shared/dto/deleted.response';
+import { PaginationQuery } from '../../../shared/dto/pagination.query';
 import { CommentsService } from './comments.service';
 import {
   CommentLikeResponse,

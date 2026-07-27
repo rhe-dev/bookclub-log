@@ -5,8 +5,8 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { ClubRole } from '@prisma/client';
-import { ErrorMessage } from '../shared/constants/error-message';
-import { PrismaService } from '../prisma/prisma.service';
+import { ErrorMessage } from '../../../shared/constants/error-message';
+import { PrismaService } from '../../../shared/prisma/prisma.service';
 
 @Injectable()
 export class ClubsService {

@@ -10,7 +10,7 @@ import {
   Query,
 } from '@nestjs/common';
 import { ApiHeader } from '@nestjs/swagger';
-import { DeletedResponse } from '../shared/dto/deleted.response';
+import { DeletedResponse } from '../../../shared/dto/deleted.response';
 import { BooksService } from './books.service';
 import { BookResponse, PaginatedBooksResponse } from './dto/book.response';
 import { CreateBookDto } from './dto/create-book.dto';

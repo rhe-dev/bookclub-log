@@ -1,7 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { BookStatus } from '@prisma/client';
-import { MemberSummaryResponse } from '../../shared/dto/member-summary.response';
-import { PageMetaResponse } from '../../shared/dto/page-meta.response';
+import { MemberSummaryResponse } from '../../../../shared/dto/member-summary.response';
+import { PageMetaResponse } from '../../../../shared/dto/page-meta.response';
 
 export class BookResponse {
   publicId: string;

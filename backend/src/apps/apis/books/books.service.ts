@@ -5,10 +5,10 @@ import {
 } from '@nestjs/common';
 import { BookStatus, Prisma } from '@prisma/client';
 import { ClubsService } from '../clubs/clubs.service';
-import { ErrorMessage } from '../shared/constants/error-message';
-import { toPageMeta } from '../shared/dto/pagination.query';
-import { PrismaService } from '../prisma/prisma.service';
-import { memberSummarySelect } from '../shared/prisma/selects';
+import { ErrorMessage } from '../../../shared/constants/error-message';
+import { toPageMeta } from '../../../shared/dto/pagination.query';
+import { PrismaService } from '../../../shared/prisma/prisma.service';
+import { memberSummarySelect } from '../../../shared/prisma/selects';
 import { CreateBookDto } from './dto/create-book.dto';
 import { ListBooksQuery } from './dto/list-books.query';
 import { UpdateBookDto } from './dto/update-book.dto';

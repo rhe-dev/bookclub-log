@@ -9,7 +9,7 @@ import {
   Matches,
   MaxLength,
 } from 'class-validator';
-import { ErrorMessage } from '../../shared/constants/error-message';
+import { ErrorMessage } from '../../../../shared/constants/error-message';
 
 export class CreateBookDto {
   @IsString()

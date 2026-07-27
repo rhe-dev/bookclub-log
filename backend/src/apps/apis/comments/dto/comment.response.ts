@@ -1,5 +1,5 @@
-import { MemberSummaryResponse } from '../../shared/dto/member-summary.response';
-import { PageMetaResponse } from '../../shared/dto/page-meta.response';
+import { MemberSummaryResponse } from '../../../../shared/dto/member-summary.response';
+import { PageMetaResponse } from '../../../../shared/dto/page-meta.response';
 
 /**
  * 코멘트·답글 공통 응답.

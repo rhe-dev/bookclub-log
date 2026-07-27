@@ -7,10 +7,13 @@ import {
 import { Prisma } from '@prisma/client';
 import { BooksService } from '../books/books.service';
 import { ClubsService } from '../clubs/clubs.service';
-import { ErrorMessage } from '../shared/constants/error-message';
-import { PaginationQuery, toPageMeta } from '../shared/dto/pagination.query';
-import { PrismaService } from '../prisma/prisma.service';
-import { memberSummarySelect } from '../shared/prisma/selects';
+import { ErrorMessage } from '../../../shared/constants/error-message';
+import {
+  PaginationQuery,
+  toPageMeta,
+} from '../../../shared/dto/pagination.query';
+import { PrismaService } from '../../../shared/prisma/prisma.service';
+import { memberSummarySelect } from '../../../shared/prisma/selects';
 import { CreateCommentDto } from './dto/create-comment.dto';
 import { UpdateCommentDto } from './dto/update-comment.dto';
 

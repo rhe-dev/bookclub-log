@@ -6,7 +6,7 @@ import {
   MaxLength,
   Min,
 } from 'class-validator';
-import { ErrorMessage } from '../../shared/constants/error-message';
+import { ErrorMessage } from '../../../../shared/constants/error-message';
 
 export class CreateCommentDto {
   @IsString()
