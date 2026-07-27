@@ -4,6 +4,11 @@
 
 ## 2026-07-27
 
+- 리팩토링(커밋 전 자체 리뷰): 중복 추출 — MemberAvatar(4곳)·ErrorView(3곳)·BookCover(4곳)·BookSchedule(2곳)·useRequireMember 훅(2곳)·lineClamp 믹스인·백엔드 memberSummarySelect 공통화. BookStatusTag를 shared/components/book으로 이동(크로스 라우트 import 해소), 중복 import 정리.
+- 코멘트 공감 기능(D-021): CommentLike 스키마+마이그레이션, 토글 API(POST /comments/:id/like), 응답에 likeCount·likedByMe(조회 헤더 선택적), 시드 공감 31개. UI는 하트 토글.
+- 토론 UX 개선(사용자 피드백): 코멘트 기본 최신순 정렬(답글은 대화 순서 유지), 작성 인풋 최대 300px 후 스크롤, 인용 입력 textarea化(4줄 캡), 컴포저 카드 라운드를 인풋과 동일(10px)하게 정합.
+- 책 상세(토론) 구현: 책 정보 카드(서지·일정·참여 아바타) + 모임장 관리 메뉴(수정 모달 재사용·삭제 확인) + 토론 스레드 — 코멘트 작성 폼(페이지·인용 앵커 접이식), 답글 인라인 작성, 작성자만 수정(인라인)·삭제(확인 모달, 자리 유지 안내), '삭제된 코멘트' 표시, 수정됨 표기. BookFormModal을 shared/components/book으로 승격(추가/수정 겸용). commentApi 훅 신설.
+- 코드젠이 프-백 타입 어긋남을 실제로 검출: @nestjs/mapped-types의 PartialType은 Swagger 플러그인이 추론 못 해 Update DTO가 빈 스키마 → @nestjs/swagger의 PartialType으로 교체해 해결(검증 제약까지 스펙에 반영됨).
 - 책방(홈) 구현: '지금 읽는 책' 히어로 카드(일정·참여 아바타·코멘트 수) + 우리 책장 그리드(2/3/4열 반응형) + 상태 필터 칩(서버 필터) + 책 추가 모달(서지·표지 색/이모지 피커·상태·일정·참여 회원 칩, 모임장만) + 빈 책방 온보딩(역할별 문구) + 스켈레톤·재시도. bookApi 훅·상태 라벨·날짜 유틸·MemberAvatarGroup 신설. 책 상세 스텁 라우트 추가, 미선택 접근 가드(입장 화면으로).
 - 입장 화면을 /entry 라우트로 분리(루트 /는 리다이렉트 전용), EntrySkeleton을 라우트 하위 components/로 파일 분리 — 페이지 전용 컴포넌트 co-location 컨벤션 등재.
 - CommonContainer(layout) 신설 — Stack 기반, 가운데 정렬 + 양옆 패딩 20px 고정, maxWidth prop. Header·입장·책방 스텁 모두 전환(MUI Container 직접 사용 금지 컨벤션). 루트 레이아웃 Header+Footer 공통화는 TODO 등록.

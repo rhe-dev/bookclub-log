@@ -37,7 +37,7 @@
 
 - **F0. 입장**: 첫 화면에서 내 프로필 선택 → 우리 모임 책방 진입 _(로그인 대체)_
 - **F1. 책 등록 (모임장)**: 책방 → `+ 책 추가` → 서지정보(제목·저자·출판사)·표지(색+이모지)·모임 날짜/기간·참여 회원 → 저장
-- **F2. 토론**: 책 상세 → 코멘트 작성(선택: 페이지·인용 문장 지정) → 다른 회원이 답글 → 스레드로 쌓임. 내 코멘트는 수정·삭제 가능(삭제는 소프트 딜리트)
+- **F2. 토론**: 책 상세 → 코멘트 작성(선택: 페이지·인용 문장 지정) → 다른 회원이 답글·공감(좋아요) → 스레드로 쌓임. 내 코멘트는 수정·삭제 가능(삭제는 소프트 딜리트)
 - **F3. 문집 주문**: 책방에서 책 선택 → `문집으로 내보내기` → 수록 내용 확인 → 문집 제목·부수 → 주문(주문자 = 현재 멤버) → **마이페이지에서 주문일·단계별 진행 날짜와 함께 상태 확인, 배송 완료 후 구매 확정**
 - **F4. 주문 처리 (운영자)**: `/admin` → 주문 목록 → 단계 진행(주문 확인 → 제작 → 배송 → 배송 완료) → 날짜와 함께 이력 기록
 
@@ -68,6 +68,7 @@ Book               (id, publicId, clubId, title, author, publisher?,
 BookParticipant    (bookId, memberId)
 Comment            (id, publicId, bookId, memberId, parentId?, page?, quote?, content,
                     createdAt, updatedAt, deletedAt?)
+CommentLike        (commentId, memberId, createdAt)  ← 공감(멤버당 1회 토글)
 Order              (id, publicId, clubId, memberId(주문자), title, copies,
                     status: OrderStatus, createdAt)
 OrderBook          (orderId, bookId)

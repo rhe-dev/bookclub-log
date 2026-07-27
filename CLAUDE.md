@@ -26,6 +26,12 @@
 3. 설계·UX 판단이 있었다면 `docs/DECISIONS.md`에 D-번호로 기록
 4. AI 도구가 틀렸거나 삽질한 게 있으면 `docs/AI_LOG.md`에 즉시 기록
 
+## 개발 실행 워크플로우
+
+- **개발 중**: db만 도커(`docker compose up -d db`), 프/백은 로컬 dev 서버로 핫 리로드 — backend `npm run start:dev`(:4000), frontend `npm run dev`(:3000)
+- **검증·제출 전**: `docker compose up --build`로 프로덕션 파리티 확인 (심사자 시나리오는 항상 도커 기준)
+- 포트가 겹치므로 도커 프/백과 로컬 dev 서버는 동시에 켜지 않는다 (`docker compose stop frontend backend`)
+
 ## 커밋 규칙 (중요)
 
 - **커밋은 사용자가 변경 내용을 직접 확인하고 지시했을 때만 실행한다. 임의로 커밋하지 않는다.**
