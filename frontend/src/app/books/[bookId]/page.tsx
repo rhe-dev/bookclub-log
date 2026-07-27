@@ -1,10 +1,8 @@
 'use client';
 
 // 책 상세 — 서지정보 + 토론 스레드(코멘트·답글, 페이지·인용 앵커) (PLAN 화면 3, F2)
-import ArrowBackIosNewRoundedIcon from '@mui/icons-material/ArrowBackIosNewRounded';
 import MoreVertRoundedIcon from '@mui/icons-material/MoreVertRounded';
-import { ButtonBase, IconButton, Menu, MenuItem, Stack } from '@mui/material';
-import Link from 'next/link';
+import { IconButton, Menu, MenuItem, Stack } from '@mui/material';
 import { useParams, useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { useBookQuery, useDeleteBookMutation } from '@/shared/api/bookApi';
@@ -56,25 +54,6 @@ export default function BookDetailPage() {
   return (
     <>
       <CommonContainer maxWidth={760} sx={{ py: { xs: 2.5, md: 4 }, gap: 2.5 }}>
-        <ButtonBase
-          component={Link}
-          href={ROUTES.bookshelf}
-          sx={{
-            alignSelf: 'flex-start',
-            borderRadius: 1.5,
-            px: 0.75,
-            py: 0.5,
-            gap: 0.5,
-          }}
-        >
-          <ArrowBackIosNewRoundedIcon
-            sx={{ fontSize: 13, color: colorChips.grayScale[500] }}
-          />
-          <Typo token="text_m_14" color={colorChips.grayScale[500]}>
-            책방
-          </Typo>
-        </ButtonBase>
-
         {isError ? (
           <ErrorView
             message="책을 불러오지 못했어요. 삭제되었거나 잘못된 주소일 수 있어요."

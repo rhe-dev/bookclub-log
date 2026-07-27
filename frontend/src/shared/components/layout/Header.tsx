@@ -1,10 +1,18 @@
 'use client';
 
+import ArrowBackIosNewRoundedIcon from '@mui/icons-material/ArrowBackIosNewRounded';
 import KeyboardArrowDownRoundedIcon from '@mui/icons-material/KeyboardArrowDownRounded';
-import { Box, ButtonBase, Divider, Menu, MenuItem } from '@mui/material';
+import {
+  Box,
+  ButtonBase,
+  Divider,
+  IconButton,
+  Menu,
+  MenuItem,
+} from '@mui/material';
 import Image from 'next/image';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { ROUTES } from '@/shared/constants/routes';
 import { useMemberStore } from '@/shared/stores/memberStore';
@@ -23,6 +31,10 @@ export const Header = () => {
   const clearMember = useMemberStore((s) => s.clearMember);
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
   const router = useRouter();
+  const pathname = usePathname();
+  // GNB 구성: 현재 페이지명 + 홈으로 돌아가기(로고, 모바일은 ←) + 사용자 메뉴
+  const pageTitle = getPageTitle(pathname);
+  const showBack = Boolean(member) && pageTitle !== null;
 
   const handleChangeMember = () => {
     setAnchorEl(null);
@@ -50,33 +62,51 @@ export const Header = () => {
           gap: 1,
         }}
       >
-        <Box
-          component={Link}
-          href={member ? ROUTES.bookshelf : ROUTES.entry}
-          sx={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: 1.25,
-            textDecoration: 'none',
-            flexShrink: 0,
-            transition: 'opacity 0.2s',
-            '&:hover': { opacity: 0.8 },
-          }}
-        >
-          <Image
-            src="/logo.svg"
-            alt="북클럽 로그 로고"
-            width={28}
-            height={28}
-            priority
-          />
-          <Typo
-            token="text_b_18"
-            color={colorChips.basic.black}
-            sx={{ fontSize: { xs: 16, md: 18 } }}
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+          {showBack && (
+            <IconButton
+              aria-label="책방으로 돌아가기"
+              onClick={() => router.push(ROUTES.bookshelf)}
+              sx={{ ml: -1, display: { xs: 'inline-flex', md: 'none' } }}
+            >
+              <ArrowBackIosNewRoundedIcon
+                sx={{ fontSize: 18, color: colorChips.grayScale[600] }}
+              />
+            </IconButton>
+          )}
+          <Box
+            component={Link}
+            href={member ? ROUTES.bookshelf : ROUTES.entry}
+            sx={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: 1.25,
+              textDecoration: 'none',
+              flexShrink: 0,
+              transition: 'opacity 0.2s',
+              '&:hover': { opacity: 0.8 },
+            }}
           >
-            북클럽 로그
-          </Typo>
+            <Image
+              src="/logo.svg"
+              alt="북클럽 로그 로고"
+              width={28}
+              height={28}
+              priority
+            />
+            {/* 서브 페이지는 현재 페이지명, 홈·입장은 서비스명(모바일은 로고만) */}
+            <Typo
+              token="text_b_18"
+              color={colorChips.basic.black}
+              sx={{
+                fontSize: { xs: 16, md: 18 },
+                whiteSpace: 'nowrap',
+                display: pageTitle ? 'block' : { xs: 'none', sm: 'block' },
+              }}
+            >
+              {pageTitle ?? '북클럽 로그'}
+            </Typo>
+          </Box>
         </Box>
 
         {member && (
@@ -151,3 +181,14 @@ export const Header = () => {
     </Box>
   );
 };
+
+const PAGE_TITLES: { pattern: RegExp; title: string }[] = [
+  { pattern: /^\/books\//, title: '책 상세' },
+  { pattern: /^\/orders\/new/, title: '문집 만들기' },
+  { pattern: /^\/my/, title: '마이페이지' },
+  { pattern: /^\/admin/, title: '주문 관리' },
+];
+
+/** 서브 페이지명 — 홈(책방)·입장은 null */
+const getPageTitle = (pathname: string) =>
+  PAGE_TITLES.find(({ pattern }) => pattern.test(pathname))?.title ?? null;
