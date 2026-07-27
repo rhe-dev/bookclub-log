@@ -21,6 +21,8 @@ export const ReadingBookCard = ({ book }: { book: Book }) => {
         display: 'flex',
         alignItems: 'stretch',
         textAlign: 'left',
+        // 극단적으로 좁은 화면에서는 찌그러지는 대신 가로 스크롤
+        minWidth: 300,
         gap: { xs: 2, md: 3 },
         p: { xs: 2, md: 2.5 },
         borderRadius: 3,

@@ -77,11 +77,14 @@ export default function EntryPage() {
               ) : (
                 <Stack spacing={3.5} sx={{ alignItems: 'center' }}>
                   <Stack spacing={1} sx={{ alignItems: 'center' }}>
-                    <Typo token="text_b_20">{club.name}</Typo>
+                    <Typo token="text_b_20" color={colorChips.primary[500]}>
+                      {club.name}
+                    </Typo>
                     <Typo
                       token="text_r_14"
                       color={colorChips.grayScale[600]}
                       align="center"
+                      sx={{ maxWidth: '90%', wordBreak: 'keep-all' }}
                     >
                       {club.description}
                     </Typo>
@@ -124,7 +127,11 @@ export default function EntryPage() {
                           emoji={m.avatarEmoji}
                           size={{ xs: 56, md: 64 }}
                         />
-                        <Stack spacing={0.25} sx={{ alignItems: 'center' }}>
+                        <Stack
+                          direction="row"
+                          spacing={0.5}
+                          sx={{ alignItems: 'center' }}
+                        >
                           <Typo
                             token="text_sb_14"
                             color={colorChips.grayScale[800]}
@@ -132,12 +139,22 @@ export default function EntryPage() {
                             {m.name}
                           </Typo>
                           {m.role === 'LEADER' && (
-                            <Typo
-                              token="text_m_12"
-                              color={colorChips.secondary[500]}
+                            <Box
+                              sx={{
+                                px: 0.6,
+                                py: 0.2,
+                                borderRadius: 999,
+                                backgroundColor: colorChips.secondary[100],
+                              }}
                             >
-                              모임장
-                            </Typo>
+                              <Typo
+                                token="text_sb_10"
+                                color={colorChips.secondary[700]}
+                                sx={{ whiteSpace: 'nowrap' }}
+                              >
+                                모임장
+                              </Typo>
+                            </Box>
                           )}
                         </Stack>
                       </ButtonBase>
