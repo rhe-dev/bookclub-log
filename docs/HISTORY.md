@@ -4,6 +4,7 @@
 
 ## 2026-07-27
 
+- 루트 레이아웃 공통화: AppShell(Header+main+Footer, sticky footer)을 루트 레이아웃에 배치하고 페이지별 Header 렌더 제거. Footer 신규 — 로고·서비스 소개·사업자 정보 플레이스홀더·카피라이트, 반응형 여백(링크 컬럼은 범위 제외).
 - 리팩토링(커밋 전 자체 리뷰): 중복 추출 — MemberAvatar(4곳)·ErrorView(3곳)·BookCover(4곳)·BookSchedule(2곳)·useRequireMember 훅(2곳)·lineClamp 믹스인·백엔드 memberSummarySelect 공통화. BookStatusTag를 shared/components/book으로 이동(크로스 라우트 import 해소), 중복 import 정리.
 - 코멘트 공감 기능(D-021): CommentLike 스키마+마이그레이션, 토글 API(POST /comments/:id/like), 응답에 likeCount·likedByMe(조회 헤더 선택적), 시드 공감 31개. UI는 하트 토글.
 - 토론 UX 개선(사용자 피드백): 코멘트 기본 최신순 정렬(답글은 대화 순서 유지), 작성 인풋 최대 300px 후 스크롤, 인용 입력 textarea化(4줄 캡), 컴포저 카드 라운드를 인풋과 동일(10px)하게 정합.
