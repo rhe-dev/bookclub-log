@@ -787,7 +787,55 @@
       },
       "UpdateBookDto": {
         "type": "object",
-        "properties": {}
+        "properties": {
+          "title": {
+            "type": "string",
+            "maxLength": 200
+          },
+          "author": {
+            "type": "string",
+            "maxLength": 100
+          },
+          "publisher": {
+            "type": "string",
+            "nullable": true,
+            "maxLength": 100
+          },
+          "coverColor": {
+            "type": "string",
+            "pattern": "^#[0-9a-fA-F]{6}$"
+          },
+          "coverEmoji": {
+            "type": "string",
+            "maxLength": 16
+          },
+          "status": {
+            "enum": [
+              "UPCOMING",
+              "READING",
+              "DONE"
+            ],
+            "type": "string"
+          },
+          "meetingDate": {
+            "type": "string",
+            "nullable": true
+          },
+          "periodFrom": {
+            "type": "string",
+            "nullable": true
+          },
+          "periodTo": {
+            "type": "string",
+            "nullable": true
+          },
+          "participantIds": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        }
       },
       "DeletedResponse": {
         "type": "object",
@@ -966,7 +1014,22 @@
       },
       "UpdateCommentDto": {
         "type": "object",
-        "properties": {}
+        "properties": {
+          "content": {
+            "type": "string",
+            "maxLength": 10000
+          },
+          "page": {
+            "type": "number",
+            "nullable": true,
+            "minimum": 1
+          },
+          "quote": {
+            "type": "string",
+            "nullable": true,
+            "maxLength": 1000
+          }
+        }
       }
     }
   }
