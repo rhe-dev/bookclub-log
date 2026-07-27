@@ -2,8 +2,12 @@
 
 import { Box, ButtonBase, Chip, Stack } from '@mui/material';
 import { useEffect, useState } from 'react';
-import { useCreateBookMutation } from '@/shared/api/bookApi';
+import {
+  useCreateBookMutation,
+  useUpdateBookMutation,
+} from '@/shared/api/bookApi';
 import { useClubMembersQuery } from '@/shared/api/clubApi';
+import { BookCover } from '@/shared/components/book/BookCover';
 import { CommonButton } from '@/shared/components/ui/CommonButton';
 import { CommonInput } from '@/shared/components/ui/CommonInput';
 import { CommonModal } from '@/shared/components/ui/CommonModal';
@@ -11,7 +15,7 @@ import { Typo } from '@/shared/components/ui/Typo';
 import { BOOK_STATUS_LABEL } from '@/shared/constants/bookStatus';
 import { toast } from '@/shared/stores/toastStore';
 import { colorChips } from '@/shared/styles/colors';
-import type { BookStatus } from '@/shared/types/book';
+import type { Book, BookStatus } from '@/shared/types/book';
 
 const COVER_COLORS = [
   '#2B6CB0',
@@ -45,20 +49,28 @@ const COVER_EMOJIS = [
 
 const STATUS_OPTIONS: BookStatus[] = ['UPCOMING', 'READING', 'DONE'];
 
+const toDateInput = (iso?: string | null) => (iso ? iso.slice(0, 10) : '');
+
 interface BookFormModalProps {
   open: boolean;
   onClose: () => void;
   clubPublicId?: string;
+  /** 전달하면 수정 모드 */
+  book?: Book;
 }
 
-/** 책 추가 모달 — 서지정보·표지(색+이모지)·상태·일정·참여 회원 (PLAN F1) */
+/** 책 추가/수정 모달 — 서지정보·표지(색+이모지)·상태·일정·참여 회원 (PLAN F1) */
 export const BookFormModal = ({
   open,
   onClose,
   clubPublicId,
+  book,
 }: BookFormModalProps) => {
+  const isEdit = Boolean(book);
   const { data: members } = useClubMembersQuery(clubPublicId);
   const createMutation = useCreateBookMutation(clubPublicId);
+  const updateMutation = useUpdateBookMutation(book?.publicId);
+  const isPending = createMutation.isPending || updateMutation.isPending;
 
   const [title, setTitle] = useState('');
   const [author, setAuthor] = useState('');
@@ -72,21 +84,25 @@ export const BookFormModal = ({
   const [participantIds, setParticipantIds] = useState<string[]>([]);
   const [errors, setErrors] = useState<{ title?: string; author?: string }>({});
 
-  // 열 때마다 초기화 — 참여 회원은 기본 전체 선택
+  // 열 때마다 초기화 — 수정 모드는 기존 값, 추가 모드는 기본값(참여 회원 전체 선택)
   useEffect(() => {
     if (!open) return;
-    setTitle('');
-    setAuthor('');
-    setPublisher('');
-    setCoverColor(COVER_COLORS[0]);
-    setCoverEmoji(COVER_EMOJIS[0]);
-    setStatus('UPCOMING');
-    setPeriodFrom('');
-    setPeriodTo('');
-    setMeetingDate('');
-    setParticipantIds(members?.map((m) => m.publicId) ?? []);
+    setTitle(book?.title ?? '');
+    setAuthor(book?.author ?? '');
+    setPublisher(book?.publisher ?? '');
+    setCoverColor(book?.coverColor ?? COVER_COLORS[0]);
+    setCoverEmoji(book?.coverEmoji ?? COVER_EMOJIS[0]);
+    setStatus(book?.status ?? 'UPCOMING');
+    setPeriodFrom(toDateInput(book?.periodFrom));
+    setPeriodTo(toDateInput(book?.periodTo));
+    setMeetingDate(toDateInput(book?.meetingDate));
+    setParticipantIds(
+      book
+        ? book.participants.map((p) => p.publicId)
+        : (members?.map((m) => m.publicId) ?? []),
+    );
     setErrors({});
-  }, [open, members]);
+  }, [open, members, book]);
 
   const toggleParticipant = (publicId: string) => {
     setParticipantIds((prev) =>
@@ -103,6 +119,33 @@ export const BookFormModal = ({
     setErrors(nextErrors);
     if (Object.keys(nextErrors).length > 0) return;
 
+    const options = {
+      onSuccess: () => {
+        toast.success(isEdit ? '책 정보를 수정했어요.' : '책을 추가했어요.');
+        onClose();
+      },
+    };
+
+    if (isEdit) {
+      // 수정 모드: 비운 값은 null로 보내 '해제'
+      updateMutation.mutate(
+        {
+          title: title.trim(),
+          author: author.trim(),
+          publisher: publisher.trim() || null,
+          coverColor,
+          coverEmoji,
+          status,
+          periodFrom: periodFrom || null,
+          periodTo: periodTo || null,
+          meetingDate: meetingDate || null,
+          participantIds,
+        },
+        options,
+      );
+      return;
+    }
+
     createMutation.mutate(
       {
         title: title.trim(),
@@ -116,12 +159,7 @@ export const BookFormModal = ({
         meetingDate: meetingDate || undefined,
         participantIds,
       },
-      {
-        onSuccess: () => {
-          toast.success('책을 추가했어요.');
-          onClose();
-        },
-      },
+      options,
     );
   };
 
@@ -129,15 +167,15 @@ export const BookFormModal = ({
     <CommonModal
       open={open}
       onClose={onClose}
-      title="책 추가"
+      title={isEdit ? '책 정보 수정' : '책 추가'}
       disableBackdropClose
       actions={
         <>
           <CommonButton label="취소" buttonColor="tertiary" onClick={onClose} />
           <CommonButton
-            label="책 추가"
+            label={isEdit ? '저장' : '책 추가'}
             onClick={handleSubmit}
-            isLoading={createMutation.isPending}
+            isLoading={isPending}
           />
         </>
       }
@@ -167,21 +205,13 @@ export const BookFormModal = ({
         </Stack>
 
         <Stack direction="row" spacing={2.5} sx={{ alignItems: 'flex-start' }}>
-          <Box
-            sx={{
-              width: 72,
-              aspectRatio: '3 / 4',
-              borderRadius: 2,
-              backgroundColor: coverColor,
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              fontSize: 32,
-              flexShrink: 0,
-            }}
-          >
-            {coverEmoji}
-          </Box>
+          <BookCover
+            color={coverColor}
+            emoji={coverEmoji}
+            width={72}
+            fontSize={32}
+            borderRadius={2}
+          />
           <Stack spacing={1.5} sx={{ flex: 1 }}>
             <Box>
               <Typo
@@ -301,7 +331,7 @@ export const BookFormModal = ({
           >
             참여 회원
           </Typo>
-          <Stack direction="row" spacing={1} sx={{ flexWrap: 'wrap', gap: 1 }}>
+          <Stack direction="row" sx={{ flexWrap: 'wrap', gap: 1 }}>
             {members?.map((m) => {
               const selected = participantIds.includes(m.publicId);
               return (

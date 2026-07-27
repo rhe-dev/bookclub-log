@@ -1,19 +1,18 @@
 import ChatBubbleOutlineRoundedIcon from '@mui/icons-material/ChatBubbleOutlineRounded';
 import { Box, ButtonBase, Stack } from '@mui/material';
 import Link from 'next/link';
+import { BookCover } from '@/shared/components/book/BookCover';
+import { BookSchedule } from '@/shared/components/book/BookSchedule';
+import { BookStatusTag } from '@/shared/components/book/BookStatusTag';
 import { MemberAvatarGroup } from '@/shared/components/ui/MemberAvatarGroup';
 import { Typo } from '@/shared/components/ui/Typo';
 import { ROUTES } from '@/shared/constants/routes';
 import { colorChips } from '@/shared/styles/colors';
+import { lineClamp } from '@/shared/styles/mixins';
 import type { Book } from '@/shared/types/book';
-import { formatDate, formatPeriod } from '@/shared/utils/date';
-import { BookStatusTag } from './BookStatusTag';
 
 /** '지금 읽는 책' 히어로 카드 — 표지 + 일정·참여 멤버·코멘트 수 */
 export const ReadingBookCard = ({ book }: { book: Book }) => {
-  const period = formatPeriod(book.periodFrom, book.periodTo);
-  const meeting = formatDate(book.meetingDate);
-
   return (
     <ButtonBase
       component={Link}
@@ -31,21 +30,12 @@ export const ReadingBookCard = ({ book }: { book: Book }) => {
         '&:hover': { boxShadow: '0 4px 16px rgba(17, 17, 17, 0.08)' },
       }}
     >
-      <Box
-        sx={{
-          width: { xs: 84, md: 104 },
-          aspectRatio: '3 / 4',
-          borderRadius: 2.5,
-          backgroundColor: book.coverColor,
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          fontSize: { xs: 36, md: 44 },
-          flexShrink: 0,
-        }}
-      >
-        {book.coverEmoji}
-      </Box>
+      <BookCover
+        color={book.coverColor}
+        emoji={book.coverEmoji}
+        width={{ xs: 84, md: 104 }}
+        fontSize={{ xs: 36, md: 44 }}
+      />
 
       <Stack spacing={1} sx={{ flex: 1, minWidth: 0, py: 0.5 }}>
         <Stack direction="row" spacing={1} sx={{ alignItems: 'center' }}>
@@ -64,12 +54,7 @@ export const ReadingBookCard = ({ book }: { book: Book }) => {
           <Typo
             token="text_b_18"
             color={colorChips.grayScale[800]}
-            sx={{
-              display: '-webkit-box',
-              WebkitLineClamp: 2,
-              WebkitBoxOrient: 'vertical',
-              overflow: 'hidden',
-            }}
+            sx={lineClamp(2)}
           >
             {book.title}
           </Typo>
@@ -79,18 +64,11 @@ export const ReadingBookCard = ({ book }: { book: Book }) => {
           </Typo>
         </Box>
 
-        <Stack spacing={0.25}>
-          {period && (
-            <Typo token="text_m_12" color={colorChips.grayScale[600]}>
-              함께 읽는 기간 {period}
-            </Typo>
-          )}
-          {meeting && (
-            <Typo token="text_m_12" color={colorChips.grayScale[600]}>
-              모임일 {meeting}
-            </Typo>
-          )}
-        </Stack>
+        <BookSchedule
+          periodFrom={book.periodFrom}
+          periodTo={book.periodTo}
+          meetingDate={book.meetingDate}
+        />
 
         <Box sx={{ mt: 'auto' }}>
           <MemberAvatarGroup members={book.participants} size={26} max={6} />

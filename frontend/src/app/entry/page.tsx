@@ -8,7 +8,8 @@ import { useClubMembersQuery, useClubsQuery } from '@/shared/api/clubApi';
 import { EntrySkeleton } from './components/EntrySkeleton';
 import { CommonContainer } from '@/shared/components/layout/CommonContainer';
 import { Header } from '@/shared/components/layout/Header';
-import { CommonButton } from '@/shared/components/ui/CommonButton';
+import { ErrorView } from '@/shared/components/ui/ErrorView';
+import { MemberAvatar } from '@/shared/components/ui/MemberAvatar';
 import { Typo } from '@/shared/components/ui/Typo';
 import { ROUTES } from '@/shared/constants/routes';
 import { useMemberStore } from '@/shared/stores/memberStore';
@@ -55,19 +56,13 @@ export default function EntryPage() {
           </Typo>
 
           {isError ? (
-            <Stack spacing={2} sx={{ alignItems: 'center', py: 6 }}>
-              <Typo token="text_m_16" color={colorChips.grayScale[600]}>
-                모임 정보를 불러오지 못했어요.
-              </Typo>
-              <CommonButton
-                label="다시 시도"
-                buttonVariant="outlined"
-                onClick={() => {
-                  void clubsQuery.refetch();
-                  void membersQuery.refetch();
-                }}
-              />
-            </Stack>
+            <ErrorView
+              message="모임 정보를 불러오지 못했어요."
+              onRetry={() => {
+                void clubsQuery.refetch();
+                void membersQuery.refetch();
+              }}
+            />
           ) : (
             <Box
               sx={{
@@ -126,20 +121,11 @@ export default function EntryPage() {
                           },
                         }}
                       >
-                        <Box
-                          sx={{
-                            width: { xs: 56, md: 64 },
-                            height: { xs: 56, md: 64 },
-                            borderRadius: '50%',
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            fontSize: { xs: 26, md: 30 },
-                            backgroundColor: m.color,
-                          }}
-                        >
-                          {m.avatarEmoji}
-                        </Box>
+                        <MemberAvatar
+                          color={m.color}
+                          emoji={m.avatarEmoji}
+                          size={{ xs: 56, md: 64 }}
+                        />
                         <Stack spacing={0.25} sx={{ alignItems: 'center' }}>
                           <Typo
                             token="text_sb_14"

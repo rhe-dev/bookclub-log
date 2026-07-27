@@ -1,11 +1,13 @@
 import ChatBubbleOutlineRoundedIcon from '@mui/icons-material/ChatBubbleOutlineRounded';
-import { Box, ButtonBase, Stack } from '@mui/material';
+import { ButtonBase, Stack } from '@mui/material';
 import Link from 'next/link';
+import { BookCover } from '@/shared/components/book/BookCover';
+import { BookStatusTag } from '@/shared/components/book/BookStatusTag';
 import { Typo } from '@/shared/components/ui/Typo';
 import { ROUTES } from '@/shared/constants/routes';
 import { colorChips } from '@/shared/styles/colors';
+import { lineClamp } from '@/shared/styles/mixins';
 import type { Book } from '@/shared/types/book';
-import { BookStatusTag } from './BookStatusTag';
 
 /** 책장 그리드 카드 — 표지(색+이모지)·제목·저자·상태·코멘트 수 */
 export const BookCard = ({ book }: { book: Book }) => {
@@ -25,29 +27,12 @@ export const BookCard = ({ book }: { book: Book }) => {
         '&:hover': { backgroundColor: colorChips.grayScale[100] },
       }}
     >
-      <Box
-        sx={{
-          aspectRatio: '3 / 4',
-          borderRadius: 2.5,
-          backgroundColor: book.coverColor,
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          fontSize: 44,
-        }}
-      >
-        {book.coverEmoji}
-      </Box>
+      <BookCover color={book.coverColor} emoji={book.coverEmoji} />
       <Stack spacing={0.5} sx={{ px: 0.5, pb: 0.5 }}>
         <Typo
           token="text_sb_14"
           color={colorChips.grayScale[800]}
-          sx={{
-            display: '-webkit-box',
-            WebkitLineClamp: 2,
-            WebkitBoxOrient: 'vertical',
-            overflow: 'hidden',
-          }}
+          sx={lineClamp(2)}
         >
           {book.title}
         </Typo>

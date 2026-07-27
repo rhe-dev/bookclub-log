@@ -8,16 +8,13 @@ import { ClubsService } from '../clubs/clubs.service';
 import { ErrorMessage } from '../shared/constants/error-message';
 import { toPageMeta } from '../shared/dto/pagination.query';
 import { PrismaService } from '../prisma/prisma.service';
+import { memberSummarySelect } from '../shared/prisma/selects';
 import { CreateBookDto } from './dto/create-book.dto';
 import { ListBooksQuery } from './dto/list-books.query';
 import { UpdateBookDto } from './dto/update-book.dto';
 
-const memberSummary = {
-  select: { publicId: true, name: true, avatarEmoji: true, color: true },
-} as const;
-
 const bookInclude = {
-  participants: { include: { member: memberSummary } },
+  participants: { include: { member: memberSummarySelect } },
   _count: { select: { comments: { where: { deletedAt: null } } } },
 } satisfies Prisma.BookInclude;
 

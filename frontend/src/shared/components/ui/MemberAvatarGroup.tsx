@@ -2,8 +2,9 @@
 
 import { Box } from '@mui/material';
 import { colorChips } from '@/shared/styles/colors';
-import { Typo } from './Typo';
 import type { MemberSummary } from '@/shared/types/member';
+import { MemberAvatar } from './MemberAvatar';
+import { Typo } from './Typo';
 
 interface MemberAvatarGroupProps {
   members: MemberSummary[];
@@ -19,39 +20,34 @@ export const MemberAvatarGroup = ({
 }: MemberAvatarGroupProps) => {
   const visible = members.slice(0, max);
   const rest = members.length - visible.length;
-
-  const circleSx = {
-    width: size,
-    height: size,
-    borderRadius: '50%',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    fontSize: size * 0.45,
+  const overlapSx = {
     border: `2px solid ${colorChips.basic.white}`,
-    flexShrink: 0,
   } as const;
 
   return (
     <Box sx={{ display: 'flex', alignItems: 'center' }}>
       {visible.map((member, index) => (
-        <Box
+        <MemberAvatar
           key={member.publicId}
+          color={member.color}
+          emoji={member.avatarEmoji}
+          size={size}
           title={member.name}
-          sx={{
-            ...circleSx,
-            backgroundColor: member.color,
-            ml: index === 0 ? 0 : '-8px',
-          }}
-        >
-          {member.avatarEmoji}
-        </Box>
+          sx={{ ...overlapSx, ml: index === 0 ? 0 : '-8px' }}
+        />
       ))}
       {rest > 0 && (
         <Box
           sx={{
-            ...circleSx,
+            width: size,
+            height: size,
+            borderRadius: '50%',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            flexShrink: 0,
             backgroundColor: colorChips.grayScale[200],
+            ...overlapSx,
             ml: '-8px',
           }}
         >

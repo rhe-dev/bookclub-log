@@ -9,6 +9,7 @@ import { useState } from 'react';
 import { ROUTES } from '@/shared/constants/routes';
 import { useMemberStore } from '@/shared/stores/memberStore';
 import { colorChips } from '@/shared/styles/colors';
+import { MemberAvatar } from '../ui/MemberAvatar';
 import { Typo } from '../ui/Typo';
 import { CommonContainer } from './CommonContainer';
 
@@ -93,20 +94,11 @@ export const Header = () => {
                 '&:hover': { backgroundColor: colorChips.grayScale[100] },
               }}
             >
-              <Box
-                sx={{
-                  width: { xs: 30, md: 32 },
-                  height: { xs: 30, md: 32 },
-                  borderRadius: '50%',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  fontSize: 16,
-                  backgroundColor: member.color,
-                }}
-              >
-                {member.avatarEmoji}
-              </Box>
+              <MemberAvatar
+                color={member.color}
+                emoji={member.avatarEmoji}
+                size={{ xs: 30, md: 32 }}
+              />
               {/* 모바일(xs)에서는 이름·역할 숨김 — 메뉴 상단에서 확인 */}
               <Box
                 sx={{

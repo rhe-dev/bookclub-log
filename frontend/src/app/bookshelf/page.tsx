@@ -3,21 +3,20 @@
 // 책방(모임 홈) — 지금 읽는 책 + 책장(상태 필터·책 추가·빈 상태) (PLAN 화면 2)
 import AddRoundedIcon from '@mui/icons-material/AddRounded';
 import { Box, Chip, Stack } from '@mui/material';
-import { useRouter } from 'next/navigation';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { useBooksQuery } from '@/shared/api/bookApi';
 import { useClubsQuery } from '@/shared/api/clubApi';
 import { CommonContainer } from '@/shared/components/layout/CommonContainer';
 import { Header } from '@/shared/components/layout/Header';
 import { CommonButton } from '@/shared/components/ui/CommonButton';
+import { ErrorView } from '@/shared/components/ui/ErrorView';
 import { Typo } from '@/shared/components/ui/Typo';
 import { BOOK_STATUS_LABEL } from '@/shared/constants/bookStatus';
-import { ROUTES } from '@/shared/constants/routes';
-import { useMemberStore } from '@/shared/stores/memberStore';
+import { useRequireMember } from '@/shared/hooks/useRequireMember';
 import { colorChips } from '@/shared/styles/colors';
 import type { BookStatus } from '@/shared/types/book';
+import { BookFormModal } from '@/shared/components/book/BookFormModal';
 import { BookCard } from './components/BookCard';
-import { BookFormModal } from './components/BookFormModal';
 import { BookshelfSkeleton } from './components/BookshelfSkeleton';
 import { EmptyBookshelf } from './components/EmptyBookshelf';
 import { ReadingBookCard } from './components/ReadingBookCard';
@@ -32,8 +31,7 @@ const FILTERS: { value: FilterValue; label: string }[] = [
 ];
 
 export default function BookshelfPage() {
-  const router = useRouter();
-  const member = useMemberStore((s) => s.member);
+  const member = useRequireMember();
   const [filter, setFilter] = useState<FilterValue>('ALL');
   const [formOpen, setFormOpen] = useState(false);
 
@@ -43,11 +41,6 @@ export default function BookshelfPage() {
     club?.publicId,
     filter === 'ALL' ? undefined : filter,
   );
-
-  // 멤버 선택 없이 직접 접근하면 입장 화면으로
-  useEffect(() => {
-    if (!member) router.replace(ROUTES.entry);
-  }, [member, router]);
 
   if (!member) return null;
 
@@ -82,19 +75,13 @@ export default function BookshelfPage() {
         </Stack>
 
         {isError ? (
-          <Stack spacing={2} sx={{ alignItems: 'center', py: 8 }}>
-            <Typo token="text_m_16" color={colorChips.grayScale[600]}>
-              책방을 불러오지 못했어요.
-            </Typo>
-            <CommonButton
-              label="다시 시도"
-              buttonVariant="outlined"
-              onClick={() => {
-                void clubsQuery.refetch();
-                void booksQuery.refetch();
-              }}
-            />
-          </Stack>
+          <ErrorView
+            message="책방을 불러오지 못했어요."
+            onRetry={() => {
+              void clubsQuery.refetch();
+              void booksQuery.refetch();
+            }}
+          />
         ) : isLoading ? (
           <BookshelfSkeleton />
         ) : isEmpty && filter === 'ALL' ? (
