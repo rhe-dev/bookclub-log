@@ -1,15 +1,18 @@
 'use client';
 
-import { Box, Stack } from '@mui/material';
-import { ButtonBase } from '@mui/material';
+import FavoriteBorderRoundedIcon from '@mui/icons-material/FavoriteBorderRounded';
+import FavoriteRoundedIcon from '@mui/icons-material/FavoriteRounded';
+import { Box, ButtonBase, Stack } from '@mui/material';
 import { useState } from 'react';
 import {
   useCreateCommentMutation,
   useDeleteCommentMutation,
+  useToggleLikeMutation,
   useUpdateCommentMutation,
 } from '@/shared/api/commentApi';
 import { CommonButton } from '@/shared/components/ui/CommonButton';
 import { CommonModal } from '@/shared/components/ui/CommonModal';
+import { MemberAvatar } from '@/shared/components/ui/MemberAvatar';
 import { Typo } from '@/shared/components/ui/Typo';
 import { useMemberStore } from '@/shared/stores/memberStore';
 import { toast } from '@/shared/stores/toastStore';
@@ -56,6 +59,7 @@ const CommentEntry = ({
   const [deleteOpen, setDeleteOpen] = useState(false);
   const updateMutation = useUpdateCommentMutation(bookPublicId);
   const deleteMutation = useDeleteCommentMutation(bookPublicId);
+  const likeMutation = useToggleLikeMutation(bookPublicId);
 
   if (comment.deleted) {
     return (
@@ -96,21 +100,11 @@ const CommentEntry = ({
 
   return (
     <Stack direction="row" spacing={1.25} sx={{ py: 1 }}>
-      <Box
-        sx={{
-          width: avatarSize,
-          height: avatarSize,
-          borderRadius: '50%',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          fontSize: avatarSize * 0.5,
-          backgroundColor: comment.member?.color,
-          flexShrink: 0,
-        }}
-      >
-        {comment.member?.avatarEmoji}
-      </Box>
+      <MemberAvatar
+        color={comment.member?.color ?? ''}
+        emoji={comment.member?.avatarEmoji ?? ''}
+        size={avatarSize}
+      />
       <Stack spacing={0.75} sx={{ flex: 1, minWidth: 0 }}>
         <Stack
           direction="row"
@@ -169,7 +163,35 @@ const CommentEntry = ({
           {comment.content}
         </Typo>
 
-        <Stack direction="row" spacing={0.5}>
+        <Stack direction="row" spacing={1} sx={{ alignItems: 'center' }}>
+          <ButtonBase
+            onClick={() => likeMutation.mutate(comment.publicId)}
+            disabled={likeMutation.isPending}
+            aria-label={comment.likedByMe ? '공감 취소' : '공감'}
+            sx={{ borderRadius: 1, px: 0.5, py: 0.25, gap: 0.25 }}
+          >
+            {comment.likedByMe ? (
+              <FavoriteRoundedIcon
+                sx={{ fontSize: 15, color: colorChips.primary[500] }}
+              />
+            ) : (
+              <FavoriteBorderRoundedIcon
+                sx={{ fontSize: 15, color: colorChips.grayScale[500] }}
+              />
+            )}
+            {comment.likeCount > 0 && (
+              <Typo
+                token="text_m_12"
+                color={
+                  comment.likedByMe
+                    ? colorChips.primary[500]
+                    : colorChips.grayScale[500]
+                }
+              >
+                {comment.likeCount}
+              </Typo>
+            )}
+          </ButtonBase>
           {onReplyClick && <TextAction label="답글" onClick={onReplyClick} />}
           {isAuthor && (
             <>

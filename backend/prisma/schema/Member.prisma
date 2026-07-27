@@ -10,5 +10,6 @@ model Member {
   memberships    ClubMember[]
   participations BookParticipant[]
   comments       Comment[]
+  commentLikes   CommentLike[]
   orders         Order[]
 }

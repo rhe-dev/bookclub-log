@@ -14,3 +14,6 @@ export type CreateCommentBody = components['schemas']['CreateCommentDto'];
 
 /** PATCH /comments/:id 바디 — null은 앵커 해제 */
 export type UpdateCommentBody = components['schemas']['UpdateCommentDto'];
+
+/** POST /comments/:id/like 응답 — 공감 토글 결과 */
+export type CommentLikeResult = components['schemas']['CommentLikeResponse'];

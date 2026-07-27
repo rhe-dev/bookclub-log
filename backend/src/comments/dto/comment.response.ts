@@ -15,6 +15,15 @@ export class CommentResponse {
   createdAt: Date;
   updatedAt: Date | null;
   isEdited: boolean;
+  likeCount: number;
+  /** 요청 멤버(X-Member-Id)가 공감했는지 */
+  likedByMe: boolean;
+}
+
+/** POST /comments/:id/like 응답 — 토글 결과 */
+export class CommentLikeResponse {
+  liked: boolean;
+  likeCount: number;
 }
 
 export class CommentThreadResponse extends CommentResponse {

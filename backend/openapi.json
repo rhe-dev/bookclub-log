@@ -507,6 +507,45 @@
           "Comments"
         ]
       }
+    },
+    "/api/comments/{commentId}/like": {
+      "post": {
+        "operationId": "CommentsController_toggleLike",
+        "parameters": [
+          {
+            "name": "X-Member-Id",
+            "in": "header",
+            "description": "현재 멤버의 publicId — 쓰기 요청에 필요 (D-017)",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "commentId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CommentLikeResponse"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Comments"
+        ]
+      }
     }
   },
   "info": {
@@ -893,6 +932,12 @@
           },
           "isEdited": {
             "type": "boolean"
+          },
+          "likeCount": {
+            "type": "number"
+          },
+          "likedByMe": {
+            "type": "boolean"
           }
         },
         "required": [
@@ -904,7 +949,9 @@
           "content",
           "createdAt",
           "updatedAt",
-          "isEdited"
+          "isEdited",
+          "likeCount",
+          "likedByMe"
         ]
       },
       "CommentThreadResponse": {
@@ -954,6 +1001,12 @@
           },
           "isEdited": {
             "type": "boolean"
+          },
+          "likeCount": {
+            "type": "number"
+          },
+          "likedByMe": {
+            "type": "boolean"
           }
         },
         "required": [
@@ -966,7 +1019,9 @@
           "content",
           "createdAt",
           "updatedAt",
-          "isEdited"
+          "isEdited",
+          "likeCount",
+          "likedByMe"
         ]
       },
       "PaginatedCommentsResponse": {
@@ -1030,6 +1085,21 @@
             "maxLength": 1000
           }
         }
+      },
+      "CommentLikeResponse": {
+        "type": "object",
+        "properties": {
+          "liked": {
+            "type": "boolean"
+          },
+          "likeCount": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "liked",
+          "likeCount"
+        ]
       }
     }
   }

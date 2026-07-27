@@ -14,6 +14,7 @@ import { DeletedResponse } from '../shared/dto/deleted.response';
 import { PaginationQuery } from '../shared/dto/pagination.query';
 import { CommentsService } from './comments.service';
 import {
+  CommentLikeResponse,
   CommentResponse,
   PaginatedCommentsResponse,
 } from './dto/comment.response';
@@ -33,8 +34,9 @@ export class CommentsController {
   list(
     @Param('bookId') bookId: string,
     @Query() query: PaginationQuery,
+    @Headers('x-member-id') memberId: string | undefined,
   ): Promise<PaginatedCommentsResponse> {
-    return this.commentsService.listForBook(bookId, query);
+    return this.commentsService.listForBook(bookId, query, memberId);
   }
 
   @Post('books/:bookId/comments')
@@ -61,5 +63,13 @@ export class CommentsController {
     @Headers('x-member-id') memberId: string | undefined,
   ): Promise<DeletedResponse> {
     return this.commentsService.remove(commentId, memberId);
+  }
+
+  @Post('comments/:commentId/like')
+  toggleLike(
+    @Param('commentId') commentId: string,
+    @Headers('x-member-id') memberId: string | undefined,
+  ): Promise<CommentLikeResponse> {
+    return this.commentsService.toggleLike(commentId, memberId);
   }
 }

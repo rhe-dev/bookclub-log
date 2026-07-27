@@ -12,8 +12,21 @@ model Comment {
   updatedAt DateTime  @updatedAt /// createdAt과 다르면 UI에 '수정됨' 표시
   deletedAt DateTime? /// 소프트 딜리트 — 답글 보존을 위해 '삭제된 코멘트'로 자리 유지 (D-010)
 
-  book    Book      @relation(fields: [bookId], references: [id])
-  member  Member    @relation(fields: [memberId], references: [id])
-  parent  Comment?  @relation("CommentReplies", fields: [parentId], references: [id])
-  replies Comment[] @relation("CommentReplies")
+  book    Book          @relation(fields: [bookId], references: [id])
+  member  Member        @relation(fields: [memberId], references: [id])
+  parent  Comment?      @relation("CommentReplies", fields: [parentId], references: [id])
+  replies Comment[]     @relation("CommentReplies")
+  likes   CommentLike[]
+}
+
+/// 코멘트 공감(좋아요) — 멤버당 코멘트 1회, 재클릭 시 해제(토글)
+model CommentLike {
+  commentId Int
+  memberId  Int
+  createdAt DateTime @default(now())
+
+  comment Comment @relation(fields: [commentId], references: [id])
+  member  Member  @relation(fields: [memberId], references: [id])
+
+  @@id([commentId, memberId])
 }

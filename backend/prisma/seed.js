@@ -207,8 +207,35 @@ async function main() {
     });
   }
 
+  // 코멘트 공감 — 토론이 활발해 보이도록 주요 코멘트에 분포
+  const LIKES = {
+    c1: ['minjun', 'seoyeon', 'haneul'],
+    c3: ['jiwon', 'doyun'],
+    c7: ['jiwon', 'seoyeon', 'eunchae', 'haneul'],
+    c11: ['jiwon', 'minjun', 'seoyeon', 'haneul', 'eunchae'],
+    c13: ['eunchae', 'jiwon'],
+    c16: ['haneul', 'minjun'],
+    c20: ['seoyeon', 'haneul', 'doyun'],
+    c22: ['seoyeon', 'jiwon', 'minjun'],
+    c28: ['haneul', 'doyun', 'seoyeon'],
+    c33: ['eunchae', 'minjun'],
+    c36: ['seoyeon', 'eunchae'],
+  };
+  let likeCount = 0;
+  for (const [commentKey, likerKeys] of Object.entries(LIKES)) {
+    for (const likerKey of likerKeys) {
+      await prisma.commentLike.create({
+        data: {
+          commentId: comments[commentKey].id,
+          memberId: members[likerKey].id,
+        },
+      });
+      likeCount += 1;
+    }
+  }
+
   console.log(
-    `[seed] 완료 — 모임 1, 멤버 ${MEMBERS.length}, 책 ${BOOKS.length}, 코멘트·답글 ${COMMENTS.length}`,
+    `[seed] 완료 — 모임 1, 멤버 ${MEMBERS.length}, 책 ${BOOKS.length}, 코멘트·답글 ${COMMENTS.length}, 공감 ${likeCount}`,
   );
 }
 

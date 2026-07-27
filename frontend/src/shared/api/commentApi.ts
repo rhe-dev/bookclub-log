@@ -2,6 +2,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { queryKeys } from '@/shared/constants/queryKeys';
 import type {
   Comment,
+  CommentLikeResult,
   CommentThread,
   CreateCommentBody,
   UpdateCommentBody,
@@ -41,6 +42,12 @@ export const commentApi = {
   },
   deleteComment: async (commentPublicId: string): Promise<void> => {
     await axiosClient.del(`/comments/${commentPublicId}`);
+  },
+  toggleLike: async (commentPublicId: string): Promise<CommentLikeResult> => {
+    const { data } = await axiosClient.post<CommentLikeResult>(
+      `/comments/${commentPublicId}/like`,
+    );
+    return data;
   },
 };
 
@@ -94,5 +101,18 @@ export const useDeleteCommentMutation = (bookPublicId?: string) => {
     mutationFn: (commentPublicId: string) =>
       commentApi.deleteComment(commentPublicId),
     onSuccess: invalidate,
+  });
+};
+
+export const useToggleLikeMutation = (bookPublicId?: string) => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (commentPublicId: string) =>
+      commentApi.toggleLike(commentPublicId),
+    onSuccess: () => {
+      void queryClient.invalidateQueries({
+        queryKey: queryKeys.comments(bookPublicId ?? ''),
+      });
+    },
   });
 };

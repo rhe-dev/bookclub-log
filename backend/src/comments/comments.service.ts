@@ -10,15 +10,17 @@ import { ClubsService } from '../clubs/clubs.service';
 import { ErrorMessage } from '../shared/constants/error-message';
 import { PaginationQuery, toPageMeta } from '../shared/dto/pagination.query';
 import { PrismaService } from '../prisma/prisma.service';
+import { memberSummarySelect } from '../shared/prisma/selects';
 import { CreateCommentDto } from './dto/create-comment.dto';
 import { UpdateCommentDto } from './dto/update-comment.dto';
 
-const memberSummary = {
-  select: { publicId: true, name: true, avatarEmoji: true, color: true },
+const commentInclude = {
+  member: memberSummarySelect,
+  likes: { select: { memberId: true } },
 } as const;
 
-type CommentWithMember = Prisma.CommentGetPayload<{
-  include: { member: typeof memberSummary };
+type CommentWithRelations = Prisma.CommentGetPayload<{
+  include: typeof commentInclude;
 }>;
 
 @Injectable()
@@ -29,8 +31,13 @@ export class CommentsService {
     private readonly booksService: BooksService,
   ) {}
 
-  async listForBook(bookPublicId: string, query: PaginationQuery) {
+  async listForBook(
+    bookPublicId: string,
+    query: PaginationQuery,
+    viewerPublicId?: string,
+  ) {
     const book = await this.booksService.getBookOrThrow(bookPublicId);
+    const viewerId = await this.resolveViewerId(viewerPublicId);
     const page = query.page ?? 1;
     const limit = query.limit ?? 20;
     // 삭제된 코멘트는 답글(비삭제)이 남아 있을 때만 '자리 유지'로 노출 (D-010)
@@ -43,23 +50,24 @@ export class CommentsService {
       this.prisma.comment.count({ where }),
       this.prisma.comment.findMany({
         where,
-        orderBy: { createdAt: 'asc' },
+        // 코멘트는 최신순, 스레드 안의 답글은 대화 흐름대로 과거순
+        orderBy: { createdAt: 'desc' },
         skip: (page - 1) * limit,
         take: limit,
         include: {
-          member: memberSummary,
+          ...commentInclude,
           replies: {
             where: { deletedAt: null },
             orderBy: { createdAt: 'asc' },
-            include: { member: memberSummary },
+            include: commentInclude,
           },
         },
       }),
     ]);
     return {
       items: threads.map((comment) => ({
-        ...this.toDto(comment),
-        replies: comment.replies.map((reply) => this.toDto(reply)),
+        ...this.toDto(comment, viewerId),
+        replies: comment.replies.map((reply) => this.toDto(reply, viewerId)),
       })),
       meta: toPageMeta(page, limit, totalCount),
     };
@@ -101,9 +109,9 @@ export class CommentsService {
         quote: dto.quote,
         content: dto.content,
       },
-      include: { member: memberSummary },
+      include: commentInclude,
     });
-    return this.toDto(comment);
+    return this.toDto(comment, member.id);
   }
 
   async update(
@@ -111,7 +119,7 @@ export class CommentsService {
     memberPublicId: string | undefined,
     dto: UpdateCommentDto,
   ) {
-    const comment = await this.getOwnCommentOrThrow(
+    const { comment, member } = await this.getOwnCommentOrThrow(
       commentPublicId,
       memberPublicId,
     );
@@ -121,18 +129,18 @@ export class CommentsService {
     if (dto.page !== undefined) data.page = dto.page;
     if (dto.quote !== undefined) data.quote = dto.quote;
     // 변경 필드가 없으면 updatedAt을 건드리지 않는다 — 빈 PATCH가 '수정됨'을 만들지 않게
-    if (Object.keys(data).length === 0) return this.toDto(comment);
+    if (Object.keys(data).length === 0) return this.toDto(comment, member.id);
 
     const updated = await this.prisma.comment.update({
       where: { id: comment.id },
       data,
-      include: { member: memberSummary },
+      include: commentInclude,
     });
-    return this.toDto(updated);
+    return this.toDto(updated, member.id);
   }
 
   async remove(commentPublicId: string, memberPublicId: string | undefined) {
-    const comment = await this.getOwnCommentOrThrow(
+    const { comment } = await this.getOwnCommentOrThrow(
       commentPublicId,
       memberPublicId,
     );
@@ -143,23 +151,70 @@ export class CommentsService {
     return { publicId: comment.publicId, deleted: true };
   }
 
+  /** 공감 토글 — 이미 눌렀으면 해제. 삭제된 코멘트는 불가 */
+  async toggleLike(
+    commentPublicId: string,
+    memberPublicId: string | undefined,
+  ) {
+    const comment = await this.prisma.comment.findUnique({
+      where: { publicId: commentPublicId },
+    });
+    if (!comment || comment.deletedAt)
+      throw new NotFoundException(ErrorMessage.COMMENT_NOT_FOUND);
+    const book = await this.prisma.book.findFirst({
+      where: { id: comment.bookId, deletedAt: null },
+    });
+    if (!book) throw new NotFoundException(ErrorMessage.BOOK_NOT_FOUND);
+    const { member } = await this.clubsService.getMembershipOrThrow(
+      book.clubId,
+      memberPublicId,
+    );
+
+    const likeKey = {
+      commentId_memberId: { commentId: comment.id, memberId: member.id },
+    };
+    const existing = await this.prisma.commentLike.findUnique({
+      where: likeKey,
+    });
+    if (existing) {
+      await this.prisma.commentLike.delete({ where: likeKey });
+    } else {
+      await this.prisma.commentLike.create({
+        data: { commentId: comment.id, memberId: member.id },
+      });
+    }
+    const likeCount = await this.prisma.commentLike.count({
+      where: { commentId: comment.id },
+    });
+    return { liked: !existing, likeCount };
+  }
+
+  /** 조회용 멤버 식별 — 헤더가 없거나 알 수 없는 값이면 비로그인처럼 취급 */
+  private async resolveViewerId(viewerPublicId?: string) {
+    if (!viewerPublicId) return null;
+    const member = await this.prisma.member.findUnique({
+      where: { publicId: viewerPublicId },
+    });
+    return member?.id ?? null;
+  }
+
   private async getOwnCommentOrThrow(
     commentPublicId: string,
     memberPublicId: string | undefined,
-  ): Promise<CommentWithMember> {
+  ) {
     const member = await this.clubsService.getMemberOrThrow(memberPublicId);
     const comment = await this.prisma.comment.findUnique({
       where: { publicId: commentPublicId },
-      include: { member: memberSummary },
+      include: commentInclude,
     });
     if (!comment || comment.deletedAt)
       throw new NotFoundException(ErrorMessage.COMMENT_NOT_FOUND);
     if (comment.memberId !== member.id)
       throw new ForbiddenException(ErrorMessage.COMMENT_AUTHOR_ONLY);
-    return comment;
+    return { comment, member };
   }
 
-  private toDto(comment: CommentWithMember) {
+  private toDto(comment: CommentWithRelations, viewerId: number | null) {
     // 소프트 딜리트된 코멘트는 자리만 유지 — 내용·작성자 미노출 (D-010)
     if (comment.deletedAt) {
       return {
@@ -172,6 +227,8 @@ export class CommentsService {
         createdAt: comment.createdAt,
         updatedAt: null,
         isEdited: false,
+        likeCount: 0,
+        likedByMe: false,
       };
     }
     return {
@@ -186,6 +243,10 @@ export class CommentsService {
       // 생성 시 createdAt·updatedAt이 밀리초 단위로 어긋날 수 있어 1초 여유
       isEdited:
         comment.updatedAt.getTime() - comment.createdAt.getTime() > 1000,
+      likeCount: comment.likes.length,
+      likedByMe:
+        viewerId !== null &&
+        comment.likes.some((like) => like.memberId === viewerId),
     };
   }
 }
