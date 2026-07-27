@@ -35,6 +35,7 @@ export const CommonButton = ({
         isLoading ? <CircularProgress size={16} color="inherit" /> : undefined
       }
       sx={[
+        { whiteSpace: 'nowrap', flexShrink: 0 },
         isTertiary &&
           buttonVariant === 'filled' && {
             backgroundColor: colorChips.grayScale[200],

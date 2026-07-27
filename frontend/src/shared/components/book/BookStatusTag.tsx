@@ -26,9 +26,10 @@ export const BookStatusTag = ({ status }: { status: BookStatus }) => {
         borderRadius: 1,
         backgroundColor: bg,
         width: 'fit-content',
+        flexShrink: 0,
       }}
     >
-      <Typo token="text_sb_12" color={text}>
+      <Typo token="text_sb_12" color={text} sx={{ whiteSpace: 'nowrap' }}>
         {BOOK_STATUS_LABEL[status]}
       </Typo>
     </Box>

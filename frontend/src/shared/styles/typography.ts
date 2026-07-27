@@ -4,7 +4,7 @@
  * 화면 텍스트는 Typo 컴포넌트 + 이 토큰으로 통일한다.
  */
 const TYPO_WEIGHTS = { b: 700, sb: 600, m: 500, r: 400 } as const;
-const TYPO_SIZES = [12, 14, 16, 18, 20, 24, 28] as const;
+const TYPO_SIZES = [8, 10, 12, 14, 16, 18, 20, 24, 28] as const;
 
 export type TypoWeight = keyof typeof TYPO_WEIGHTS;
 export type TypoSize = (typeof TYPO_SIZES)[number];

@@ -51,7 +51,7 @@ export const MemberAvatarGroup = ({
             ml: '-8px',
           }}
         >
-          <Typo token="text_sb_12" color={colorChips.grayScale[600]}>
+          <Typo token="text_sb_10" color={colorChips.grayScale[600]}>
             +{rest}
           </Typo>
         </Box>
