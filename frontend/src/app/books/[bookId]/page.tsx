@@ -15,7 +15,6 @@ import {
 } from '@/shared/api/commentApi';
 import { BookFormModal } from '@/shared/components/book/BookFormModal';
 import { CommonContainer } from '@/shared/components/layout/CommonContainer';
-import { Header } from '@/shared/components/layout/Header';
 import { CommonButton } from '@/shared/components/ui/CommonButton';
 import { CommonModal } from '@/shared/components/ui/CommonModal';
 import { ErrorView } from '@/shared/components/ui/ErrorView';
@@ -56,7 +55,6 @@ export default function BookDetailPage() {
 
   return (
     <>
-      <Header />
       <CommonContainer maxWidth={760} sx={{ py: { xs: 2.5, md: 4 }, gap: 2.5 }}>
         <ButtonBase
           component={Link}

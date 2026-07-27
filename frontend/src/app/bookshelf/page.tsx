@@ -7,7 +7,6 @@ import { useState } from 'react';
 import { useBooksQuery } from '@/shared/api/bookApi';
 import { useClubsQuery } from '@/shared/api/clubApi';
 import { CommonContainer } from '@/shared/components/layout/CommonContainer';
-import { Header } from '@/shared/components/layout/Header';
 import { CommonButton } from '@/shared/components/ui/CommonButton';
 import { ErrorView } from '@/shared/components/ui/ErrorView';
 import { Typo } from '@/shared/components/ui/Typo';
@@ -56,7 +55,6 @@ export default function BookshelfPage() {
 
   return (
     <>
-      <Header />
       <CommonContainer sx={{ py: { xs: 3, md: 5 }, gap: { xs: 3, md: 4 } }}>
         <Stack
           direction="row"

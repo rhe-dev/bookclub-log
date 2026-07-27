@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import 'pretendard/dist/web/variable/pretendardvariable.css';
+import { AppShell } from '@/shared/components/layout/AppShell';
 import { Providers } from './providers';
 
 export const metadata: Metadata = {
@@ -20,7 +21,9 @@ export default function RootLayout({
   return (
     <html lang="ko">
       <body>
-        <Providers>{children}</Providers>
+        <Providers>
+          <AppShell>{children}</AppShell>
+        </Providers>
       </body>
     </html>
   );

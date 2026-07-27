@@ -7,7 +7,6 @@ import { useEffect } from 'react';
 import { useClubMembersQuery, useClubsQuery } from '@/shared/api/clubApi';
 import { EntrySkeleton } from './components/EntrySkeleton';
 import { CommonContainer } from '@/shared/components/layout/CommonContainer';
-import { Header } from '@/shared/components/layout/Header';
 import { ErrorView } from '@/shared/components/ui/ErrorView';
 import { MemberAvatar } from '@/shared/components/ui/MemberAvatar';
 import { Typo } from '@/shared/components/ui/Typo';
@@ -42,7 +41,6 @@ export default function EntryPage() {
 
   return (
     <>
-      <Header />
       <CommonContainer maxWidth={600} sx={{ py: { xs: 5, md: 8 } }}>
         <Stack spacing={4} sx={{ alignItems: 'center' }}>
           <Typo
