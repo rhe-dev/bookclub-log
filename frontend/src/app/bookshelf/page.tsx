@@ -2,7 +2,9 @@
 
 // 책방(모임 홈) — 지금 읽는 책 + 책장(상태 필터·책 추가·빈 상태) (PLAN 화면 2)
 import AddRoundedIcon from '@mui/icons-material/AddRounded';
+import AutoStoriesRoundedIcon from '@mui/icons-material/AutoStoriesRounded';
 import { Box, Chip, Stack } from '@mui/material';
+import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { useBooksQuery } from '@/shared/api/bookApi';
 import { useClubsQuery } from '@/shared/api/clubApi';
@@ -11,6 +13,7 @@ import { CommonButton } from '@/shared/components/ui/CommonButton';
 import { ErrorView } from '@/shared/components/ui/ErrorView';
 import { Typo } from '@/shared/components/ui/Typo';
 import { BOOK_STATUS_LABEL } from '@/shared/constants/bookStatus';
+import { ROUTES } from '@/shared/constants/routes';
 import { useRequireMember } from '@/shared/hooks/useRequireMember';
 import { colorChips } from '@/shared/styles/colors';
 import type { BookStatus } from '@/shared/types/book';
@@ -30,6 +33,7 @@ const FILTERS: { value: FilterValue; label: string }[] = [
 ];
 
 export default function BookshelfPage() {
+  const router = useRouter();
   const member = useRequireMember();
   const [filter, setFilter] = useState<FilterValue>('ALL');
   const [formOpen, setFormOpen] = useState(false);
@@ -57,19 +61,50 @@ export default function BookshelfPage() {
     <>
       <CommonContainer sx={{ py: { xs: 3, md: 5 }, gap: { xs: 3, md: 4 } }}>
         <Stack
-          direction="row"
-          sx={{ alignItems: 'center', justifyContent: 'space-between' }}
+          direction={{ xs: 'column', sm: 'row' }}
+          sx={{
+            alignItems: { xs: 'flex-start', sm: 'center' },
+            justifyContent: 'space-between',
+            gap: 1.5,
+          }}
         >
-          <Typo token="text_b_24" sx={{ fontSize: { xs: 20, md: 24 } }}>
-            {club ? `${club.name} 책방` : '우리 모임 책방'}
+          <Typo
+            token="text_b_24"
+            sx={{ fontSize: { xs: 20, md: 24 }, wordBreak: 'keep-all' }}
+          >
+            {club ? (
+              <>
+                <Typo
+                  component="span"
+                  token="text_b_24"
+                  color={colorChips.primary[500]}
+                  sx={{ fontSize: { xs: 20, md: 24 } }}
+                >
+                  {club.name}
+                </Typo>{' '}
+                책방
+              </>
+            ) : (
+              '우리 모임 책방'
+            )}
           </Typo>
-          {isLeader && !isEmpty && (
-            <CommonButton
-              label="책 추가"
-              startIcon={<AddRoundedIcon />}
-              onClick={() => setFormOpen(true)}
-            />
-          )}
+          <Stack direction="row" spacing={1}>
+            {!isEmpty && (
+              <CommonButton
+                label="문집 만들기"
+                buttonColor="secondary"
+                startIcon={<AutoStoriesRoundedIcon />}
+                onClick={() => router.push(ROUTES.orderNew)}
+              />
+            )}
+            {isLeader && !isEmpty && (
+              <CommonButton
+                label="책 추가"
+                startIcon={<AddRoundedIcon />}
+                onClick={() => setFormOpen(true)}
+              />
+            )}
+          </Stack>
         </Stack>
 
         {isError ? (
