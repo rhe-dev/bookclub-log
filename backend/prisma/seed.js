@@ -268,9 +268,9 @@ async function main() {
     },
     {
       by: 'jiwon',
-      title: '가을 문집 준비호 — 물고기 스페셜',
+      title: '가을 문집 준비호 — 완독 기록 모음',
       copies: 6,
-      books: ['fish'],
+      books: ['library', 'pachinko'],
       history: [['RECEIVED', '2026-07-26T22:40:00', 'USER']],
     },
   ];
@@ -291,8 +291,9 @@ async function main() {
         status: last[0],
         createdAt: kst(orderDef.history[0][1]),
         books: {
-          create: orderDef.books.map((bookKey) => ({
+          create: orderDef.books.map((bookKey, index) => ({
             bookId: books[bookKey].id,
+            position: index,
           })),
         },
         history: { create: historyRows },

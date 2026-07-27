@@ -5,6 +5,7 @@ import { memberSummarySelect } from '../prisma/selects';
 export const orderInclude = {
   member: memberSummarySelect,
   books: {
+    orderBy: { position: 'asc' as const },
     include: {
       book: {
         select: {

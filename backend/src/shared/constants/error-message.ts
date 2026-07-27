@@ -27,6 +27,7 @@ export enum ErrorMessage {
   ORDER_COPIES_MIN = '부수는 1부 이상이어야 합니다.',
   ORDER_BOOKS_REQUIRED = '수록할 책을 한 권 이상 선택해 주세요.',
   ORDER_BOOK_INVALID = '수록 목록에 이 모임의 책이 아닌 항목이 있습니다.',
+  ORDER_BOOK_NOT_DONE = '완독한 책만 문집에 수록할 수 있습니다.',
   ORDER_INVALID_TRANSITION = '현재 상태에서는 불가능한 변경입니다.',
   ORDER_ADMIN_ONLY_TRANSITION = '운영자만 진행할 수 있는 단계입니다.',
   ORDER_ORDERER_ONLY = '주문자만 할 수 있습니다.',

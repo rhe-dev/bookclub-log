@@ -41,10 +41,11 @@ model Order {
   history OrderStatusHistory[]
 }
 
-/// 문집에 수록된 책 (다대다)
+/// 문집에 수록된 책 (다대다) — position은 수록 순서
 model OrderBook {
-  orderId Int
-  bookId  Int
+  orderId  Int
+  bookId   Int
+  position Int @default(0)
 
   order Order @relation(fields: [orderId], references: [id])
   book  Book  @relation(fields: [bookId], references: [id])

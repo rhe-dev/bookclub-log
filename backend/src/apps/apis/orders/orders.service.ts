@@ -38,6 +38,14 @@ export class OrdersService {
     });
     if (books.length !== uniqueBookIds.length)
       throw new BadRequestException(ErrorMessage.ORDER_BOOK_INVALID);
+    if (books.some((book) => book.status !== 'DONE'))
+      throw new BadRequestException(ErrorMessage.ORDER_BOOK_NOT_DONE);
+
+    // 선택(입력) 순서를 수록 순서로 보존
+    const bookByPublicId = new Map(books.map((book) => [book.publicId, book]));
+    const orderedBooks = uniqueBookIds.map((publicId) =>
+      bookByPublicId.get(publicId)!,
+    );
 
     const order = await this.prisma.order.create({
       data: {
@@ -46,7 +54,12 @@ export class OrdersService {
         title: dto.title,
         copies: dto.copies,
         status: OrderStatus.RECEIVED,
-        books: { create: books.map((book) => ({ bookId: book.id })) },
+        books: {
+          create: orderedBooks.map((book, index) => ({
+            bookId: book.id,
+            position: index,
+          })),
+        },
         history: {
           create: {
             fromStatus: null,
