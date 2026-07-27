@@ -31,3 +31,9 @@
 - 시도: Update DTO를 @nestjs/mapped-types의 PartialType으로 작성한 채 OpenAPI 스펙 추출
 - 결과: 수정 필요 — 스펙에서 Update DTO가 빈 객체로 나와 프론트 생성 타입이 Record<string, never>가 됨. 프론트 빌드의 타입 에러로 발견
 - 배운 것: NestJS에서 Swagger를 쓰면 mapped types(PartialType·OmitType)는 @nestjs/swagger 쪽을 써야 메타데이터가 이어짐. codegen 파이프라인이 이런 프-백 어긋남을 빌드 단계에서 잡아준다는 것을 실증한 사례
+
+### [2026-07-27] Claude Code — 치환 스크립트 조용한 미적용
+
+- 시도: 입장 화면 모임장 배지 디자인 교체를 문자열 치환 스크립트로 적용
+- 결과: 실패 — 파일이 포매터로 재정렬된 상태라 치환 대상 문자열이 일치하지 않았고, 스크립트는 에러 없이 "완료"를 출력. 빌드도 통과라 사용자 화면 확인 전까지 미적용을 인지하지 못함
+- 배운 것: 자동 치환은 성공 여부를 검증(assert·치환 후 grep)해야 하고, UI 변경은 적용 결과를 코드 grep이나 화면으로 재확인해야 함. "빌드 통과 ≠ 의도 반영"
