@@ -1,16 +1,22 @@
 'use client';
 
-// 마이페이지 — 내 프로필(클럽별 역할)·로그아웃 + 내 주문·내 코멘트 (클럽 무관 전체) (PLAN 화면 5, D-024)
+// 마이페이지 — 프로필(클럽별 역할)·로그아웃 + 내 코멘트/내 문집 주문 탭 (PLAN 화면 5, D-024)
 import ChevronRightRoundedIcon from '@mui/icons-material/ChevronRightRounded';
 import { Box, Stack } from '@mui/material';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
+import { Suspense, useState } from 'react';
 import { useMyClubsQuery } from '@/shared/api/clubApi';
-import { useMyCommentsInfiniteQuery } from '@/shared/api/commentApi';
-import { useMyOrdersInfiniteQuery } from '@/shared/api/orderApi';
+import {
+  MY_COMMENTS_PAGE_SIZE,
+  useMyCommentsQuery,
+} from '@/shared/api/commentApi';
+import { MY_ORDERS_PAGE_SIZE, useMyOrdersQuery } from '@/shared/api/orderApi';
 import { ClubRoleTag } from '@/shared/components/club/ClubRoleTag';
 import { CommonContainer } from '@/shared/components/layout/CommonContainer';
 import { CommonButton } from '@/shared/components/ui/CommonButton';
 import { CommonListRow } from '@/shared/components/ui/CommonListRow';
+import { CommonPagination } from '@/shared/components/ui/CommonPagination';
+import { CommonTab } from '@/shared/components/ui/CommonTab';
 import { ErrorView } from '@/shared/components/ui/ErrorView';
 import { MemberAvatar } from '@/shared/components/ui/MemberAvatar';
 import { Typo } from '@/shared/components/ui/Typo';
@@ -23,22 +29,41 @@ import { MyCommentCard } from './components/MyCommentCard';
 import { MyPageSkeleton } from './components/MyPageSkeleton';
 import { OrderCard } from './components/OrderCard';
 
+// useSearchParams는 Suspense 경계가 필요 — 페이지는 래퍼만 두고 본문은 아래 컴포넌트
 export default function MyPage() {
+  return (
+    <Suspense fallback={null}>
+      <MyPageContent />
+    </Suspense>
+  );
+}
+
+type MyTab = 'comments' | 'orders';
+
+function MyPageContent() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  // 활동(코멘트·주문)은 탭으로 구분 — 탭 상태는 URL(?tab=)로 유지해 새로고침에도 같은 탭
+  const tab: MyTab =
+    searchParams.get('tab') === 'orders' ? 'orders' : 'comments';
   const session = useRequireMember();
   const { goClub, logout } = useSessionActions();
+  const [commentsPage, setCommentsPage] = useState(1);
+  const [ordersPage, setOrdersPage] = useState(1);
   const myClubsQuery = useMyClubsQuery(session?.member.publicId);
-  const ordersQuery = useMyOrdersInfiniteQuery(session?.member.publicId);
-  const commentsQuery = useMyCommentsInfiniteQuery(session?.member.publicId);
+  const ordersQuery = useMyOrdersQuery(session?.member.publicId, ordersPage);
+  const commentsQuery = useMyCommentsQuery(
+    session?.member.publicId,
+    commentsPage,
+  );
 
   if (!session) return null;
   const { member } = session;
 
-  const orders = ordersQuery.data?.pages.flatMap((page) => page.items) ?? [];
-  const orderCount = ordersQuery.data?.pages[0]?.meta.totalCount ?? 0;
-  const comments =
-    commentsQuery.data?.pages.flatMap((page) => page.items) ?? [];
-  const commentCount = commentsQuery.data?.pages[0]?.meta.totalCount ?? 0;
+  const orders = ordersQuery.data?.items ?? [];
+  const orderCount = ordersQuery.data?.meta.totalCount ?? 0;
+  const comments = commentsQuery.data?.items ?? [];
+  const commentCount = commentsQuery.data?.meta.totalCount ?? 0;
   const isLoading =
     myClubsQuery.isLoading || ordersQuery.isLoading || commentsQuery.isLoading;
   const isError =
@@ -132,82 +157,81 @@ export default function MyPage() {
             </Stack>
           </Box>
 
-          <VerticalGap size={24} />
+          <VerticalGap size={16} />
 
-          <Stack direction="row" spacing={1} sx={{ alignItems: 'baseline' }}>
-            <Typo token="text_sb_18">내 코멘트</Typo>
-            <Typo token="text_m_12" color={colorChips.grayScale[500]}>
-              {commentCount}
-            </Typo>
-          </Stack>
-          <VerticalGap size={12} />
+          <CommonTab
+            currentVal={tab}
+            tabs={[
+              { value: 'comments', label: `내 코멘트 ${commentCount}` },
+              { value: 'orders', label: `내 문집 주문 ${orderCount}` },
+            ]}
+            handleChange={(next) =>
+              router.replace(`${ROUTES.myPage}?tab=${next}`, { scroll: false })
+            }
+          />
+          <VerticalGap size={16} />
 
-          {comments.length === 0 ? (
-            <Typo
-              token="text_r_14"
-              color={colorChips.grayScale[500]}
-              align="center"
-              sx={{ py: 4, wordBreak: 'keep-all' }}
-            >
-              아직 남긴 코멘트가 없어요. 책방에서 읽고 있는 책에 첫 밑줄을 남겨
-              보세요.
-            </Typo>
-          ) : (
-            <Stack spacing={1.5}>
-              {comments.map((comment) => (
-                <MyCommentCard key={comment.publicId} comment={comment} />
-              ))}
-              {commentsQuery.hasNextPage && (
-                <CommonButton
-                  label="코멘트 더 보기"
-                  buttonColor="tertiary"
-                  isLoading={commentsQuery.isFetchingNextPage}
-                  onClick={() => void commentsQuery.fetchNextPage()}
-                />
+          {tab === 'comments' && (
+            <>
+              {comments.length === 0 ? (
+                <Typo
+                  token="text_r_14"
+                  color={colorChips.grayScale[500]}
+                  align="center"
+                  sx={{ py: 4, wordBreak: 'keep-all' }}
+                >
+                  아직 남긴 코멘트가 없어요. 책방에서 읽고 있는 책에 첫 밑줄을
+                  남겨 보세요.
+                </Typo>
+              ) : (
+                <Stack spacing={1.5}>
+                  {comments.map((comment) => (
+                    <MyCommentCard key={comment.publicId} comment={comment} />
+                  ))}
+                </Stack>
               )}
-            </Stack>
-          )}
-          <VerticalGap size={32} />
-
-          <Stack direction="row" spacing={1} sx={{ alignItems: 'baseline' }}>
-            <Typo token="text_sb_18">내 문집 주문</Typo>
-            <Typo token="text_m_12" color={colorChips.grayScale[500]}>
-              {orderCount}
-            </Typo>
-          </Stack>
-          <VerticalGap size={12} />
-
-          {orders.length === 0 ? (
-            <Stack spacing={2} sx={{ alignItems: 'center', py: 6 }}>
-              <Typo
-                token="text_r_14"
-                color={colorChips.grayScale[500]}
-                align="center"
-                sx={{ wordBreak: 'keep-all' }}
-              >
-                아직 주문한 문집이 없어요. 완독한 책들로 우리 모임의 첫 문집을
-                만들어 보세요.
-              </Typo>
-              <CommonButton
-                label="문집 만들기"
-                buttonColor="secondary"
-                onClick={() => router.push(ROUTES.orderNew)}
+              <CommonPagination
+                page={commentsPage}
+                totalCount={commentCount}
+                pageSize={MY_COMMENTS_PAGE_SIZE}
+                onChange={setCommentsPage}
               />
-            </Stack>
-          ) : (
-            <Stack spacing={2}>
-              {orders.map((order) => (
-                <OrderCard key={order.publicId} order={order} />
-              ))}
-              {ordersQuery.hasNextPage && (
-                <CommonButton
-                  label="주문 더 보기"
-                  buttonColor="tertiary"
-                  isLoading={ordersQuery.isFetchingNextPage}
-                  onClick={() => void ordersQuery.fetchNextPage()}
-                />
+            </>
+          )}
+
+          {tab === 'orders' && (
+            <>
+              {orders.length === 0 ? (
+                <Stack spacing={2} sx={{ alignItems: 'center', py: 6 }}>
+                  <Typo
+                    token="text_r_14"
+                    color={colorChips.grayScale[500]}
+                    align="center"
+                    sx={{ wordBreak: 'keep-all' }}
+                  >
+                    아직 주문한 문집이 없어요. 완독한 책들로 우리 모임의 첫
+                    문집을 만들어 보세요.
+                  </Typo>
+                  <CommonButton
+                    label="문집 만들기"
+                    buttonColor="secondary"
+                    onClick={() => router.push(ROUTES.orderNew)}
+                  />
+                </Stack>
+              ) : (
+                <Stack spacing={2}>
+                  {orders.map((order) => (
+                    <OrderCard key={order.publicId} order={order} />
+                  ))}
+                </Stack>
               )}
-            </Stack>
+              <CommonPagination
+                page={ordersPage}
+                totalCount={orderCount}
+                pageSize={MY_ORDERS_PAGE_SIZE}
+                onChange={setOrdersPage}
+              />
+            </>
           )}
         </>
       )}

@@ -50,20 +50,49 @@ export const MyCommentCard = ({ comment }: { comment: MyComment }) => {
           </Typo>
           <Typo token="text_r_12" color={colorChips.grayScale[500]}>
             {comment.club.name}
-            {comment.page ? ` · p.${comment.page}` : ''}
           </Typo>
         </Box>
       </Stack>
-      {comment.quote && (
+      {/* 앵커(페이지 칩·인용 블록)는 토론 스레드와 동일 문법으로 표시 */}
+      {(comment.page || comment.quote) && (
         <>
           <VerticalGap size={8} />
-          <Typo
-            token="text_r_12"
-            color={colorChips.grayScale[500]}
-            sx={{ ...lineClamp(1), fontStyle: 'italic' }}
-          >
-            “{comment.quote}”
-          </Typo>
+          <Stack spacing={0.75}>
+            {comment.page && (
+              <Box
+                sx={{
+                  alignSelf: 'flex-start',
+                  px: 0.75,
+                  py: 0.25,
+                  borderRadius: 1,
+                  backgroundColor: colorChips.primary[100],
+                }}
+              >
+                <Typo token="text_sb_12" color={colorChips.primary[700]}>
+                  p.{comment.page}
+                </Typo>
+              </Box>
+            )}
+            {comment.quote && (
+              <Box
+                sx={{
+                  borderLeft: `3px solid ${colorChips.secondary[300]}`,
+                  backgroundColor: colorChips.grayScale[50],
+                  borderRadius: 1,
+                  px: 1.5,
+                  py: 0.75,
+                }}
+              >
+                <Typo
+                  token="text_r_12"
+                  color={colorChips.grayScale[600]}
+                  sx={lineClamp(1)}
+                >
+                  “{comment.quote}”
+                </Typo>
+              </Box>
+            )}
+          </Stack>
         </>
       )}
       <VerticalGap size={8} />

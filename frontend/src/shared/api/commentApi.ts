@@ -1,5 +1,5 @@
 import {
-  useInfiniteQuery,
+  keepPreviousData,
   useMutation,
   useQuery,
   useQueryClient,
@@ -52,7 +52,7 @@ export const commentApi = {
   getMyComments: async (page: number): Promise<Paginated<MyComment>> => {
     const { data } = await axiosClient.get<Paginated<MyComment>>(
       '/comments/mine',
-      { params: { page, limit: 10 }, skipErrorToast: true },
+      { params: { page, limit: MY_COMMENTS_PAGE_SIZE }, skipErrorToast: true },
     );
     return data;
   },
@@ -133,13 +133,13 @@ export const useToggleLikeMutation = (bookPublicId?: string) => {
   });
 };
 
-/** 내가 쓴 코멘트 — 마이페이지 모아보기 (더보기 페이지네이션) */
-export const useMyCommentsInfiniteQuery = (memberPublicId?: string) =>
-  useInfiniteQuery({
-    queryKey: queryKeys.commentsMine(memberPublicId ?? ''),
-    queryFn: ({ pageParam }) => commentApi.getMyComments(pageParam),
-    initialPageParam: 1,
-    getNextPageParam: (last) =>
-      last.meta.hasNext ? last.meta.page + 1 : undefined,
+export const MY_COMMENTS_PAGE_SIZE = 10;
+
+/** 내가 쓴 코멘트 — 마이페이지 모아보기 (번호 페이지네이션) */
+export const useMyCommentsQuery = (memberPublicId?: string, page = 1) =>
+  useQuery({
+    queryKey: [...queryKeys.commentsMine(memberPublicId ?? ''), page],
+    queryFn: () => commentApi.getMyComments(page),
+    placeholderData: keepPreviousData,
     enabled: Boolean(memberPublicId),
   });
