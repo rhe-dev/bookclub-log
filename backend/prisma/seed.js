@@ -1,5 +1,5 @@
 // 시드: 모임 2(멀티 클럽 시연 — 서지원·김민준이 두 클럽에 가입, 역할이 다름), 회원 8,
-// 책 8(읽는 중 2·예정 1·완료 5), 코멘트·답글 42, 주문 5(4권 수록·타 클럽 주문 포함)
+// 책 15(읽는 중 2·예정 1·완독 12), 코멘트·답글 46, 주문 5(4권 수록·타 클럽 주문 포함)
 // 컨테이너 기동 시 자동 실행되므로 멱등해야 한다 — 데이터가 있으면 건너뜀
 const { PrismaClient } = require('@prisma/client');
 
@@ -103,6 +103,15 @@ const BOOKS = [
     meetingDate: '2026-04-19T20:00:00',
     participants: ['jiwon', 'minjun', 'seoyeon', 'eunchae'],
   },
+
+  // 지난 완독 기록(2025-08~2026-03) — 책방 '더보기' 페이지네이션(12권 초과) 시연용
+  { key: 'dallergut', title: '달러구트 꿈 백화점', author: '이미예', publisher: '팩토리나인', coverColor: '#7E6BC4', coverEmoji: '🌠', status: 'DONE', periodFrom: '2025-12-22T00:00:00', periodTo: '2026-01-18T00:00:00', meetingDate: '2026-01-18T20:00:00', participants: ['jiwon', 'minjun', 'seoyeon', 'haneul'] },
+  { key: 'hyunam', title: '어서 오세요, 휴남동 서점입니다', author: '황보름', publisher: '클레이하우스', coverColor: '#5E8B6B', coverEmoji: '🌿', status: 'DONE', periodFrom: '2026-01-19T00:00:00', periodTo: '2026-02-22T00:00:00', meetingDate: '2026-02-22T20:00:00', participants: ['jiwon', 'seoyeon', 'haneul', 'doyun', 'eunchae'] },
+  { key: 'farewell', title: '작별인사', author: '김영하', publisher: '복복서가', coverColor: '#3C4F76', coverEmoji: '🤖', status: 'DONE', periodFrom: '2025-10-27T00:00:00', periodTo: '2025-11-23T00:00:00', meetingDate: '2025-11-23T20:00:00', participants: ['jiwon', 'minjun', 'doyun', 'eunchae'] },
+  { key: 'pagwa', title: '파과', author: '구병모', publisher: '자음과모음', coverColor: '#8A4B53', coverEmoji: '🌹', status: 'DONE', periodFrom: '2025-09-29T00:00:00', periodTo: '2025-10-26T00:00:00', meetingDate: '2025-10-26T20:00:00', participants: ['jiwon', 'seoyeon', 'haneul', 'eunchae'] },
+  { key: 'longnight', title: '긴긴밤', author: '루리', publisher: '문학동네', coverColor: '#41698C', coverEmoji: '🐧', status: 'DONE', periodFrom: '2025-09-01T00:00:00', periodTo: '2025-09-28T00:00:00', meetingDate: '2025-09-28T20:00:00', participants: ['jiwon', 'minjun', 'seoyeon', 'haneul', 'doyun', 'eunchae'] },
+  { key: 'smallthings', title: '이처럼 사소한 것들', author: '클레어 키건', publisher: '다산책방', coverColor: '#6E7F5C', coverEmoji: '❄️', status: 'DONE', periodFrom: '2025-11-24T00:00:00', periodTo: '2025-12-21T00:00:00', meetingDate: '2025-12-21T20:00:00', participants: ['jiwon', 'minjun', 'haneul'] },
+  { key: 'bluehorse', title: '천 개의 파랑', author: '천선란', publisher: '허블', coverColor: '#2E6E8E', coverEmoji: '🐎', status: 'DONE', periodFrom: '2025-08-04T00:00:00', periodTo: '2025-08-31T00:00:00', meetingDate: '2025-08-31T20:00:00', participants: ['jiwon', 'minjun', 'seoyeon', 'doyun'] },
 ];
 
 const BOOKS2 = [
@@ -189,6 +198,12 @@ const COMMENTS = [
   { key: 'c40', book: 'shoko', by: 'jiwon', parent: 'c39', content: '두 모임을 병행하며 읽는 첫 책인데, 단편이라 호흡이 좋아요. 저는 마지막 문장에서 한참 멈췄습니다.', at: '2026-05-13T08:40:00' },
   { key: 'c41', book: 'shoko', by: 'yujin', quote: '씬짜오, 씬짜오', content: '표제작만큼 「씬짜오, 씬짜오」도 꼭 이야기해보고 싶어요. 사과에 대한 소설이기도 한 것 같아서.', at: '2026-05-24T22:05:00' },
   { key: 'c42', book: 'summer', by: 'seojun', content: '첫 단편부터 여름 공기가 훅 들어오네요. 8/2 모임까지 격주로 두 편씩 읽어요.', at: '2026-07-08T20:30:00' },
+
+  // 서지원 추가 코멘트 — 마이페이지 '내 코멘트' 페이지네이션(10개 초과) 시연용
+  { key: 'c43', book: 'fish', by: 'jiwon', page: 178, content: '3부에 들어서면서 완전히 다른 책이 됐어요. 다들 어디까지 오셨나요?', at: '2026-07-24T21:10:00' },
+  { key: 'c44', book: 'almond', by: 'jiwon', content: '문집 준비하며 재독 중인데, 곤이의 대사가 처음 읽을 때와 완전히 다르게 읽히네요.', at: '2026-06-10T22:00:00' },
+  { key: 'c45', book: 'library', by: 'jiwon', page: 302, content: '후회의 도서관이 결국 자기 용서의 공간이었다는 게 이 책의 답 같습니다.', at: '2026-05-12T21:30:00' },
+  { key: 'c46', book: 'shoko', by: 'jiwon', quote: '쇼코는 오랫동안 나에게 어둡고 좁은 통로였다', content: '두 번째 모임을 준비하며 다시 훑는데, 편지 형식이 만드는 거리감이 이 소설의 핵심 같아요.', at: '2026-05-28T20:15:00' },
 ];
 
 async function main() {
