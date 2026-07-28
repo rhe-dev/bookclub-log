@@ -2,6 +2,7 @@ import { Box, Skeleton, Stack } from '@mui/material';
 import { Typo } from '@/shared/components/ui/Typo';
 import { VerticalGap } from '@/shared/components/ui/VerticalGap';
 import { colorChips } from '@/shared/styles/colors';
+import { cardSurface } from '@/shared/styles/mixins';
 
 /**
  * 마이페이지 로딩 스켈레톤 — 프로필 카드 + 활동 탭 + 목록 자리.
@@ -9,14 +10,7 @@ import { colorChips } from '@/shared/styles/colors';
  */
 export const MyPageSkeleton = () => (
   <>
-    <Box
-      sx={{
-        borderRadius: 2,
-        border: `1px solid ${colorChips.grayScale[200]}`,
-        backgroundColor: colorChips.basic.white,
-        p: { xs: 2, md: 2.5 },
-      }}
-    >
+    <Box sx={cardSurface}>
       <Stack
         direction="row"
         sx={{ alignItems: 'center', justifyContent: 'space-between', gap: 1 }}

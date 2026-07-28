@@ -10,6 +10,7 @@ import {
   useToggleLikeMutation,
   useUpdateCommentMutation,
 } from '@/shared/api/commentApi';
+import { CommentAnchor } from '@/shared/components/comment/CommentAnchor';
 import { CommonConfirmModal } from '@/shared/components/ui/CommonConfirmModal';
 import { MemberAvatar } from '@/shared/components/ui/MemberAvatar';
 import { Typo } from '@/shared/components/ui/Typo';
@@ -119,40 +120,7 @@ const CommentEntry = ({
           </Typo>
         </Stack>
 
-        {(comment.page || comment.quote) && (
-          <Stack spacing={0.75}>
-            {comment.page && (
-              <Box
-                sx={{
-                  alignSelf: 'flex-start',
-                  px: 0.75,
-                  py: 0.25,
-                  borderRadius: 1,
-                  backgroundColor: colorChips.primary[100],
-                }}
-              >
-                <Typo token="text_sb_12" color={colorChips.primary[700]}>
-                  p.{comment.page}
-                </Typo>
-              </Box>
-            )}
-            {comment.quote && (
-              <Box
-                sx={{
-                  borderLeft: `3px solid ${colorChips.secondary[300]}`,
-                  backgroundColor: colorChips.grayScale[50],
-                  borderRadius: 1,
-                  px: 1.5,
-                  py: 1,
-                }}
-              >
-                <Typo token="text_r_14" color={colorChips.grayScale[600]}>
-                  “{comment.quote}”
-                </Typo>
-              </Box>
-            )}
-          </Stack>
-        )}
+        <CommentAnchor page={comment.page} quote={comment.quote} />
 
         <Typo
           token="text_r_14"

@@ -24,6 +24,7 @@ import {
 } from '@/shared/constants/orderStatus';
 import { toast } from '@/shared/stores/toastStore';
 import { colorChips } from '@/shared/styles/colors';
+import { cardSurface } from '@/shared/styles/mixins';
 import type { Order } from '@/shared/types/order';
 import { formatDate } from '@/shared/utils/date';
 import { ACTIONS_BY_STATUS, type OrderAction } from './orderActions';
@@ -41,15 +42,7 @@ export const OrderCard = ({ order }: { order: Order }) => {
   const actions = ACTIONS_BY_STATUS[order.status] ?? [];
 
   return (
-    <Box
-      sx={{
-        borderRadius: 2,
-        border: `1px solid ${colorChips.grayScale[200]}`,
-        backgroundColor: colorChips.basic.white,
-        p: { xs: 2, md: 2.5 },
-        minWidth: 300,
-      }}
-    >
+    <Box sx={{ ...cardSurface, minWidth: 300 }}>
       <Stack
         direction="row"
         sx={{

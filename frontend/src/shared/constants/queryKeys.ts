@@ -15,9 +15,9 @@ export const queryKeys = {
   ordersMine: (memberPublicId: string) =>
     ['orders', 'mine', memberPublicId] as const,
   ordersMineRoot: ['orders', 'mine'] as const,
-  adminOrders: ['admin', 'orders'] as const,
   comments: (bookPublicId: string) =>
     ['books', bookPublicId, 'comments'] as const,
   commentsMine: (memberPublicId: string) =>
     ['comments', 'mine', memberPublicId] as const,
+  commentsMineRoot: ['comments', 'mine'] as const,
 } as const;

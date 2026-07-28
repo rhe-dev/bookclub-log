@@ -6,10 +6,9 @@ import { BookSchedule } from '@/shared/components/book/BookSchedule';
 import { BookStatusTag } from '@/shared/components/book/BookStatusTag';
 import { MemberAvatarGroup } from '@/shared/components/ui/MemberAvatarGroup';
 import { Typo } from '@/shared/components/ui/Typo';
-import { cardShadow } from '@/shared/styles/mixins';
 import { ROUTES } from '@/shared/constants/routes';
 import { colorChips } from '@/shared/styles/colors';
-import { lineClamp } from '@/shared/styles/mixins';
+import { cardShadow, lineClamp } from '@/shared/styles/mixins';
 import type { Book } from '@/shared/types/book';
 
 /** '지금 읽는 책' 히어로 카드 — 표지 + 일정·참여 멤버·코멘트 수 */

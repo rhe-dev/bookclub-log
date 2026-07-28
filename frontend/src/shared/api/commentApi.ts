@@ -84,7 +84,9 @@ const useInvalidateComments = (bookPublicId?: string) => {
     // 책방 카드의 코멘트 수 반영 — 클럽 id가 없는 컨텍스트라 책 목록 광역 무효화
     void queryClient.invalidateQueries({ queryKey: queryKeys.booksAll });
     // 마이페이지 '내 코멘트'에도 반영
-    void queryClient.invalidateQueries({ queryKey: ['comments', 'mine'] });
+    void queryClient.invalidateQueries({
+      queryKey: queryKeys.commentsMineRoot,
+    });
   };
 };
 

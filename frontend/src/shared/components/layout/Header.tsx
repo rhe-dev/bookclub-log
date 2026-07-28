@@ -46,7 +46,6 @@ export const Header = () => {
   const router = useRouter();
   const pathname = usePathname();
   const myClubsQuery = useMyClubsQuery(member?.publicId);
-  const isLeader = club?.role === 'LEADER';
 
   const handleGoMyPage = () => {
     setAnchorEl(null);
@@ -193,11 +192,7 @@ export const Header = () => {
                 <Typo token="text_sb_14" color={colorChips.grayScale[800]}>
                   {member.name}
                 </Typo>
-                {isLeader && (
-                  <Typo token="text_m_12" color={colorChips.secondary[500]}>
-                    모임장
-                  </Typo>
-                )}
+                {club && <ClubRoleTag role={club.role} />}
               </Box>
               <KeyboardArrowDownRoundedIcon
                 sx={{ fontSize: 18, color: colorChips.grayScale[500] }}

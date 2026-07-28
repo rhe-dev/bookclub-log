@@ -1,14 +1,7 @@
 'use client';
 
 // 문집 내보내기 — 책 선택 → 수록 확인 → 제목·부수 → 주문 (PLAN F3, 화면 4)
-import {
-  Skeleton,
-  Stack,
-  Step,
-  StepButton,
-  StepLabel,
-  Stepper,
-} from '@mui/material';
+import { Stack, Step, StepButton, StepLabel, Stepper } from '@mui/material';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { useBooksQuery } from '@/shared/api/bookApi';
@@ -24,6 +17,7 @@ import { toast } from '@/shared/stores/toastStore';
 import { colorChips } from '@/shared/styles/colors';
 import type { Order } from '@/shared/types/order';
 import { BookSelectStep } from './components/BookSelectStep';
+import { OrderNewSkeleton } from './components/OrderNewSkeleton';
 import { CompleteStep } from './components/CompleteStep';
 import { OrderFormStep } from './components/OrderFormStep';
 import { ReviewStep } from './components/ReviewStep';
@@ -131,10 +125,7 @@ export default function OrderNewPage() {
           onRetry={() => void booksQuery.refetch()}
         />
       ) : isLoading ? (
-        <Stack spacing={2}>
-          <Skeleton variant="rounded" height={40} />
-          <Skeleton variant="rounded" height={280} />
-        </Stack>
+        <OrderNewSkeleton />
       ) : doneBooks.length === 0 ? (
         <Stack spacing={2} sx={{ alignItems: 'center', py: 8 }}>
           <Typo
@@ -201,7 +192,6 @@ export default function OrderNewPage() {
               bottom: 0,
               zIndex: 2,
               py: 1.5,
-              mt: 1,
               backgroundColor: colorChips.grayScale[100],
               borderTop: `1px solid ${colorChips.grayScale[200]}`,
             }}

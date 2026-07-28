@@ -56,10 +56,8 @@ export const useMyOrdersQuery = (memberPublicId?: string, page = 1) =>
 
 const useInvalidateOrders = () => {
   const queryClient = useQueryClient();
-  return () => {
+  return () =>
     void queryClient.invalidateQueries({ queryKey: queryKeys.ordersMineRoot });
-    void queryClient.invalidateQueries({ queryKey: queryKeys.adminOrders });
-  };
 };
 
 export const useCreateOrderMutation = (clubPublicId?: string) => {

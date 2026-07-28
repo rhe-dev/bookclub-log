@@ -498,6 +498,17 @@ export interface components {
             /** @enum {string} */
             toStatus: "RECEIVED" | "CONFIRMED" | "IN_PRODUCTION" | "PRODUCED" | "SHIPPED" | "IN_TRANSIT" | "DELIVERED" | "PURCHASE_CONFIRMED" | "CANCELED" | "REFUND_REQUESTED" | "REFUNDED" | "REMAKE_REQUESTED";
         };
+        ApiErrorItemResponse: {
+            /** @enum {string} */
+            code: "INTERNAL_ERROR" | "MEMBER_HEADER_REQUIRED" | "MEMBER_NOT_FOUND" | "COMMON_INVALID_INPUT" | "UNKNOWN_FIELD" | "PAGE_INVALID" | "LIMIT_INVALID" | "CLUB_NOT_FOUND" | "CLUB_MEMBER_ONLY" | "LEADER_ONLY" | "BOOK_NOT_FOUND" | "BOOK_TITLE_REQUIRED" | "BOOK_AUTHOR_REQUIRED" | "BOOK_COVER_COLOR_FORMAT" | "BOOK_TITLE_MAX" | "BOOK_AUTHOR_MAX" | "BOOK_PUBLISHER_MAX" | "BOOK_COVER_EMOJI_INVALID" | "BOOK_STATUS_INVALID" | "BOOK_DATE_INVALID" | "BOOK_PERIOD_INVALID" | "BOOK_PARTICIPANT_NOT_IN_CLUB" | "ORDER_NOT_FOUND" | "ORDER_TITLE_REQUIRED" | "ORDER_COPIES_MIN" | "ORDER_COPIES_MAX" | "ORDER_TITLE_MAX" | "ORDER_BOOKS_REQUIRED" | "ORDER_BOOK_INVALID" | "ORDER_BOOK_NOT_DONE" | "ORDER_INVALID_TRANSITION" | "ORDER_ADMIN_ONLY_TRANSITION" | "ORDER_ORDERER_ONLY" | "ORDER_REASON_REQUIRED" | "ORDER_REASON_INVALID" | "ORDER_REASON_DETAIL_REQUIRED" | "ORDER_REASON_DETAIL_MIN" | "ORDER_REASON_DETAIL_MAX" | "ORDER_STATUS_INVALID" | "COMMENT_NOT_FOUND" | "COMMENT_AUTHOR_ONLY" | "COMMENT_CONTENT_REQUIRED" | "COMMENT_CONTENT_TOO_LONG" | "COMMENT_PAGE_MIN" | "COMMENT_QUOTE_TOO_LONG" | "REPLY_TARGET_NOT_FOUND" | "REPLY_TO_OTHER_BOOK" | "REPLY_DEPTH_EXCEEDED" | "REPLY_TO_DELETED" | "NOT_FOUND" | "UNKNOWN";
+            message: string;
+        };
+        ApiErrorResponse: {
+            statusCode: number;
+            errors: components["schemas"]["ApiErrorItemResponse"][];
+            timestamp: string;
+            path: string;
+        };
     };
     responses: never;
     parameters: never;
@@ -546,7 +557,10 @@ export interface operations {
     ClubsController_findMine: {
         parameters: {
             query?: never;
-            header?: never;
+            header?: {
+                /** @description 현재 멤버의 publicId — /clubs/mine에는 필수 (D-017) */
+                "X-Member-Id"?: string;
+            };
             path?: never;
             cookie?: never;
         };
@@ -565,7 +579,10 @@ export interface operations {
     ClubsController_findMembers: {
         parameters: {
             query?: never;
-            header?: never;
+            header?: {
+                /** @description 현재 멤버의 publicId — /clubs/mine에는 필수 (D-017) */
+                "X-Member-Id"?: string;
+            };
             path: {
                 clubId: string;
             };
@@ -983,12 +1000,13 @@ export interface operations {
         };
         requestBody?: never;
         responses: {
+            /** @description 주문 전체 CSV (BOM 포함) */
             200: {
                 headers: {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": string;
+                    "text/csv": string;
                 };
             };
         };

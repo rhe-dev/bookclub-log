@@ -10,6 +10,7 @@ import { useBooksInfiniteQuery, useBooksQuery } from '@/shared/api/bookApi';
 import { BookFormModal } from '@/shared/components/book/BookFormModal';
 import { CommonContainer } from '@/shared/components/layout/CommonContainer';
 import { CommonButton } from '@/shared/components/ui/CommonButton';
+import { CommonEmptyState } from '@/shared/components/ui/CommonEmptyState';
 import { ErrorView } from '@/shared/components/ui/ErrorView';
 import { Typo } from '@/shared/components/ui/Typo';
 import { BOOK_STATUS_LABEL } from '@/shared/constants/bookStatus';
@@ -54,16 +55,17 @@ export default function BookshelfPage() {
   const readingBooks = readingQuery.data?.items ?? [];
   // '전체'는 말 그대로 전체 — 읽는 중 책도 히어로(강조)와 그리드(아카이브)에 모두 노출
   const shelfBooks = shelfQuery.data?.pages.flatMap((page) => page.items) ?? [];
-  const allTotal = shelfQuery.data?.pages[0]?.meta.totalCount ?? 0;
-  const shelfCount = allTotal;
+  const shelfCount = shelfQuery.data?.pages[0]?.meta.totalCount ?? 0;
 
-  // 히어로는 최초 1회만 로딩, 책장은 필터가 바뀔 때마다 로딩 — 스켈레톤을 영역별로 분리
+  // 히어로는 최초 1회만 로딩, 책장은 필터가 바뀔 때마다 로딩 — 스켈레톤·에러를 영역별로 분리
   const heroLoading = readingQuery.isLoading;
   const shelfLoading = shelfQuery.isLoading;
-  const isError = readingQuery.isError || shelfQuery.isError;
   // '빈 책방' 판단은 필터와 무관한 전체 기준 — 필터 결과가 0이어도 CTA는 유지한다
   const collectionEmpty =
-    filter === 'ALL' && !shelfLoading && !isError && allTotal === 0;
+    filter === 'ALL' &&
+    !shelfLoading &&
+    !shelfQuery.isError &&
+    shelfCount === 0;
 
   return (
     <>
@@ -109,15 +111,7 @@ export default function BookshelfPage() {
           </Stack>
         </Stack>
 
-        {isError ? (
-          <ErrorView
-            message="책방을 불러오지 못했어요."
-            onRetry={() => {
-              void readingQuery.refetch();
-              void shelfQuery.refetch();
-            }}
-          />
-        ) : collectionEmpty ? (
+        {collectionEmpty ? (
           <EmptyBookshelf
             isLeader={isLeader}
             onAddBook={() => setFormOpen(true)}
@@ -127,6 +121,11 @@ export default function BookshelfPage() {
             {/* 히어로는 필터와 무관하게 항시 고정 — 여러 권이면 순환 캐러셀 */}
             {heroLoading ? (
               <ReadingHeroSkeleton />
+            ) : readingQuery.isError ? (
+              <ErrorView
+                message="지금 읽는 책을 불러오지 못했어요."
+                onRetry={() => void readingQuery.refetch()}
+              />
             ) : (
               readingBooks.length > 0 && (
                 <Stack spacing={1.5}>
@@ -174,16 +173,17 @@ export default function BookshelfPage() {
 
               {shelfLoading ? (
                 <ShelfGridSkeleton />
+              ) : shelfQuery.isError ? (
+                <ErrorView
+                  message="책장을 불러오지 못했어요."
+                  onRetry={() => void shelfQuery.refetch()}
+                />
               ) : shelfBooks.length === 0 ? (
-                <Typo
-                  token="text_r_14"
-                  color={colorChips.grayScale[500]}
-                  sx={{ py: 4, textAlign: 'center' }}
-                >
-                  {filter === 'ALL'
-                    ? '지난 책이 아직 없어요.'
-                    : `'${FILTERS.find((f) => f.value === filter)?.label}' 상태의 책이 없어요.`}
-                </Typo>
+                // 전체 필터에서 0권이면 위쪽 빈 책방 온보딩으로 빠지므로 여기는 필터 결과 안내만
+                <CommonEmptyState
+                  message={`'${FILTERS.find((f) => f.value === filter)?.label}' 상태의 책이 없어요.`}
+                  py={4}
+                />
               ) : (
                 <>
                   <Box

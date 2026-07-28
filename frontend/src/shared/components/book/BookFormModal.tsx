@@ -1,7 +1,7 @@
 'use client';
 
 import { Box, ButtonBase, Chip, Stack } from '@mui/material';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import {
   useCreateBookMutation,
   useUpdateBookMutation,
@@ -12,6 +12,7 @@ import { CommonButton } from '@/shared/components/ui/CommonButton';
 import { CommonInput } from '@/shared/components/ui/CommonInput';
 import { CommonModal } from '@/shared/components/ui/CommonModal';
 import { Typo } from '@/shared/components/ui/Typo';
+import { VerticalGap } from '@/shared/components/ui/VerticalGap';
 import { BOOK_STATUS_LABEL } from '@/shared/constants/bookStatus';
 import { toast } from '@/shared/stores/toastStore';
 import { colorChips } from '@/shared/styles/colors';
@@ -85,9 +86,12 @@ export const BookFormModal = ({
   const [participantIds, setParticipantIds] = useState<string[]>([]);
   const [errors, setErrors] = useState<{ title?: string; author?: string }>({});
 
-  // 열 때마다 초기화 — 수정 모드는 기존 값, 추가 모드는 기본값(참여 회원 전체 선택)
-  useEffect(() => {
-    if (!open) return;
+  // 열 때마다 초기화 — 수정 모드는 기존 값, 추가 모드는 기본값(참여 회원 전체 선택).
+  // 이펙트 대신 렌더 중 상태 조정 — members가 재검증돼도 입력 중인 폼이 리셋되지 않는다
+  const formKey = `${open}-${book?.publicId ?? 'new'}`;
+  const [lastFormKey, setLastFormKey] = useState(formKey);
+  if (open && formKey !== lastFormKey) {
+    setLastFormKey(formKey);
     setTitle(book?.title ?? '');
     setAuthor(book?.author ?? '');
     setPublisher(book?.publisher ?? '');
@@ -103,10 +107,7 @@ export const BookFormModal = ({
         : (members?.map((m) => m.publicId) ?? []),
     );
     setErrors({});
-    // members는 추가 모드의 초기 선택값으로만 쓰므로 deps에서 제외 —
-    // 모달이 열린 채 멤버 쿼리가 재검증되면 입력 중인 폼이 초기화되는 버그 방지
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [open, book]);
+  }
 
   const toggleParticipant = (publicId: string) => {
     setParticipantIds((prev) =>
@@ -218,13 +219,10 @@ export const BookFormModal = ({
           />
           <Stack spacing={1.5} sx={{ flex: 1 }}>
             <Box>
-              <Typo
-                token="text_m_12"
-                color={colorChips.grayScale[600]}
-                sx={{ mb: 0.75 }}
-              >
+              <Typo token="text_m_12" color={colorChips.grayScale[600]}>
                 표지 색
               </Typo>
+              <VerticalGap size={6} />
               <Stack direction="row" spacing={1} sx={{ flexWrap: 'wrap' }}>
                 {COVER_COLORS.map((color) => (
                   <ButtonBase
@@ -246,13 +244,10 @@ export const BookFormModal = ({
               </Stack>
             </Box>
             <Box>
-              <Typo
-                token="text_m_12"
-                color={colorChips.grayScale[600]}
-                sx={{ mb: 0.75 }}
-              >
+              <Typo token="text_m_12" color={colorChips.grayScale[600]}>
                 표지 이모지
               </Typo>
+              <VerticalGap size={6} />
               <Box
                 sx={{
                   display: 'grid',
@@ -283,13 +278,10 @@ export const BookFormModal = ({
         </Stack>
 
         <Box>
-          <Typo
-            token="text_m_12"
-            color={colorChips.grayScale[600]}
-            sx={{ mb: 0.75 }}
-          >
+          <Typo token="text_m_12" color={colorChips.grayScale[600]}>
             상태
           </Typo>
+          <VerticalGap size={6} />
           <Stack direction="row" spacing={1}>
             {STATUS_OPTIONS.map((option) => (
               <Chip
@@ -328,13 +320,10 @@ export const BookFormModal = ({
         </Stack>
 
         <Box>
-          <Typo
-            token="text_m_12"
-            color={colorChips.grayScale[600]}
-            sx={{ mb: 0.75 }}
-          >
+          <Typo token="text_m_12" color={colorChips.grayScale[600]}>
             참여 회원
           </Typo>
+          <VerticalGap size={6} />
           <Stack direction="row" sx={{ flexWrap: 'wrap', gap: 1 }}>
             {members?.map((m) => {
               const selected = participantIds.includes(m.publicId);

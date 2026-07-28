@@ -1,7 +1,7 @@
 'use client';
 
 import { FormControlLabel, Radio, RadioGroup } from '@mui/material';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { CommonButton } from '@/shared/components/ui/CommonButton';
 import { CommonInput } from '@/shared/components/ui/CommonInput';
 import { CommonModal } from '@/shared/components/ui/CommonModal';
@@ -37,11 +37,13 @@ export const OrderActionModal = ({
   const [reason, setReason] = useState<OrderIssueReason | ''>('');
   const [reasonDetail, setReasonDetail] = useState('');
 
-  // 액션이 바뀌어 열릴 때마다 입력 초기화
-  useEffect(() => {
+  // 액션이 바뀌어 열릴 때마다 입력 초기화 — 렌더 중 상태 조정(이펙트 불필요)
+  const [lastAction, setLastAction] = useState(action);
+  if (action !== lastAction) {
+    setLastAction(action);
     setReason('');
     setReasonDetail('');
-  }, [action]);
+  }
 
   const showReason = action !== null && needsReason(action.toStatus);
   const detailLength = reasonDetail.trim().length;

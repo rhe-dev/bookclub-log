@@ -4,6 +4,7 @@ import axios, {
   type AxiosResponse,
 } from 'axios';
 import { useMemberStore } from '@/shared/stores/memberStore';
+import type { ApiErrorItem, ErrorCode } from '@/shared/types/common';
 import { toast } from '@/shared/stores/toastStore';
 
 const apiInstance = axios.create({
@@ -12,20 +13,14 @@ const apiInstance = axios.create({
   headers: { 'Content-Type': 'application/json' },
 });
 
-/** 전역 에러 응답 항목 (D-018·D-028) — code로 분기하고 message를 그대로 표시한다 */
-export interface ApiErrorItem {
-  code: string;
-  message: string;
-}
-
-/** 백엔드 전역 에러 포맷에서 에러 목록을 꺼낸다 — 네트워크·미상 오류는 프론트 코드로 합성 */
+/** 백엔드 전역 에러 포맷에서 에러 목록을 꺼낸다 — 네트워크·미상 오류는 UNKNOWN으로 합성 */
 export function getApiErrors(error: unknown): ApiErrorItem[] {
   if (axios.isAxiosError(error)) {
     const errors = (error.response?.data as { errors?: ApiErrorItem[] })
       ?.errors;
     if (errors?.length) return errors;
     if (!error.response)
-      return [{ code: 'NETWORK', message: '네트워크 연결을 확인해 주세요.' }];
+      return [{ code: 'UNKNOWN', message: '네트워크 연결을 확인해 주세요.' }];
   }
   return [
     {
@@ -47,7 +42,10 @@ apiInstance.interceptors.request.use((config) => {
  * MEMBER_NOT_FOUND — DB 초기화 등으로 스토리지 id가 무효 /
  * MEMBER_HEADER_REQUIRED — 스토리지 반쪽 오염으로 publicId가 없어 헤더 미첨부
  */
-const SESSION_INVALID_CODES = ['MEMBER_NOT_FOUND', 'MEMBER_HEADER_REQUIRED'];
+const SESSION_INVALID_CODES: ErrorCode[] = [
+  'MEMBER_NOT_FOUND',
+  'MEMBER_HEADER_REQUIRED',
+];
 
 const isInvalidSessionError = (error: AxiosError) =>
   getApiErrors(error).some((item) => SESSION_INVALID_CODES.includes(item.code));
