@@ -3,6 +3,12 @@ import { ActorType, OrderStatus } from '@prisma/client';
 import { MemberSummaryResponse } from '../../dto/member-summary.response';
 import { PageMetaResponse } from '../../dto/page-meta.response';
 
+/** 주문이 속한 클럽 — 여러 클럽의 주문이 섞이는 마이페이지 구분용 */
+export class OrderClubSummaryResponse {
+  publicId: string;
+  name: string;
+}
+
 export class OrderBookSummaryResponse {
   publicId: string;
   title: string;
@@ -34,6 +40,7 @@ export class OrderResponse {
   status: OrderStatus;
 
   createdAt: Date;
+  club: OrderClubSummaryResponse;
   member: MemberSummaryResponse;
   books: OrderBookSummaryResponse[];
   history: OrderHistoryResponse[];

@@ -26,6 +26,26 @@ export class ClubsService {
     }));
   }
 
+  /** 멤버가 가입한 클럽 + 클럽별 역할 — 역할은 클럽마다 다를 수 있다 */
+  async findMine(memberPublicId?: string) {
+    const member = await this.getMemberOrThrow(memberPublicId);
+    const memberships = await this.prisma.clubMember.findMany({
+      where: { memberId: member.id },
+      include: {
+        club: { include: { _count: { select: { members: true } } } },
+      },
+      orderBy: { joinedAt: 'asc' },
+    });
+    return memberships.map(({ club, role, joinedAt }) => ({
+      publicId: club.publicId,
+      name: club.name,
+      description: club.description,
+      memberCount: club._count.members,
+      myRole: role,
+      joinedAt,
+    }));
+  }
+
   async findMembers(clubPublicId: string) {
     const club = await this.getClubOrThrow(clubPublicId);
     const memberships = await this.prisma.clubMember.findMany({

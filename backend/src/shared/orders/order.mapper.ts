@@ -3,6 +3,7 @@ import { memberSummarySelect } from '../prisma/selects';
 
 /** 주문 응답 공통 include — 서비스/어드민 앱이 함께 사용 */
 export const orderInclude = {
+  club: { select: { publicId: true, name: true } },
   member: memberSummarySelect,
   books: {
     orderBy: { position: 'asc' as const },
@@ -31,6 +32,7 @@ export const toOrderDto = (order: OrderWithRelations) => ({
   copies: order.copies,
   status: order.status,
   createdAt: order.createdAt,
+  club: order.club,
   member: order.member,
   books: order.books.map((ob) => ob.book),
   history: order.history.map((h) => ({

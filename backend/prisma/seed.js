@@ -1,4 +1,5 @@
-// 시드: 모임 1, 회원 6(전원 가입·모임장 1), 책 6(읽는 중 1·예정 1·완료 4), 코멘트·답글 38
+// 시드: 모임 2(멀티 클럽 시연 — 서지원·김민준이 두 클럽에 가입, 역할이 다름), 회원 8,
+// 책 8(읽는 중 2·예정 1·완료 5), 코멘트·답글 42, 주문 5(4권 수록·타 클럽 주문 포함)
 // 컨테이너 기동 시 자동 실행되므로 멱등해야 한다 — 데이터가 있으면 건너뜀
 const { PrismaClient } = require('@prisma/client');
 
@@ -13,6 +14,14 @@ const MEMBERS = [
   { key: 'haneul', name: '박하늘', avatarEmoji: '☁️', color: '#58B99D', role: 'MEMBER' },
   { key: 'doyun', name: '최도윤', avatarEmoji: '🦊', color: '#E8853D', role: 'MEMBER' },
   { key: 'eunchae', name: '정은채', avatarEmoji: '🌙', color: '#8B6F4E', role: 'MEMBER' },
+];
+
+// 두 번째 클럽 멤버십 — jiwon·minjun은 기존 멤버 재사용(멀티 클럽 회원), 여기서는 일반 멤버
+const MEMBERS2 = [
+  { key: 'seojun', name: '한서준', avatarEmoji: '🐢', color: '#3D7A68', role: 'LEADER' },
+  { key: 'yujin', name: '오유진', avatarEmoji: '🍀', color: '#6FA84C', role: 'MEMBER' },
+  { key: 'jiwon', role: 'MEMBER' },
+  { key: 'minjun', role: 'MEMBER' },
 ];
 
 const BOOKS = [
@@ -96,6 +105,35 @@ const BOOKS = [
   },
 ];
 
+const BOOKS2 = [
+  {
+    key: 'summer',
+    title: '바깥은 여름',
+    author: '김애란',
+    publisher: '문학동네',
+    coverColor: '#4C9A6E',
+    coverEmoji: '🌿',
+    status: 'READING',
+    periodFrom: '2026-07-06T00:00:00',
+    periodTo: '2026-08-02T00:00:00',
+    meetingDate: '2026-08-02T14:00:00',
+    participants: ['seojun', 'yujin', 'jiwon', 'minjun'],
+  },
+  {
+    key: 'shoko',
+    title: '쇼코의 미소',
+    author: '최은영',
+    publisher: '문학동네',
+    coverColor: '#6B8CAE',
+    coverEmoji: '💌',
+    status: 'DONE',
+    periodFrom: '2026-05-04T00:00:00',
+    periodTo: '2026-05-31T00:00:00',
+    meetingDate: '2026-05-31T14:00:00',
+    participants: ['seojun', 'yujin', 'jiwon'],
+  },
+];
+
 // key: 답글이 참조할 식별자 / parent: 부모 코멘트 key / editedAt: 수정됨 표시용 / deletedAt: 소프트 딜리트
 const COMMENTS = [
   // 물고기는 존재하지 않는다 (읽는 중 — 토론 진행형)
@@ -145,6 +183,12 @@ const COMMENTS = [
   { key: 'c36', book: 'pachinko', by: 'jiwon', page: 11, quote: '역사가 우리를 망쳐 놨지만 그래도 상관없다', content: '첫 문장부터 압도적이네요. 이번 달은 분량이 있으니 일정 관리 잘 해봐요.', at: '2026-03-28T20:40:00' },
   { key: 'c37', book: 'pachinko', by: 'seoyeon', content: '선자가 부산을 떠나는 장면에서 한참 멈춰 있었어요. 담담해서 더 슬픈 문장들.', at: '2026-04-10T22:25:00' },
   { key: 'c38', book: 'pachinko', by: 'eunchae', parent: 'c37', content: '저도 그 장면 접어뒀어요. 2권도 언젠가 같이 읽어요.', at: '2026-04-11T09:05:00' },
+
+  // ── 밑줄과 여백 (두 번째 클럽) ──
+  { key: 'c39', book: 'shoko', by: 'seojun', page: 33, content: '쇼코의 편지들이 담담해서 오히려 오래 남네요. 편지라는 형식 자체가 이 소설의 온도 같아요.', at: '2026-05-12T21:20:00' },
+  { key: 'c40', book: 'shoko', by: 'jiwon', parent: 'c39', content: '두 모임을 병행하며 읽는 첫 책인데, 단편이라 호흡이 좋아요. 저는 마지막 문장에서 한참 멈췄습니다.', at: '2026-05-13T08:40:00' },
+  { key: 'c41', book: 'shoko', by: 'yujin', quote: '씬짜오, 씬짜오', content: '표제작만큼 「씬짜오, 씬짜오」도 꼭 이야기해보고 싶어요. 사과에 대한 소설이기도 한 것 같아서.', at: '2026-05-24T22:05:00' },
+  { key: 'c42', book: 'summer', by: 'seojun', content: '첫 단편부터 여름 공기가 훅 들어오네요. 8/2 모임까지 격주로 두 편씩 읽어요.', at: '2026-07-08T20:30:00' },
 ];
 
 async function main() {
@@ -162,6 +206,15 @@ async function main() {
     },
   });
 
+  const club2 = await prisma.club.create({
+    data: {
+      name: '밑줄과 여백',
+      description: '격주에 한 번, 에세이와 단편을 짧고 깊게 읽는 소모임',
+      inviteCode: 'LINE-2026',
+      createdAt: kst('2026-04-12T10:00:00'),
+    },
+  });
+
   const members = {};
   for (const { key, role, ...data } of MEMBERS) {
     members[key] = await prisma.member.create({ data });
@@ -174,23 +227,39 @@ async function main() {
       },
     });
   }
-
-  const books = {};
-  for (const { key, participants, periodFrom, periodTo, meetingDate, ...data } of BOOKS) {
-    books[key] = await prisma.book.create({
+  // 두 번째 클럽 — 기존 멤버(jiwon)는 사람을 재사용하고 멤버십만 추가
+  for (const { key, role, ...data } of MEMBERS2) {
+    if (!members[key]) members[key] = await prisma.member.create({ data });
+    await prisma.clubMember.create({
       data: {
-        ...data,
-        clubId: club.id,
-        periodFrom: kst(periodFrom),
-        periodTo: kst(periodTo),
-        meetingDate: kst(meetingDate),
-        createdAt: kst(periodFrom),
-        participants: {
-          create: participants.map((p) => ({ memberId: members[p].id })),
-        },
+        clubId: club2.id,
+        memberId: members[key].id,
+        role,
+        joinedAt: kst('2026-04-12T11:00:00'),
       },
     });
   }
+
+  const books = {};
+  const createBooks = async (clubId, bookDefs) => {
+    for (const { key, participants, periodFrom, periodTo, meetingDate, ...data } of bookDefs) {
+      books[key] = await prisma.book.create({
+        data: {
+          ...data,
+          clubId,
+          periodFrom: kst(periodFrom),
+          periodTo: kst(periodTo),
+          meetingDate: kst(meetingDate),
+          createdAt: kst(periodFrom),
+          participants: {
+            create: participants.map((p) => ({ memberId: members[p].id })),
+          },
+        },
+      });
+    }
+  };
+  await createBooks(club.id, BOOKS);
+  await createBooks(club2.id, BOOKS2);
 
   const comments = {};
   for (const { key, book, by, parent, at, editedAt, deletedAt, ...data } of COMMENTS) {
@@ -220,6 +289,8 @@ async function main() {
     c28: ['haneul', 'doyun', 'seoyeon'],
     c33: ['eunchae', 'minjun'],
     c36: ['seoyeon', 'eunchae'],
+    c39: ['jiwon', 'yujin'],
+    c40: ['seojun'],
   };
   let likeCount = 0;
   for (const [commentKey, likerKeys] of Object.entries(LIKES)) {
@@ -234,7 +305,7 @@ async function main() {
     }
   }
 
-  // 문집 주문 — 완결·진행 중·접수 직후 3가지 상태를 시연
+  // 문집 주문 — 완결·진행 중·접수 직후·4권 수록·타 클럽 주문을 시연
   const ORDERS = [
     {
       by: 'jiwon',
@@ -273,6 +344,35 @@ async function main() {
       books: ['library', 'pachinko'],
       history: [['RECEIVED', '2026-07-26T22:40:00', 'USER']],
     },
+    // 4권 수록 — 표지 나열 뷰 확인용
+    {
+      by: 'jiwon',
+      title: '페이지 너머 문집 Vol.2 — 완독 전집',
+      copies: 8,
+      books: ['store', 'almond', 'library', 'pachinko'],
+      history: [
+        ['RECEIVED', '2026-07-20T21:00:00', 'USER'],
+        ['CONFIRMED', '2026-07-21T10:00:00', 'ADMIN'],
+        ['IN_PRODUCTION', '2026-07-22T09:00:00', 'ADMIN'],
+      ],
+    },
+    // 다른 클럽(밑줄과 여백)의 주문 — 마이페이지 클럽 구분 표시 확인용
+    {
+      club: 'margin',
+      by: 'jiwon',
+      title: '쇼코의 미소 — 밑줄 모음집',
+      copies: 3,
+      books: ['shoko'],
+      history: [
+        ['RECEIVED', '2026-06-02T20:00:00', 'USER'],
+        ['CONFIRMED', '2026-06-03T10:00:00', 'ADMIN'],
+        ['IN_PRODUCTION', '2026-06-04T09:00:00', 'ADMIN'],
+        ['PRODUCED', '2026-06-08T17:00:00', 'ADMIN'],
+        ['SHIPPED', '2026-06-09T10:00:00', 'ADMIN'],
+        ['IN_TRANSIT', '2026-06-09T18:00:00', 'ADMIN'],
+        ['DELIVERED', '2026-06-10T14:00:00', 'ADMIN'],
+      ],
+    },
   ];
   for (const orderDef of ORDERS) {
     const historyRows = orderDef.history.map(([toStatus, at, actor], i) => ({
@@ -284,7 +384,7 @@ async function main() {
     const last = orderDef.history[orderDef.history.length - 1];
     await prisma.order.create({
       data: {
-        clubId: club.id,
+        clubId: orderDef.club === 'margin' ? club2.id : club.id,
         memberId: members[orderDef.by].id,
         title: orderDef.title,
         copies: orderDef.copies,
@@ -302,7 +402,7 @@ async function main() {
   }
 
   console.log(
-    `[seed] 완료 — 모임 1, 멤버 ${MEMBERS.length}, 책 ${BOOKS.length}, 코멘트·답글 ${COMMENTS.length}, 공감 ${likeCount}, 주문 ${ORDERS.length}`,
+    `[seed] 완료 — 모임 2, 멤버 ${Object.keys(members).length}, 책 ${BOOKS.length + BOOKS2.length}, 코멘트·답글 ${COMMENTS.length}, 공감 ${likeCount}, 주문 ${ORDERS.length}`,
   );
 }
 
