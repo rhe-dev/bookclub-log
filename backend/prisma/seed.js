@@ -373,6 +373,39 @@ async function main() {
         ['DELIVERED', '2026-06-10T14:00:00', 'ADMIN'],
       ],
     },
+    // 배송완료 상태 2건 — 구매 확정·환불/재제작 요청 버튼 시연용 (밑줄과 여백 멤버들)
+    {
+      club: 'margin',
+      by: 'seojun',
+      title: '쇼코의 미소 — 서준의 밑줄 소장본',
+      copies: 1,
+      books: ['shoko'],
+      history: [
+        ['RECEIVED', '2026-06-15T20:00:00', 'USER'],
+        ['CONFIRMED', '2026-06-16T10:00:00', 'ADMIN'],
+        ['IN_PRODUCTION', '2026-06-17T09:00:00', 'ADMIN'],
+        ['PRODUCED', '2026-06-20T17:00:00', 'ADMIN'],
+        ['SHIPPED', '2026-06-21T10:00:00', 'ADMIN'],
+        ['IN_TRANSIT', '2026-06-21T18:00:00', 'ADMIN'],
+        ['DELIVERED', '2026-06-22T14:00:00', 'ADMIN'],
+      ],
+    },
+    {
+      club: 'margin',
+      by: 'yujin',
+      title: '쇼코의 미소 — 문장 수집 노트',
+      copies: 2,
+      books: ['shoko'],
+      history: [
+        ['RECEIVED', '2026-07-18T21:30:00', 'USER'],
+        ['CONFIRMED', '2026-07-19T10:00:00', 'ADMIN'],
+        ['IN_PRODUCTION', '2026-07-20T09:00:00', 'ADMIN'],
+        ['PRODUCED', '2026-07-23T17:00:00', 'ADMIN'],
+        ['SHIPPED', '2026-07-24T10:00:00', 'ADMIN'],
+        ['IN_TRANSIT', '2026-07-24T19:00:00', 'ADMIN'],
+        ['DELIVERED', '2026-07-25T15:00:00', 'ADMIN'],
+      ],
+    },
   ];
   for (const orderDef of ORDERS) {
     const historyRows = orderDef.history.map(([toStatus, at, actor], i) => ({
