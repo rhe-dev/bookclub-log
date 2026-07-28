@@ -4,7 +4,13 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
-import { ActorType, Order, OrderStatus, Prisma } from '@prisma/client';
+import {
+  ActorType,
+  Order,
+  OrderIssueReason,
+  OrderStatus,
+  Prisma,
+} from '@prisma/client';
 import { ErrorMessage } from '../constants/error-message';
 import { PaginationQuery, toPageMeta } from '../dto/pagination.query';
 import { PrismaService } from '../prisma/prisma.service';
@@ -58,6 +64,7 @@ export class OrdersSharedService {
     toStatus: OrderStatus,
     actor: ActorType,
     isOrderer: boolean,
+    issue?: { reason?: OrderIssueReason; reasonDetail?: string },
   ) {
     const error = validateTransition({
       from: order.status,
@@ -76,6 +83,22 @@ export class OrdersSharedService {
     if (error === 'NOT_ORDERER')
       throw new ForbiddenException(ErrorMessage.ORDER_ORDERER_ONLY);
 
+    // 환불·재제작 요청은 사유 필수, OTHER는 상세까지 — 그 외 전이에서는 사유를 기록하지 않는다
+    const isIssueRequest =
+      toStatus === OrderStatus.REFUND_REQUESTED ||
+      toStatus === OrderStatus.REMAKE_REQUESTED;
+    if (isIssueRequest && !issue?.reason)
+      throw new BadRequestException(ErrorMessage.ORDER_REASON_REQUIRED);
+    if (isIssueRequest && issue?.reason === OrderIssueReason.OTHER) {
+      const detail = issue.reasonDetail?.trim() ?? '';
+      if (!detail)
+        throw new BadRequestException(
+          ErrorMessage.ORDER_REASON_DETAIL_REQUIRED,
+        );
+      if (detail.length < 5)
+        throw new BadRequestException(ErrorMessage.ORDER_REASON_DETAIL_MIN);
+    }
+
     const [, updated] = await this.prisma.$transaction([
       this.prisma.orderStatusHistory.create({
         data: {
@@ -83,6 +106,10 @@ export class OrdersSharedService {
           fromStatus: order.status,
           toStatus,
           actor,
+          reason: isIssueRequest ? issue!.reason : null,
+          reasonDetail: isIssueRequest
+            ? (issue!.reasonDetail?.trim() ?? null)
+            : null,
         },
       }),
       this.prisma.order.update({

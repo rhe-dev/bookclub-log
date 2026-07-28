@@ -31,6 +31,11 @@ export enum ErrorMessage {
   ORDER_INVALID_TRANSITION = '현재 상태에서는 불가능한 변경입니다.',
   ORDER_ADMIN_ONLY_TRANSITION = '운영자만 진행할 수 있는 단계입니다.',
   ORDER_ORDERER_ONLY = '주문자만 할 수 있습니다.',
+  ORDER_REASON_REQUIRED = '환불·재제작 사유를 선택해 주세요.',
+  ORDER_REASON_INVALID = '올바른 사유 항목이 아닙니다.',
+  ORDER_REASON_DETAIL_REQUIRED = '기타 사유는 상세 내용을 입력해 주세요.',
+  ORDER_REASON_DETAIL_MIN = '기타 사유 상세는 5자 이상 입력해 주세요.',
+  ORDER_REASON_DETAIL_MAX = '사유 상세는 500자 이하로 입력해 주세요.',
 
   // 코멘트
   COMMENT_NOT_FOUND = '코멘트를 찾을 수 없습니다.',

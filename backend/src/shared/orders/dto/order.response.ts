@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { ActorType, OrderStatus } from '@prisma/client';
+import { ActorType, OrderIssueReason, OrderStatus } from '@prisma/client';
 import { MemberSummaryResponse } from '../../dto/member-summary.response';
 import { PageMetaResponse } from '../../dto/page-meta.response';
 
@@ -29,6 +29,12 @@ export class OrderHistoryResponse {
 
   @ApiProperty({ enum: ActorType })
   actor: ActorType;
+
+  /** 환불·재제작 요청 전이에만 기록되는 사유 */
+  @ApiProperty({ enum: OrderIssueReason, nullable: true })
+  reason: OrderIssueReason | null;
+
+  reasonDetail: string | null;
 }
 
 export class OrderResponse {

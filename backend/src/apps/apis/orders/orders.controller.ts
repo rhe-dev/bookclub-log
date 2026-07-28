@@ -55,6 +55,6 @@ export class OrdersController {
     @Headers('x-member-id') memberId: string | undefined,
     @Body() dto: TransitionOrderDto,
   ): Promise<OrderResponse> {
-    return this.ordersService.transitionAsUser(orderId, memberId, dto.toStatus);
+    return this.ordersService.transitionAsUser(orderId, memberId, dto);
   }
 }

@@ -40,5 +40,7 @@ export const toOrderDto = (order: OrderWithRelations) => ({
     toStatus: h.toStatus,
     changedAt: h.changedAt,
     actor: h.actor,
+    reason: h.reason,
+    reasonDetail: h.reasonDetail,
   })),
 });

@@ -24,6 +24,15 @@ enum ActorType {
   ADMIN
 }
 
+/// 환불·재제작 요청 사유 — 주문제작 상품이라 하자 유형 위주, OTHER는 직접 입력(reasonDetail 필수)
+enum OrderIssueReason {
+  PRINT_DEFECT /// 인쇄 불량(잉크 번짐·누락 등)
+  BINDING_DEFECT /// 제본 불량(낙장·페이지 뒤섞임 등)
+  DAMAGED_IN_TRANSIT /// 배송 중 파손·훼손
+  WRONG_CONTENT /// 주문 내용과 다르게 제작됨
+  OTHER /// 기타 — reasonDetail에 직접 입력
+}
+
 /// 문집(실물 책) 주문 — 모임의 책·토론을 묶어 제작. 상태 변경은 반드시 서버 전이 검증을 거친다
 model Order {
   id        Int         @id @default(autoincrement())
@@ -55,12 +64,14 @@ model OrderBook {
 
 /// 상태 전이 이력 — 마이페이지·관리자에서 단계별 날짜 표시에 사용
 model OrderStatusHistory {
-  id         Int          @id @default(autoincrement())
-  orderId    Int
-  fromStatus OrderStatus? /// 최초 접수 기록은 null
-  toStatus   OrderStatus
-  changedAt  DateTime     @default(now())
-  actor      ActorType
+  id           Int               @id @default(autoincrement())
+  orderId      Int
+  fromStatus   OrderStatus? /// 최초 접수 기록은 null
+  toStatus     OrderStatus
+  changedAt    DateTime          @default(now())
+  actor        ActorType
+  reason       OrderIssueReason? /// 환불·재제작 요청 전이에만 기록
+  reasonDetail String? /// 사유 상세 — OTHER면 필수, 그 외 선택
 
   order Order @relation(fields: [orderId], references: [id])
 }

@@ -2,6 +2,7 @@ import { BadRequestException, Injectable } from '@nestjs/common';
 import { ActorType, OrderStatus } from '@prisma/client';
 import { ErrorMessage } from '../../../shared/constants/error-message';
 import { PaginationQuery } from '../../../shared/dto/pagination.query';
+import { TransitionOrderDto } from '../../../shared/orders/dto/transition-order.dto';
 import { orderInclude, toOrderDto } from '../../../shared/orders/order.mapper';
 import { OrdersSharedService } from '../../../shared/orders/orders-shared.service';
 import { PrismaService } from '../../../shared/prisma/prisma.service';
@@ -83,19 +84,20 @@ export class OrdersService {
     return this.ordersShared.getOne(orderPublicId);
   }
 
-  /** 주문자 전이 — 취소·구매 확정·환불/재제작 요청 */
+  /** 주문자 전이 — 취소·구매 확정·환불/재제작 요청(사유 포함) */
   async transitionAsUser(
     orderPublicId: string,
     memberPublicId: string | undefined,
-    toStatus: OrderStatus,
+    dto: TransitionOrderDto,
   ) {
     const order = await this.ordersShared.findOrderOrThrow(orderPublicId);
     const member = await this.clubsService.getMemberOrThrow(memberPublicId);
     return this.ordersShared.applyTransition(
       order,
-      toStatus,
+      dto.toStatus,
       ActorType.USER,
       member.id === order.memberId,
+      { reason: dto.reason, reasonDetail: dto.reasonDetail },
     );
   }
 }

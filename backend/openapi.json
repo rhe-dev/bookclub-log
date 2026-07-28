@@ -1644,16 +1644,33 @@
             ],
             "type": "string"
           },
+          "reason": {
+            "nullable": true,
+            "enum": [
+              "PRINT_DEFECT",
+              "BINDING_DEFECT",
+              "DAMAGED_IN_TRANSIT",
+              "WRONG_CONTENT",
+              "OTHER"
+            ],
+            "type": "string"
+          },
           "changedAt": {
             "format": "date-time",
             "type": "string"
+          },
+          "reasonDetail": {
+            "type": "string",
+            "nullable": true
           }
         },
         "required": [
           "fromStatus",
           "toStatus",
           "actor",
-          "changedAt"
+          "reason",
+          "changedAt",
+          "reasonDetail"
         ]
       },
       "OrderResponse": {
@@ -1757,6 +1774,20 @@
               "REMAKE_REQUESTED"
             ],
             "type": "string"
+          },
+          "reason": {
+            "enum": [
+              "PRINT_DEFECT",
+              "BINDING_DEFECT",
+              "DAMAGED_IN_TRANSIT",
+              "WRONG_CONTENT",
+              "OTHER"
+            ],
+            "type": "string"
+          },
+          "reasonDetail": {
+            "type": "string",
+            "maxLength": 500
           }
         },
         "required": [
