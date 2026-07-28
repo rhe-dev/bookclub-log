@@ -34,3 +34,34 @@ export class PaginatedCommentsResponse {
   items: CommentThreadResponse[];
   meta: PageMetaResponse;
 }
+
+/** 내가 쓴 코멘트가 달린 책 요약 */
+export class MyCommentBookResponse {
+  publicId: string;
+  title: string;
+  coverColor: string;
+  coverEmoji: string;
+}
+
+export class MyCommentClubResponse {
+  publicId: string;
+  name: string;
+}
+
+/** GET /comments/mine 항목 — 어느 클럽·어느 책에 썼는지 포함 */
+export class MyCommentResponse {
+  publicId: string;
+  page: number | null;
+  quote: string | null;
+  content: string;
+  createdAt: Date;
+  isEdited: boolean;
+  likeCount: number;
+  book: MyCommentBookResponse;
+  club: MyCommentClubResponse;
+}
+
+export class PaginatedMyCommentsResponse {
+  items: MyCommentResponse[];
+  meta: PageMetaResponse;
+}

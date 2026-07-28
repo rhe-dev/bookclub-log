@@ -17,6 +17,7 @@ import {
   CommentLikeResponse,
   CommentResponse,
   PaginatedCommentsResponse,
+  PaginatedMyCommentsResponse,
 } from './dto/comment.response';
 import { CreateCommentDto } from './dto/create-comment.dto';
 import { UpdateCommentDto } from './dto/update-comment.dto';
@@ -29,6 +30,15 @@ import { UpdateCommentDto } from './dto/update-comment.dto';
 @Controller()
 export class CommentsController {
   constructor(private readonly commentsService: CommentsService) {}
+
+  /** 내가 쓴 코멘트 — 마이페이지 모아보기용 (클럽 무관 전체, 최신순) */
+  @Get('comments/mine')
+  listMine(
+    @Headers('x-member-id') memberId: string | undefined,
+    @Query() query: PaginationQuery,
+  ): Promise<PaginatedMyCommentsResponse> {
+    return this.commentsService.listMine(memberId, query);
+  }
 
   @Get('books/:bookId/comments')
   list(

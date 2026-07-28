@@ -1,4 +1,8 @@
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import {
+  useInfiniteQuery,
+  useMutation,
+  useQueryClient,
+} from '@tanstack/react-query';
 import { queryKeys } from '@/shared/constants/queryKeys';
 import type { Paginated } from '@/shared/types/common';
 import type {
@@ -19,9 +23,9 @@ export const orderApi = {
     );
     return data;
   },
-  getMyOrders: async (): Promise<Paginated<Order>> => {
+  getMyOrders: async (page: number): Promise<Paginated<Order>> => {
     const { data } = await axiosClient.get<Paginated<Order>>('/orders/mine', {
-      params: { limit: 50 },
+      params: { page, limit: 10 },
       skipErrorToast: true,
     });
     return data;
@@ -38,10 +42,14 @@ export const orderApi = {
   },
 };
 
-export const useMyOrdersQuery = (memberPublicId?: string) =>
-  useQuery({
+/** 내 주문 — 마이페이지 (더보기 페이지네이션) */
+export const useMyOrdersInfiniteQuery = (memberPublicId?: string) =>
+  useInfiniteQuery({
     queryKey: queryKeys.ordersMine(memberPublicId ?? ''),
-    queryFn: orderApi.getMyOrders,
+    queryFn: ({ pageParam }) => orderApi.getMyOrders(pageParam),
+    initialPageParam: 1,
+    getNextPageParam: (last) =>
+      last.meta.hasNext ? last.meta.page + 1 : undefined,
     enabled: Boolean(memberPublicId),
   });
 

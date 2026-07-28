@@ -1,4 +1,9 @@
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import {
+  useInfiniteQuery,
+  useMutation,
+  useQuery,
+  useQueryClient,
+} from '@tanstack/react-query';
 import { queryKeys } from '@/shared/constants/queryKeys';
 import type {
   Book,
@@ -32,10 +37,12 @@ export const bookApi = {
   getBooks: async (
     clubPublicId: string,
     status?: BookStatus,
+    page = 1,
+    limit = 20,
   ): Promise<Paginated<Book>> => {
     const { data } = await axiosClient.get<Paginated<Book>>(
       `/clubs/${clubPublicId}/books`,
-      { params: { status, limit: 60 }, skipErrorToast: true },
+      { params: { status, page, limit }, skipErrorToast: true },
     );
     return data;
   },
@@ -51,10 +58,26 @@ export const bookApi = {
   },
 };
 
+/** 단발 목록 — 문집 만들기 선택 화면 등 전체가 필요한 곳 (limit 최대치) */
 export const useBooksQuery = (clubPublicId?: string, status?: BookStatus) =>
   useQuery({
     queryKey: queryKeys.books(clubPublicId ?? '', status),
-    queryFn: () => bookApi.getBooks(clubPublicId as string, status),
+    queryFn: () => bookApi.getBooks(clubPublicId as string, status, 1, 100),
+    enabled: Boolean(clubPublicId),
+  });
+
+/** 책방 책장 — 더보기 페이지네이션 */
+export const useBooksInfiniteQuery = (
+  clubPublicId?: string,
+  status?: BookStatus,
+) =>
+  useInfiniteQuery({
+    queryKey: [...queryKeys.books(clubPublicId ?? '', status), 'infinite'],
+    queryFn: ({ pageParam }) =>
+      bookApi.getBooks(clubPublicId as string, status, pageParam, 12),
+    initialPageParam: 1,
+    getNextPageParam: (last) =>
+      last.meta.hasNext ? last.meta.page + 1 : undefined,
     enabled: Boolean(clubPublicId),
   });
 
@@ -87,8 +110,8 @@ export const useUpdateBookMutation = (bookPublicId?: string) => {
       void queryClient.invalidateQueries({
         queryKey: queryKeys.book(bookPublicId ?? ''),
       });
-      // 책방 목록 카드에도 반영
-      void queryClient.invalidateQueries({ queryKey: queryKeys.clubs });
+      // 책방 목록 카드에도 반영 — 클럽 id가 없는 컨텍스트라 목록 전체 무효화
+      void queryClient.invalidateQueries({ queryKey: queryKeys.booksAll });
     },
   });
 };
@@ -98,7 +121,7 @@ export const useDeleteBookMutation = (bookPublicId?: string) => {
   return useMutation({
     mutationFn: () => bookApi.deleteBook(bookPublicId as string),
     onSuccess: () => {
-      void queryClient.invalidateQueries({ queryKey: queryKeys.clubs });
+      void queryClient.invalidateQueries({ queryKey: queryKeys.booksAll });
     },
   });
 };

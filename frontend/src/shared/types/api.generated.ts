@@ -36,22 +36,6 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/clubs": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get: operations["ClubsController_findAll"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
     "/api/clubs/mine": {
         parameters: {
             query?: never;
@@ -114,6 +98,22 @@ export interface paths {
         options?: never;
         head?: never;
         patch: operations["BooksController_update"];
+        trace?: never;
+    };
+    "/api/comments/mine": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["CommentsController_listMine"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
         trace?: never;
     };
     "/api/books/{bookId}/comments": {
@@ -188,22 +188,6 @@ export interface paths {
             cookie?: never;
         };
         get: operations["OrdersController_listMine"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/orders/{orderId}": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get: operations["OrdersController_getOne"];
         put?: never;
         post?: never;
         delete?: never;
@@ -293,14 +277,6 @@ export interface components {
             color: string;
             clubs: components["schemas"]["MemberAccountClubResponse"][];
         };
-        ClubResponse: {
-            publicId: string;
-            name: string;
-            description: string;
-            memberCount: number;
-            /** Format: date-time */
-            createdAt: string;
-        };
         MyClubResponse: {
             /** @enum {string} */
             myRole: "LEADER" | "MEMBER";
@@ -388,6 +364,32 @@ export interface components {
         DeletedResponse: {
             publicId: string;
             deleted: boolean;
+        };
+        MyCommentBookResponse: {
+            publicId: string;
+            title: string;
+            coverColor: string;
+            coverEmoji: string;
+        };
+        MyCommentClubResponse: {
+            publicId: string;
+            name: string;
+        };
+        MyCommentResponse: {
+            publicId: string;
+            page: number | null;
+            quote: string | null;
+            content: string;
+            /** Format: date-time */
+            createdAt: string;
+            isEdited: boolean;
+            likeCount: number;
+            book: components["schemas"]["MyCommentBookResponse"];
+            club: components["schemas"]["MyCommentClubResponse"];
+        };
+        PaginatedMyCommentsResponse: {
+            items: components["schemas"]["MyCommentResponse"][];
+            meta: components["schemas"]["PageMetaResponse"];
         };
         CommentResponse: {
             publicId: string;
@@ -492,6 +494,10 @@ export interface components {
             reason?: "PRINT_DEFECT" | "BINDING_DEFECT" | "DAMAGED_IN_TRANSIT" | "WRONG_CONTENT" | "OTHER";
             reasonDetail?: string;
         };
+        AdminTransitionOrderDto: {
+            /** @enum {string} */
+            toStatus: "RECEIVED" | "CONFIRMED" | "IN_PRODUCTION" | "PRODUCED" | "SHIPPED" | "IN_TRANSIT" | "DELIVERED" | "PURCHASE_CONFIRMED" | "CANCELED" | "REFUND_REQUESTED" | "REFUNDED" | "REMAKE_REQUESTED";
+        };
     };
     responses: never;
     parameters: never;
@@ -533,25 +539,6 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["MemberAccountResponse"][];
-                };
-            };
-        };
-    };
-    ClubsController_findAll: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["ClubResponse"][];
                 };
             };
         };
@@ -724,6 +711,31 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["BookResponse"];
+                };
+            };
+        };
+    };
+    CommentsController_listMine: {
+        parameters: {
+            query?: {
+                page?: number;
+                limit?: number;
+            };
+            header?: {
+                /** @description 현재 멤버의 publicId — 쓰기 요청에 필요 (D-017) */
+                "X-Member-Id"?: string;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PaginatedMyCommentsResponse"];
                 };
             };
         };
@@ -912,30 +924,6 @@ export interface operations {
             };
         };
     };
-    OrdersController_getOne: {
-        parameters: {
-            query?: never;
-            header?: {
-                /** @description 현재 멤버의 publicId — 주문·전이 요청에 필요 (D-017) */
-                "X-Member-Id"?: string;
-            };
-            path: {
-                orderId: string;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["OrderResponse"];
-                };
-            };
-        };
-    };
     OrdersController_transition: {
         parameters: {
             query?: never;
@@ -1016,7 +1004,7 @@ export interface operations {
         };
         requestBody: {
             content: {
-                "application/json": components["schemas"]["TransitionOrderDto"];
+                "application/json": components["schemas"]["AdminTransitionOrderDto"];
             };
         };
         responses: {

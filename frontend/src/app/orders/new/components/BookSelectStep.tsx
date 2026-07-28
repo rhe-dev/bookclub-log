@@ -14,6 +14,7 @@ interface BookSelectStepProps {
   books: Book[];
   selectedIds: string[];
   onToggle: (bookPublicId: string) => void;
+  clubName: string;
 }
 
 /** 1단계 — 문집에 수록할 책 선택 (완독만 가능, 다중 선택) */
@@ -21,11 +22,20 @@ export const BookSelectStep = ({
   books,
   selectedIds,
   onToggle,
+  clubName,
 }: BookSelectStepProps) => {
   return (
     <Stack spacing={1.5}>
+      {/* 멀티 클럽이므로 어느 클럽의 문집인지 명시 */}
       <Typo token="text_r_14" color={colorChips.grayScale[600]}>
-        문집에 실을 책을 골라 주세요. 각 책의 토론 코멘트가 함께 수록되며,
+        <Typo
+          component="span"
+          token="text_sb_14"
+          color={colorChips.primary[500]}
+        >
+          {clubName}
+        </Typo>
+        의 문집에 실을 책을 골라 주세요. 각 책의 토론 코멘트가 함께 수록되며,
         완독한 책만 수록할 수 있어요.
       </Typo>
       <Box

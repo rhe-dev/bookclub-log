@@ -39,30 +39,6 @@
         ]
       }
     },
-    "/api/clubs": {
-      "get": {
-        "operationId": "ClubsController_findAll",
-        "parameters": [],
-        "responses": {
-          "200": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/ClubResponse"
-                  }
-                }
-              }
-            }
-          }
-        },
-        "tags": [
-          "Clubs"
-        ]
-      }
-    },
     "/api/clubs/mine": {
       "get": {
         "operationId": "ClubsController_findMine",
@@ -360,6 +336,58 @@
         },
         "tags": [
           "Books"
+        ]
+      }
+    },
+    "/api/comments/mine": {
+      "get": {
+        "operationId": "CommentsController_listMine",
+        "parameters": [
+          {
+            "name": "X-Member-Id",
+            "in": "header",
+            "description": "현재 멤버의 publicId — 쓰기 요청에 필요 (D-017)",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "minimum": 1,
+              "default": 1,
+              "type": "number"
+            }
+          },
+          {
+            "name": "limit",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "minimum": 1,
+              "maximum": 100,
+              "default": 20,
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PaginatedMyCommentsResponse"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Comments"
         ]
       }
     },
@@ -696,45 +724,6 @@
         ]
       }
     },
-    "/api/orders/{orderId}": {
-      "get": {
-        "operationId": "OrdersController_getOne",
-        "parameters": [
-          {
-            "name": "X-Member-Id",
-            "in": "header",
-            "description": "현재 멤버의 publicId — 주문·전이 요청에 필요 (D-017)",
-            "required": false,
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "name": "orderId",
-            "required": true,
-            "in": "path",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/OrderResponse"
-                }
-              }
-            }
-          }
-        },
-        "tags": [
-          "Orders"
-        ]
-      }
-    },
     "/api/orders/{orderId}/transition": {
       "post": {
         "operationId": "OrdersController_transition",
@@ -866,7 +855,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/TransitionOrderDto"
+                "$ref": "#/components/schemas/AdminTransitionOrderDto"
               }
             }
           }
@@ -950,34 +939,6 @@
           "avatarEmoji",
           "color",
           "clubs"
-        ]
-      },
-      "ClubResponse": {
-        "type": "object",
-        "properties": {
-          "publicId": {
-            "type": "string"
-          },
-          "name": {
-            "type": "string"
-          },
-          "description": {
-            "type": "string"
-          },
-          "memberCount": {
-            "type": "number"
-          },
-          "createdAt": {
-            "format": "date-time",
-            "type": "string"
-          }
-        },
-        "required": [
-          "publicId",
-          "name",
-          "description",
-          "memberCount",
-          "createdAt"
         ]
       },
       "MyClubResponse": {
@@ -1319,6 +1280,108 @@
         "required": [
           "publicId",
           "deleted"
+        ]
+      },
+      "MyCommentBookResponse": {
+        "type": "object",
+        "properties": {
+          "publicId": {
+            "type": "string"
+          },
+          "title": {
+            "type": "string"
+          },
+          "coverColor": {
+            "type": "string"
+          },
+          "coverEmoji": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "publicId",
+          "title",
+          "coverColor",
+          "coverEmoji"
+        ]
+      },
+      "MyCommentClubResponse": {
+        "type": "object",
+        "properties": {
+          "publicId": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "publicId",
+          "name"
+        ]
+      },
+      "MyCommentResponse": {
+        "type": "object",
+        "properties": {
+          "publicId": {
+            "type": "string"
+          },
+          "page": {
+            "type": "number",
+            "nullable": true
+          },
+          "quote": {
+            "type": "string",
+            "nullable": true
+          },
+          "content": {
+            "type": "string"
+          },
+          "createdAt": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "isEdited": {
+            "type": "boolean"
+          },
+          "likeCount": {
+            "type": "number"
+          },
+          "book": {
+            "$ref": "#/components/schemas/MyCommentBookResponse"
+          },
+          "club": {
+            "$ref": "#/components/schemas/MyCommentClubResponse"
+          }
+        },
+        "required": [
+          "publicId",
+          "page",
+          "quote",
+          "content",
+          "createdAt",
+          "isEdited",
+          "likeCount",
+          "book",
+          "club"
+        ]
+      },
+      "PaginatedMyCommentsResponse": {
+        "type": "object",
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/MyCommentResponse"
+            }
+          },
+          "meta": {
+            "$ref": "#/components/schemas/PageMetaResponse"
+          }
+        },
+        "required": [
+          "items",
+          "meta"
         ]
       },
       "CommentResponse": {
@@ -1788,6 +1851,31 @@
           "reasonDetail": {
             "type": "string",
             "maxLength": 500
+          }
+        },
+        "required": [
+          "toStatus"
+        ]
+      },
+      "AdminTransitionOrderDto": {
+        "type": "object",
+        "properties": {
+          "toStatus": {
+            "enum": [
+              "RECEIVED",
+              "CONFIRMED",
+              "IN_PRODUCTION",
+              "PRODUCED",
+              "SHIPPED",
+              "IN_TRANSIT",
+              "DELIVERED",
+              "PURCHASE_CONFIRMED",
+              "CANCELED",
+              "REFUND_REQUESTED",
+              "REFUNDED",
+              "REMAKE_REQUESTED"
+            ],
+            "type": "string"
           }
         },
         "required": [

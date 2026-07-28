@@ -172,6 +172,7 @@ export default function OrderNewPage() {
 
           {step === 0 && (
             <BookSelectStep
+              clubName={club.name}
               books={books}
               selectedIds={selectedIds}
               onToggle={toggleBook}
