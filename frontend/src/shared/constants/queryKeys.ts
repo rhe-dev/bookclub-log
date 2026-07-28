@@ -12,7 +12,9 @@ export const queryKeys = {
   booksRoot: (clubPublicId: string) =>
     ['clubs', clubPublicId, 'books'] as const,
   book: (bookPublicId: string) => ['books', bookPublicId] as const,
-  ordersMine: ['orders', 'mine'] as const,
+  ordersMine: (memberPublicId: string) =>
+    ['orders', 'mine', memberPublicId] as const,
+  ordersMineRoot: ['orders', 'mine'] as const,
   order: (orderPublicId: string) => ['orders', orderPublicId] as const,
   adminOrders: ['admin', 'orders'] as const,
   comments: (bookPublicId: string) =>
