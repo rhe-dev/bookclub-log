@@ -12,15 +12,27 @@ const apiInstance = axios.create({
   headers: { 'Content-Type': 'application/json' },
 });
 
-/** 백엔드 전역 에러 포맷(D-018)에서 사용자 메시지를 꺼낸다 */
-export function getErrorMessages(error: unknown): string[] {
+/** 전역 에러 응답 항목 (D-018·D-028) — code로 분기하고 message를 그대로 표시한다 */
+export interface ApiErrorItem {
+  code: string;
+  message: string;
+}
+
+/** 백엔드 전역 에러 포맷에서 에러 목록을 꺼낸다 — 네트워크·미상 오류는 프론트 코드로 합성 */
+export function getApiErrors(error: unknown): ApiErrorItem[] {
   if (axios.isAxiosError(error)) {
-    const messages = (error.response?.data as { messages?: string[] })
-      ?.messages;
-    if (messages?.length) return messages;
-    if (!error.response) return ['네트워크 연결을 확인해 주세요.'];
+    const errors = (error.response?.data as { errors?: ApiErrorItem[] })
+      ?.errors;
+    if (errors?.length) return errors;
+    if (!error.response)
+      return [{ code: 'NETWORK', message: '네트워크 연결을 확인해 주세요.' }];
   }
-  return ['요청에 실패했습니다. 잠시 후 다시 시도해 주세요.'];
+  return [
+    {
+      code: 'UNKNOWN',
+      message: '요청에 실패했습니다. 잠시 후 다시 시도해 주세요.',
+    },
+  ];
 }
 
 // Request: 무인증 멤버 컨텍스트 — 선택된 멤버의 publicId를 X-Member-Id로 전달 (D-017)
@@ -30,23 +42,15 @@ apiInstance.interceptors.request.use((config) => {
   return config;
 });
 
-// 백엔드 ErrorMessage와 동일 문자열 — 세션 무효 감지용
-const MEMBER_NOT_FOUND_MESSAGE = '멤버를 찾을 수 없습니다.';
-const MEMBER_HEADER_REQUIRED_MESSAGE = 'X-Member-Id 헤더가 필요합니다.';
-
 /**
- * 세션이 있다고 믿는 상태에서 멤버 식별이 실패하면 세션 오염·무효로 판정:
- * 404 멤버 없음(DB 초기화 등으로 스토리지 id가 무효) /
- * 400 헤더 누락(스토리지가 반쪽 오염돼 publicId가 없어 헤더 미첨부)
+ * 세션이 있다고 믿는 상태에서 멤버 식별이 실패하면 세션 오염·무효로 판정 (코드 계약, D-028):
+ * MEMBER_NOT_FOUND — DB 초기화 등으로 스토리지 id가 무효 /
+ * MEMBER_HEADER_REQUIRED — 스토리지 반쪽 오염으로 publicId가 없어 헤더 미첨부
  */
-const isInvalidSessionError = (error: AxiosError) => {
-  const status = error.response?.status;
-  const messages = getErrorMessages(error);
-  return (
-    (status === 404 && messages.includes(MEMBER_NOT_FOUND_MESSAGE)) ||
-    (status === 400 && messages.includes(MEMBER_HEADER_REQUIRED_MESSAGE))
-  );
-};
+const SESSION_INVALID_CODES = ['MEMBER_NOT_FOUND', 'MEMBER_HEADER_REQUIRED'];
+
+const isInvalidSessionError = (error: AxiosError) =>
+  getApiErrors(error).some((item) => SESSION_INVALID_CODES.includes(item.code));
 
 // Response: 전역 에러 토스트 — 폼 인라인 표시가 필요한 곳은 skipErrorToast로 제외
 apiInstance.interceptors.response.use(
@@ -61,7 +65,7 @@ apiInstance.interceptors.response.use(
       return Promise.reject(error);
     }
     if (!axios.isCancel(error) && !error.config?.skipErrorToast) {
-      toast.error(getErrorMessages(error)[0]);
+      toast.error(getApiErrors(error)[0].message);
     }
     return Promise.reject(error);
   },

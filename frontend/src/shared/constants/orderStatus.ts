@@ -63,18 +63,26 @@ export const getOrderStepIndex = (status: OrderStatus): number | null =>
   STEP_INDEX_BY_STATUS[status] ?? null;
 
 /** 상태 칩 색 — 진행형(파랑)·완료(초록)·취소(회색)·환불/재제작(테라코타) */
+const PROGRESS_CHIP = {
+  bg: colorChips.primary[100],
+  text: colorChips.primary[700],
+} as const;
+
 export const ORDER_STATUS_CHIP: Record<
   OrderStatus,
   { bg: string; text: string }
 > = {
-  RECEIVED: { bg: colorChips.primary[100], text: colorChips.primary[700] },
-  CONFIRMED: { bg: colorChips.primary[100], text: colorChips.primary[700] },
-  IN_PRODUCTION: { bg: colorChips.primary[100], text: colorChips.primary[700] },
-  PRODUCED: { bg: colorChips.primary[100], text: colorChips.primary[700] },
-  SHIPPED: { bg: colorChips.primary[100], text: colorChips.primary[700] },
-  IN_TRANSIT: { bg: colorChips.primary[100], text: colorChips.primary[700] },
-  DELIVERED: { bg: colorChips.primary[100], text: colorChips.primary[700] },
-  PURCHASE_CONFIRMED: { bg: '#E3F2E8', text: colorChips.system.success },
+  RECEIVED: PROGRESS_CHIP,
+  CONFIRMED: PROGRESS_CHIP,
+  IN_PRODUCTION: PROGRESS_CHIP,
+  PRODUCED: PROGRESS_CHIP,
+  SHIPPED: PROGRESS_CHIP,
+  IN_TRANSIT: PROGRESS_CHIP,
+  DELIVERED: PROGRESS_CHIP,
+  PURCHASE_CONFIRMED: {
+    bg: colorChips.system.successBg,
+    text: colorChips.system.success,
+  },
   CANCELED: {
     bg: colorChips.grayScale[200],
     text: colorChips.grayScale[600],

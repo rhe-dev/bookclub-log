@@ -8,11 +8,3 @@ export interface Paginated<T> {
   items: T[];
   meta: PageMeta;
 }
-
-/** 전역 에러 필터 응답 포맷 (D-018) — 스펙 밖이라 수동 유지 */
-export interface ApiErrorBody {
-  statusCode: number;
-  messages: string[];
-  timestamp: string;
-  path: string;
-}

@@ -10,8 +10,7 @@ import {
   useToggleLikeMutation,
   useUpdateCommentMutation,
 } from '@/shared/api/commentApi';
-import { CommonButton } from '@/shared/components/ui/CommonButton';
-import { CommonModal } from '@/shared/components/ui/CommonModal';
+import { CommonConfirmModal } from '@/shared/components/ui/CommonConfirmModal';
 import { MemberAvatar } from '@/shared/components/ui/MemberAvatar';
 import { Typo } from '@/shared/components/ui/Typo';
 import { useMemberStore } from '@/shared/stores/memberStore';
@@ -206,38 +205,23 @@ const CommentEntry = ({
         </Stack>
       </Stack>
 
-      <CommonModal
+      <CommonConfirmModal
         open={deleteOpen}
         onClose={() => setDeleteOpen(false)}
         title="코멘트 삭제"
-        maxWidth="xs"
-        actions={
-          <>
-            <CommonButton
-              label="취소"
-              buttonColor="tertiary"
-              onClick={() => setDeleteOpen(false)}
-            />
-            <CommonButton
-              label="삭제"
-              buttonColor="error"
-              isLoading={deleteMutation.isPending}
-              onClick={() => {
-                deleteMutation.mutate(comment.publicId, {
-                  onSuccess: () => {
-                    toast.success('코멘트를 삭제했어요.');
-                    setDeleteOpen(false);
-                  },
-                });
-              }}
-            />
-          </>
-        }
-      >
-        <Typo token="text_r_14" color={colorChips.grayScale[600]}>
-          코멘트를 삭제할까요? 답글이 있으면 자리는 남고 내용만 지워집니다.
-        </Typo>
-      </CommonModal>
+        body="코멘트를 삭제할까요? 답글이 있으면 자리는 남고 내용만 지워집니다."
+        confirmLabel="삭제"
+        confirmColor="error"
+        isLoading={deleteMutation.isPending}
+        onConfirm={() => {
+          deleteMutation.mutate(comment.publicId, {
+            onSuccess: () => {
+              toast.success('코멘트를 삭제했어요.');
+              setDeleteOpen(false);
+            },
+          });
+        }}
+      />
     </Stack>
   );
 };

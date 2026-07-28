@@ -6,6 +6,7 @@ import { BookSchedule } from '@/shared/components/book/BookSchedule';
 import { BookStatusTag } from '@/shared/components/book/BookStatusTag';
 import { MemberAvatarGroup } from '@/shared/components/ui/MemberAvatarGroup';
 import { Typo } from '@/shared/components/ui/Typo';
+import { cardShadow } from '@/shared/styles/mixins';
 import { ROUTES } from '@/shared/constants/routes';
 import { colorChips } from '@/shared/styles/colors';
 import { lineClamp } from '@/shared/styles/mixins';
@@ -29,7 +30,7 @@ export const ReadingBookCard = ({ book }: { book: Book }) => {
         backgroundColor: colorChips.basic.white,
         border: `1px solid ${colorChips.grayScale[200]}`,
         transition: 'box-shadow 0.15s',
-        '&:hover': { boxShadow: '0 4px 16px rgba(17, 17, 17, 0.08)' },
+        '&:hover': { boxShadow: cardShadow },
       }}
     >
       <BookCover

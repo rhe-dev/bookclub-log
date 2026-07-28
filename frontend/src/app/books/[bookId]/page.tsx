@@ -13,7 +13,7 @@ import {
 import { BookFormModal } from '@/shared/components/book/BookFormModal';
 import { CommonContainer } from '@/shared/components/layout/CommonContainer';
 import { CommonButton } from '@/shared/components/ui/CommonButton';
-import { CommonModal } from '@/shared/components/ui/CommonModal';
+import { CommonConfirmModal } from '@/shared/components/ui/CommonConfirmModal';
 import { ErrorView } from '@/shared/components/ui/ErrorView';
 import { Typo } from '@/shared/components/ui/Typo';
 import { ROUTES } from '@/shared/constants/routes';
@@ -171,39 +171,23 @@ export default function BookDetailPage() {
             clubPublicId={session.club.publicId}
             book={book}
           />
-          <CommonModal
+          <CommonConfirmModal
             open={deleteOpen}
             onClose={() => setDeleteOpen(false)}
             title="책 삭제"
-            maxWidth="xs"
-            actions={
-              <>
-                <CommonButton
-                  label="취소"
-                  buttonColor="tertiary"
-                  onClick={() => setDeleteOpen(false)}
-                />
-                <CommonButton
-                  label="삭제"
-                  buttonColor="error"
-                  isLoading={deleteBookMutation.isPending}
-                  onClick={() => {
-                    deleteBookMutation.mutate(undefined, {
-                      onSuccess: () => {
-                        toast.success('책을 삭제했어요.');
-                        router.replace(ROUTES.bookshelf);
-                      },
-                    });
-                  }}
-                />
-              </>
-            }
-          >
-            <Typo token="text_r_14" color={colorChips.grayScale[600]}>
-              『{book.title}』을(를) 책방에서 삭제할까요? 토론 기록은 함께
-              보이지 않게 됩니다.
-            </Typo>
-          </CommonModal>
+            body={`『${book.title}』을(를) 책방에서 삭제할까요? 토론 기록은 함께 보이지 않게 됩니다.`}
+            confirmLabel="삭제"
+            confirmColor="error"
+            isLoading={deleteBookMutation.isPending}
+            onConfirm={() => {
+              deleteBookMutation.mutate(undefined, {
+                onSuccess: () => {
+                  toast.success('책을 삭제했어요.');
+                  router.replace(ROUTES.bookshelf);
+                },
+              });
+            }}
+          />
         </>
       )}
     </>

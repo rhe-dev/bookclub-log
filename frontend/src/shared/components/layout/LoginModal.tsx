@@ -1,8 +1,9 @@
 'use client';
 
-import { Box, ButtonBase, Skeleton, Stack } from '@mui/material';
+import { Box, Skeleton, Stack } from '@mui/material';
 import { useRouter } from 'next/navigation';
 import { useMembersQuery } from '@/shared/api/memberApi';
+import { CommonListRow } from '@/shared/components/ui/CommonListRow';
 import { CommonModal } from '@/shared/components/ui/CommonModal';
 import { ErrorView } from '@/shared/components/ui/ErrorView';
 import { MemberAvatar } from '@/shared/components/ui/MemberAvatar';
@@ -76,26 +77,11 @@ export const LoginModal = () => {
         ) : (
           <Stack spacing={1}>
             {membersQuery.data?.map((account) => (
-              <ButtonBase
+              <CommonListRow
                 key={account.publicId}
                 onClick={() => handleSelect(account)}
-                aria-label={`${account.name}(으)로 로그인`}
-                sx={{
-                  width: '100%',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'flex-start',
-                  gap: 1.5,
-                  textAlign: 'left',
-                  border: `1px solid ${colorChips.grayScale[200]}`,
-                  borderRadius: 2,
-                  px: 1.5,
-                  py: 1,
-                  '&:hover': {
-                    borderColor: colorChips.primary[300],
-                    backgroundColor: colorChips.grayScale[50],
-                  },
-                }}
+                ariaLabel={`${account.name}(으)로 로그인`}
+                sx={{ justifyContent: 'flex-start', py: 1 }}
               >
                 <MemberAvatar
                   color={account.color}
@@ -115,7 +101,7 @@ export const LoginModal = () => {
                       .join(' · ')}
                   </Typo>
                 </Box>
-              </ButtonBase>
+              </CommonListRow>
             ))}
           </Stack>
         )}

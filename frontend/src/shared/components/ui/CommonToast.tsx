@@ -6,6 +6,7 @@ import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
 import { Box, IconButton } from '@mui/material';
 import { createPortal } from 'react-dom';
 import { colorChips } from '@/shared/styles/colors';
+import { floatingShadow } from '@/shared/styles/mixins';
 import {
   TOAST_EXIT_DURATION,
   ToastItem,
@@ -42,7 +43,7 @@ const ToastRow = ({ toast }: { toast: ToastItem }) => {
         py: 1.5,
         borderRadius: 2,
         backgroundColor: colorChips.grayScale[800],
-        boxShadow: '0 6px 20px rgba(0, 0, 0, 0.25)',
+        boxShadow: floatingShadow,
         pointerEvents: 'auto',
         maxWidth: 420,
         animation: toast.isExiting

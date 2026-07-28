@@ -37,6 +37,7 @@ export const colorChips = {
     errorDark: '#9B2C2C',
     errorBg: '#FDEAEA',
     success: '#2F855A',
+    successBg: '#E3F2E8',
     warning: '#B7791F',
     info: '#2B6CB0',
     disabledBg: '#E8EDF3',

@@ -17,6 +17,7 @@ import { toast } from '@/shared/stores/toastStore';
 import { colorChips } from '@/shared/styles/colors';
 import type { Book, BookStatus } from '@/shared/types/book';
 
+// 표지 색상은 UI 토큰이 아니라 콘텐츠 값(책 표지의 색) — colorChips 규칙의 의도적 예외
 const COVER_COLORS = [
   '#2B6CB0',
   '#B0662C',
@@ -102,7 +103,10 @@ export const BookFormModal = ({
         : (members?.map((m) => m.publicId) ?? []),
     );
     setErrors({});
-  }, [open, members, book]);
+    // members는 추가 모드의 초기 선택값으로만 쓰므로 deps에서 제외 —
+    // 모달이 열린 채 멤버 쿼리가 재검증되면 입력 중인 폼이 초기화되는 버그 방지
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [open, book]);
 
   const toggleParticipant = (publicId: string) => {
     setParticipantIds((prev) =>

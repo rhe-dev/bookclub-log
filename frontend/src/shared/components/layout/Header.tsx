@@ -8,11 +8,12 @@ import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { useMyClubsQuery } from '@/shared/api/clubApi';
+import { ClubRoleTag } from '@/shared/components/club/ClubRoleTag';
 import { CommonButton } from '@/shared/components/ui/CommonButton';
 import { ROUTES } from '@/shared/constants/routes';
+import { useSessionActions } from '@/shared/hooks/useSessionActions';
 import { useLoginModalStore } from '@/shared/stores/loginModalStore';
 import { useMemberStore } from '@/shared/stores/memberStore';
-import { toast } from '@/shared/stores/toastStore';
 import { colorChips } from '@/shared/styles/colors';
 import type { MyClub } from '@/shared/types/club';
 import { MemberAvatar } from '../ui/MemberAvatar';
@@ -22,8 +23,13 @@ import { LoginModal } from './LoginModal';
 
 /** 로그인 후 사용 가능한 서비스가 GNB 메뉴 — 현재 위치는 활성 스타일로 표시 */
 const NAV_ITEMS = [
-  { label: '책방', href: ROUTES.bookshelf, pattern: /^\/(bookshelf|books)/ },
-  { label: '문집 만들기', href: ROUTES.orderNew, pattern: /^\/orders/ },
+  {
+    label: '책방',
+    href: ROUTES.bookshelf,
+    // '/books'는 책 상세(ROUTES.bookDetail)의 프리픽스 — 책 상세도 책방 섹션
+    prefixes: [ROUTES.bookshelf, '/books'],
+  },
+  { label: '문집 만들기', href: ROUTES.orderNew, prefixes: [ROUTES.orderNew] },
 ];
 
 /**
@@ -34,8 +40,7 @@ const NAV_ITEMS = [
 export const Header = () => {
   const member = useMemberStore((s) => s.member);
   const club = useMemberStore((s) => s.club);
-  const switchClub = useMemberStore((s) => s.switchClub);
-  const logout = useMemberStore((s) => s.logout);
+  const { goClub, logout } = useSessionActions();
   const openLoginModal = useLoginModalStore((s) => s.open);
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
   const router = useRouter();
@@ -51,22 +56,11 @@ export const Header = () => {
   const handleLogout = () => {
     setAnchorEl(null);
     logout();
-    toast.info('로그아웃했어요. 다음에 또 만나요!');
-    router.push(ROUTES.home);
   };
 
-  // 클럽 선택 — 다른 클럽이면 컨텍스트 전환, 어느 쪽이든 그 클럽 책방으로
   const handleSelectClub = (target: MyClub) => {
     setAnchorEl(null);
-    if (target.publicId !== club?.publicId) {
-      switchClub({
-        publicId: target.publicId,
-        name: target.name,
-        role: target.myRole,
-      });
-      toast.success(`'${target.name}' 책방으로 이동했어요.`);
-    }
-    router.push(ROUTES.bookshelf);
+    goClub(target);
   };
 
   return (
@@ -134,7 +128,9 @@ export const Header = () => {
           {member && (
             <Stack direction="row" spacing={{ xs: 0.25, md: 0.5 }}>
               {NAV_ITEMS.map((item) => {
-                const isActive = item.pattern.test(pathname);
+                const isActive = item.prefixes.some((prefix) =>
+                  pathname.startsWith(prefix),
+                );
                 return (
                   <Box
                     key={item.href}
@@ -243,16 +239,7 @@ export const Header = () => {
                       >
                         {c.name}
                       </Typo>
-                      <Typo
-                        token="text_m_12"
-                        color={
-                          c.myRole === 'LEADER'
-                            ? colorChips.secondary[500]
-                            : colorChips.grayScale[500]
-                        }
-                      >
-                        {c.myRole === 'LEADER' ? '모임장' : '멤버'}
-                      </Typo>
+                      <ClubRoleTag role={c.myRole} />
                     </Box>
                     {isCurrent && (
                       <CheckRoundedIcon

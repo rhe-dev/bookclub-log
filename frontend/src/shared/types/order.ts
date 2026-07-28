@@ -11,10 +11,6 @@ export type OrderHistoryEntry = components['schemas']['OrderHistoryResponse'];
 /** 환불·재제작 요청 사유 */
 export type OrderIssueReason = NonNullable<OrderHistoryEntry['reason']>;
 
-/** 주문에 수록된 책 요약 */
-export type OrderBookSummary =
-  components['schemas']['OrderBookSummaryResponse'];
-
 /** POST /clubs/:id/orders 바디 */
 export type CreateOrderBody = components['schemas']['CreateOrderDto'];
 
