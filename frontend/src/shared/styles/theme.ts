@@ -56,6 +56,13 @@ export const theme = createTheme({
   },
   shape: { borderRadius: 10 },
   components: {
+    MuiCssBaseline: {
+      styleOverrides: {
+        // iOS 사파리 러버밴드(위아래 바운스) 방지 — 스크롤 자체에는 영향 없음
+        html: { overscrollBehavior: 'none' },
+        body: { overscrollBehavior: 'none' },
+      },
+    },
     MuiButton: {
       defaultProps: { disableElevation: true },
     },
