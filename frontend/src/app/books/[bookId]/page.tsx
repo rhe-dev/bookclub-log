@@ -6,7 +6,6 @@ import { IconButton, Menu, MenuItem, Stack } from '@mui/material';
 import { useParams, useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { useBookQuery, useDeleteBookMutation } from '@/shared/api/bookApi';
-import { useClubsQuery } from '@/shared/api/clubApi';
 import {
   useCommentsQuery,
   useCreateCommentMutation,
@@ -29,10 +28,7 @@ import { CommentThreadItem } from './components/CommentThreadItem';
 export default function BookDetailPage() {
   const router = useRouter();
   const { bookId } = useParams<{ bookId: string }>();
-  const member = useRequireMember();
-
-  const clubsQuery = useClubsQuery();
-  const club = clubsQuery.data?.[0];
+  const session = useRequireMember();
   const bookQuery = useBookQuery(bookId);
   const commentsQuery = useCommentsQuery(bookId);
   const createMutation = useCreateCommentMutation(bookId);
@@ -42,9 +38,9 @@ export default function BookDetailPage() {
   const [editOpen, setEditOpen] = useState(false);
   const [deleteOpen, setDeleteOpen] = useState(false);
 
-  if (!member) return null;
+  if (!session) return null;
 
-  const isLeader = member.role === 'LEADER';
+  const isLeader = session.club.role === 'LEADER';
   const book = bookQuery.data;
   const threads = commentsQuery.data?.items ?? [];
   const commentCount = commentsQuery.data?.meta.totalCount ?? 0;
@@ -172,7 +168,7 @@ export default function BookDetailPage() {
           <BookFormModal
             open={editOpen}
             onClose={() => setEditOpen(false)}
-            clubPublicId={club?.publicId}
+            clubPublicId={session.club.publicId}
             book={book}
           />
           <CommonModal

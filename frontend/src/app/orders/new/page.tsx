@@ -12,7 +12,7 @@ import {
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { useBooksQuery } from '@/shared/api/bookApi';
-import { useClubsQuery } from '@/shared/api/clubApi';
+import { useMyClubsQuery } from '@/shared/api/clubApi';
 import { useCreateOrderMutation } from '@/shared/api/orderApi';
 import { CommonContainer } from '@/shared/components/layout/CommonContainer';
 import { CommonButton } from '@/shared/components/ui/CommonButton';
@@ -32,11 +32,15 @@ const STEP_LABELS = ['책 선택', '수록 확인', '제목·부수'];
 
 export default function OrderNewPage() {
   const router = useRouter();
-  const member = useRequireMember();
-  const clubsQuery = useClubsQuery();
-  const club = clubsQuery.data?.[0];
+  const session = useRequireMember();
+  const club = session?.club;
   const booksQuery = useBooksQuery(club?.publicId);
   const createMutation = useCreateOrderMutation(club?.publicId);
+  // 부수 기본값(멤버 수)용 — 현재 클럽의 멤버 수는 내 클럽 목록에서 찾는다
+  const myClubsQuery = useMyClubsQuery(session?.member.publicId);
+  const memberCount =
+    myClubsQuery.data?.find((c) => c.publicId === club?.publicId)
+      ?.memberCount ?? 0;
 
   const [step, setStep] = useState(0);
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
@@ -45,7 +49,7 @@ export default function OrderNewPage() {
   const [errors, setErrors] = useState<{ title?: string; copies?: string }>({});
   const [completedOrder, setCompletedOrder] = useState<Order | null>(null);
 
-  if (!member) return null;
+  if (!session || !club) return null;
 
   const rawBooks = booksQuery.data?.items ?? [];
   // 완독 책이 앞에 오도록 정렬 (비활성 카드는 뒤로)
@@ -57,8 +61,8 @@ export default function OrderNewPage() {
   const selectedBooks = selectedIds
     .map((id) => books.find((b) => b.publicId === id))
     .filter((b): b is NonNullable<typeof b> => Boolean(b));
-  const isLoading = clubsQuery.isLoading || booksQuery.isLoading;
-  const isError = clubsQuery.isError || booksQuery.isError;
+  const isLoading = booksQuery.isLoading;
+  const isError = booksQuery.isError;
 
   const toggleBook = (bookPublicId: string) => {
     setSelectedIds((prev) =>
@@ -91,8 +95,8 @@ export default function OrderNewPage() {
   const goNext = () => {
     // 3단계 진입 시 기본값 채움 — 제목은 모임 이름, 부수는 멤버 수
     if (step === 1) {
-      if (!title.trim() && club) setTitle(`${club.name} 문집`);
-      if (!copies && club) setCopies(String(club.memberCount));
+      if (!title.trim()) setTitle(`${club.name} 문집`);
+      if (!copies && memberCount > 0) setCopies(String(memberCount));
     }
     setStep((prev) => prev + 1);
   };
@@ -124,10 +128,7 @@ export default function OrderNewPage() {
       ) : isError ? (
         <ErrorView
           message="책 목록을 불러오지 못했어요."
-          onRetry={() => {
-            void clubsQuery.refetch();
-            void booksQuery.refetch();
-          }}
+          onRetry={() => void booksQuery.refetch()}
         />
       ) : isLoading ? (
         <Stack spacing={2}>
@@ -185,7 +186,7 @@ export default function OrderNewPage() {
               onTitleChange={handleTitleChange}
               copies={copies}
               onCopiesChange={handleCopiesChange}
-              memberCount={club?.memberCount ?? 0}
+              memberCount={memberCount}
               bookCount={selectedBooks.length}
               errors={errors}
             />

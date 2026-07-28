@@ -1,6 +1,9 @@
 /** TanStack Query 키 단일 소스 */
 export const queryKeys = {
+  members: ['members'] as const,
   clubs: ['clubs'] as const,
+  clubsMine: (memberPublicId: string) =>
+    ['clubs', 'mine', memberPublicId] as const,
   clubMembers: (clubPublicId: string) =>
     ['clubs', clubPublicId, 'members'] as const,
   /** status 미지정(전체)은 'ALL' 세그먼트로 캐시 분리 */

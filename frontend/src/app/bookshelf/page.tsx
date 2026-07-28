@@ -7,7 +7,6 @@ import { Box, Chip, Stack } from '@mui/material';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { useBooksQuery } from '@/shared/api/bookApi';
-import { useClubsQuery } from '@/shared/api/clubApi';
 import { CommonContainer } from '@/shared/components/layout/CommonContainer';
 import { CommonButton } from '@/shared/components/ui/CommonButton';
 import { ErrorView } from '@/shared/components/ui/ErrorView';
@@ -34,27 +33,26 @@ const FILTERS: { value: FilterValue; label: string }[] = [
 
 export default function BookshelfPage() {
   const router = useRouter();
-  const member = useRequireMember();
+  const session = useRequireMember();
   const [filter, setFilter] = useState<FilterValue>('ALL');
   const [formOpen, setFormOpen] = useState(false);
 
-  const clubsQuery = useClubsQuery();
-  const club = clubsQuery.data?.[0];
+  const club = session?.club;
   const booksQuery = useBooksQuery(
     club?.publicId,
     filter === 'ALL' ? undefined : filter,
   );
 
-  if (!member) return null;
+  if (!session || !club) return null;
 
-  const isLeader = member.role === 'LEADER';
+  const isLeader = club.role === 'LEADER';
   const books = booksQuery.data?.items ?? [];
   const readingBooks =
     filter === 'ALL' ? books.filter((b) => b.status === 'READING') : [];
   const shelfBooks =
     filter === 'ALL' ? books.filter((b) => b.status !== 'READING') : books;
-  const isLoading = clubsQuery.isLoading || booksQuery.isLoading;
-  const isError = clubsQuery.isError || booksQuery.isError;
+  const isLoading = booksQuery.isLoading;
+  const isError = booksQuery.isError;
   const isEmpty = !isLoading && !isError && books.length === 0;
 
   return (
@@ -72,21 +70,15 @@ export default function BookshelfPage() {
             token="text_b_24"
             sx={{ fontSize: { xs: 20, md: 24 }, wordBreak: 'keep-all' }}
           >
-            {club ? (
-              <>
-                <Typo
-                  component="span"
-                  token="text_b_24"
-                  color={colorChips.primary[500]}
-                  sx={{ fontSize: { xs: 20, md: 24 } }}
-                >
-                  {club.name}
-                </Typo>{' '}
-                책방
-              </>
-            ) : (
-              '우리 모임 책방'
-            )}
+            <Typo
+              component="span"
+              token="text_b_24"
+              color={colorChips.primary[500]}
+              sx={{ fontSize: { xs: 20, md: 24 } }}
+            >
+              {club.name}
+            </Typo>{' '}
+            책방
           </Typo>
           <Stack direction="row" spacing={1}>
             {!isEmpty && (
@@ -110,10 +102,7 @@ export default function BookshelfPage() {
         {isError ? (
           <ErrorView
             message="책방을 불러오지 못했어요."
-            onRetry={() => {
-              void clubsQuery.refetch();
-              void booksQuery.refetch();
-            }}
+            onRetry={() => void booksQuery.refetch()}
           />
         ) : isLoading ? (
           <BookshelfSkeleton />
@@ -202,7 +191,7 @@ export default function BookshelfPage() {
       <BookFormModal
         open={formOpen}
         onClose={() => setFormOpen(false)}
-        clubPublicId={club?.publicId}
+        clubPublicId={club.publicId}
       />
     </>
   );

@@ -1,45 +1,72 @@
 'use client';
 
-import ArrowBackIosNewRoundedIcon from '@mui/icons-material/ArrowBackIosNewRounded';
+import CheckRoundedIcon from '@mui/icons-material/CheckRounded';
 import KeyboardArrowDownRoundedIcon from '@mui/icons-material/KeyboardArrowDownRounded';
-import {
-  Box,
-  ButtonBase,
-  Divider,
-  IconButton,
-  Menu,
-  MenuItem,
-} from '@mui/material';
+import { Box, ButtonBase, Divider, Menu, MenuItem, Stack } from '@mui/material';
 import Image from 'next/image';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { useState } from 'react';
+import { useMyClubsQuery } from '@/shared/api/clubApi';
+import { CommonButton } from '@/shared/components/ui/CommonButton';
 import { ROUTES } from '@/shared/constants/routes';
+import { useLoginModalStore } from '@/shared/stores/loginModalStore';
 import { useMemberStore } from '@/shared/stores/memberStore';
+import { toast } from '@/shared/stores/toastStore';
 import { colorChips } from '@/shared/styles/colors';
+import type { MyClub } from '@/shared/types/club';
 import { MemberAvatar } from '../ui/MemberAvatar';
 import { Typo } from '../ui/Typo';
 import { CommonContainer } from './CommonContainer';
+import { LoginModal } from './LoginModal';
+
+/** 로그인 후 사용 가능한 서비스가 GNB 메뉴 — 현재 위치는 활성 스타일로 표시 */
+const NAV_ITEMS = [
+  { label: '책방', href: ROUTES.bookshelf, pattern: /^\/(bookshelf|books)/ },
+  { label: '문집 만들기', href: ROUTES.orderNew, pattern: /^\/orders/ },
+];
 
 /**
- * 공통 헤더 — 로고(책방 이동) + 현재 멤버 칩(멤버 변경 메뉴).
- * 반응형: 모바일 56px/데스크탑 64px, 모바일에서는 칩이 아바타만 남고
- * 이름·역할은 메뉴 상단에서 확인한다.
+ * 공통 헤더 — 로고(로그인 시 책방, 비로그인 시 서비스 소개) + 내비 메뉴(책방·문집 만들기)
+ * + 멤버 메뉴(내 클럽 전환·마이페이지·로그아웃). 비로그인 시에는 로그인 버튼 (D-024).
+ * 반응형: 모바일 56px/데스크탑 64px, 모바일은 로고·메뉴만 남고 이름은 멤버 메뉴 상단에서.
  */
 export const Header = () => {
   const member = useMemberStore((s) => s.member);
-  const clearMember = useMemberStore((s) => s.clearMember);
+  const club = useMemberStore((s) => s.club);
+  const switchClub = useMemberStore((s) => s.switchClub);
+  const logout = useMemberStore((s) => s.logout);
+  const openLoginModal = useLoginModalStore((s) => s.open);
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
   const router = useRouter();
   const pathname = usePathname();
-  // GNB 구성: 현재 페이지명 + 홈으로 돌아가기(로고, 모바일은 ←) + 사용자 메뉴
-  const pageTitle = getPageTitle(pathname);
-  const showBack = Boolean(member) && pageTitle !== null;
+  const myClubsQuery = useMyClubsQuery(member?.publicId);
+  const isLeader = club?.role === 'LEADER';
 
-  const handleChangeMember = () => {
+  const handleGoMyPage = () => {
     setAnchorEl(null);
-    clearMember();
-    router.push(ROUTES.entry);
+    router.push(ROUTES.myPage);
+  };
+
+  const handleLogout = () => {
+    setAnchorEl(null);
+    logout();
+    toast.info('로그아웃했어요. 다음에 또 만나요!');
+    router.push(ROUTES.home);
+  };
+
+  // 클럽 선택 — 다른 클럽이면 컨텍스트 전환, 어느 쪽이든 그 클럽 책방으로
+  const handleSelectClub = (target: MyClub) => {
+    setAnchorEl(null);
+    if (target.publicId !== club?.publicId) {
+      switchClub({
+        publicId: target.publicId,
+        name: target.name,
+        role: target.myRole,
+      });
+      toast.success(`'${target.name}' 책방으로 이동했어요.`);
+    }
+    router.push(ROUTES.bookshelf);
   };
 
   return (
@@ -62,21 +89,17 @@ export const Header = () => {
           gap: 1,
         }}
       >
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
-          {showBack && (
-            <IconButton
-              aria-label="책방으로 돌아가기"
-              onClick={() => router.push(ROUTES.bookshelf)}
-              sx={{ ml: -1, display: { xs: 'inline-flex', md: 'none' } }}
-            >
-              <ArrowBackIosNewRoundedIcon
-                sx={{ fontSize: 18, color: colorChips.grayScale[600] }}
-              />
-            </IconButton>
-          )}
+        <Box
+          sx={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: { xs: 1, md: 2 },
+            minWidth: 0,
+          }}
+        >
           <Box
             component={Link}
-            href={member ? ROUTES.bookshelf : ROUTES.entry}
+            href={member ? ROUTES.bookshelf : ROUTES.home}
             sx={{
               display: 'flex',
               alignItems: 'center',
@@ -94,22 +117,56 @@ export const Header = () => {
               height={28}
               priority
             />
-            {/* 서브 페이지는 현재 페이지명, 홈·입장은 서비스명(모바일은 로고만) */}
+            {/* 모바일은 로고만 — 메뉴 공간 확보 */}
             <Typo
               token="text_b_18"
               color={colorChips.basic.black}
               sx={{
                 fontSize: { xs: 16, md: 18 },
                 whiteSpace: 'nowrap',
-                display: pageTitle ? 'block' : { xs: 'none', sm: 'block' },
+                display: { xs: 'none', md: 'block' },
               }}
             >
-              {pageTitle ?? '북클럽 로그'}
+              북클럽 로그
             </Typo>
           </Box>
+
+          {member && (
+            <Stack direction="row" spacing={{ xs: 0.25, md: 0.5 }}>
+              {NAV_ITEMS.map((item) => {
+                const isActive = item.pattern.test(pathname);
+                return (
+                  <Box
+                    key={item.href}
+                    component={Link}
+                    href={item.href}
+                    sx={{
+                      px: { xs: 1, md: 1.25 },
+                      py: 0.75,
+                      borderRadius: 1.5,
+                      textDecoration: 'none',
+                      '&:hover': { backgroundColor: colorChips.grayScale[100] },
+                    }}
+                  >
+                    <Typo
+                      token={isActive ? 'text_sb_14' : 'text_m_14'}
+                      color={
+                        isActive
+                          ? colorChips.primary[500]
+                          : colorChips.grayScale[600]
+                      }
+                      sx={{ whiteSpace: 'nowrap' }}
+                    >
+                      {item.label}
+                    </Typo>
+                  </Box>
+                );
+              })}
+            </Stack>
+          )}
         </Box>
 
-        {member && (
+        {member ? (
           <>
             <ButtonBase
               onClick={(e) => setAnchorEl(e.currentTarget)}
@@ -140,7 +197,7 @@ export const Header = () => {
                 <Typo token="text_sb_14" color={colorChips.grayScale[800]}>
                   {member.name}
                 </Typo>
-                {member.role === 'LEADER' && (
+                {isLeader && (
                   <Typo token="text_m_12" color={colorChips.secondary[500]}>
                     모임장
                   </Typo>
@@ -157,38 +214,69 @@ export const Header = () => {
               anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
               transformOrigin={{ vertical: 'top', horizontal: 'right' }}
             >
-              <Box sx={{ px: 2, py: 1 }}>
+              {/* 이름은 GNB에 없는 모바일에서만 — 역할은 클럽별로 다르므로 내 클럽 목록에서 확인 */}
+              <Box sx={{ px: 2, py: 1, display: { xs: 'block', sm: 'none' } }}>
                 <Typo token="text_sb_14" color={colorChips.grayScale[800]}>
                   {member.name}
-                  {member.role === 'LEADER' && (
-                    <Typo
-                      component="span"
-                      token="text_m_12"
-                      color={colorChips.secondary[500]}
-                      sx={{ ml: 0.75 }}
-                    >
-                      모임장
-                    </Typo>
-                  )}
                 </Typo>
               </Box>
+              <Divider sx={{ display: { xs: 'block', sm: 'none' } }} />
+              <Box sx={{ px: 2, pt: 1, pb: 0.5 }}>
+                <Typo token="text_m_12" color={colorChips.grayScale[500]}>
+                  내 클럽
+                </Typo>
+              </Box>
+              {myClubsQuery.data?.map((c) => {
+                const isCurrent = c.publicId === club?.publicId;
+                return (
+                  <MenuItem
+                    key={c.publicId}
+                    onClick={() => handleSelectClub(c)}
+                    sx={{ gap: 1, justifyContent: 'space-between' }}
+                  >
+                    <Box
+                      sx={{ display: 'flex', alignItems: 'center', gap: 0.75 }}
+                    >
+                      <Typo
+                        token={isCurrent ? 'text_sb_14' : 'text_r_14'}
+                        color={colorChips.grayScale[800]}
+                      >
+                        {c.name}
+                      </Typo>
+                      <Typo
+                        token="text_m_12"
+                        color={
+                          c.myRole === 'LEADER'
+                            ? colorChips.secondary[500]
+                            : colorChips.grayScale[500]
+                        }
+                      >
+                        {c.myRole === 'LEADER' ? '모임장' : '멤버'}
+                      </Typo>
+                    </Box>
+                    {isCurrent && (
+                      <CheckRoundedIcon
+                        sx={{ fontSize: 16, color: colorChips.primary[500] }}
+                      />
+                    )}
+                  </MenuItem>
+                );
+              })}
               <Divider />
-              <MenuItem onClick={handleChangeMember}>멤버 변경</MenuItem>
+              <MenuItem onClick={handleGoMyPage}>마이페이지</MenuItem>
+              <MenuItem onClick={handleLogout}>로그아웃</MenuItem>
             </Menu>
           </>
+        ) : (
+          <CommonButton
+            label="로그인"
+            size="small"
+            buttonVariant="outlined"
+            onClick={openLoginModal}
+          />
         )}
       </CommonContainer>
+      <LoginModal />
     </Box>
   );
 };
-
-const PAGE_TITLES: { pattern: RegExp; title: string }[] = [
-  { pattern: /^\/books\//, title: '책 상세' },
-  { pattern: /^\/orders\/new/, title: '문집 만들기' },
-  { pattern: /^\/my/, title: '마이페이지' },
-  { pattern: /^\/admin/, title: '주문 관리' },
-];
-
-/** 서브 페이지명 — 홈(책방)·입장은 null */
-const getPageTitle = (pathname: string) =>
-  PAGE_TITLES.find(({ pattern }) => pattern.test(pathname))?.title ?? null;

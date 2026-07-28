@@ -1,12 +1,18 @@
 import { useQuery } from '@tanstack/react-query';
 import { queryKeys } from '@/shared/constants/queryKeys';
-import type { Club, ClubMember } from '@/shared/types/club';
+import type { Club, ClubMember, MyClub } from '@/shared/types/club';
 import { axiosClient } from './axiosClient';
 
 // 조회 실패는 화면 단위 에러 뷰로 보여주므로 전역 토스트는 끈다
 export const clubApi = {
   getClubs: async (): Promise<Club[]> => {
     const { data } = await axiosClient.get<Club[]>('/clubs', {
+      skipErrorToast: true,
+    });
+    return data;
+  },
+  getMyClubs: async (): Promise<MyClub[]> => {
+    const { data } = await axiosClient.get<MyClub[]>('/clubs/mine', {
       skipErrorToast: true,
     });
     return data;
@@ -22,6 +28,14 @@ export const clubApi = {
 
 export const useClubsQuery = () =>
   useQuery({ queryKey: queryKeys.clubs, queryFn: clubApi.getClubs });
+
+/** 내가 가입한 클럽 목록 — GNB 클럽 변경·마이페이지 프로필용 */
+export const useMyClubsQuery = (memberPublicId?: string) =>
+  useQuery({
+    queryKey: queryKeys.clubsMine(memberPublicId ?? ''),
+    queryFn: clubApi.getMyClubs,
+    enabled: Boolean(memberPublicId),
+  });
 
 export const useClubMembersQuery = (clubPublicId?: string) =>
   useQuery({

@@ -20,6 +20,22 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/members": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["MembersController_findAll"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/clubs": {
         parameters: {
             query?: never;
@@ -28,6 +44,22 @@ export interface paths {
             cookie?: never;
         };
         get: operations["ClubsController_findAll"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/clubs/mine": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["ClubsController_findMine"];
         put?: never;
         post?: never;
         delete?: never;
@@ -248,6 +280,19 @@ export interface paths {
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
+        MemberAccountClubResponse: {
+            /** @enum {string} */
+            role: "LEADER" | "MEMBER";
+            publicId: string;
+            name: string;
+        };
+        MemberAccountResponse: {
+            publicId: string;
+            name: string;
+            avatarEmoji: string;
+            color: string;
+            clubs: components["schemas"]["MemberAccountClubResponse"][];
+        };
         ClubResponse: {
             publicId: string;
             name: string;
@@ -255,6 +300,16 @@ export interface components {
             memberCount: number;
             /** Format: date-time */
             createdAt: string;
+        };
+        MyClubResponse: {
+            /** @enum {string} */
+            myRole: "LEADER" | "MEMBER";
+            publicId: string;
+            name: string;
+            description: string;
+            memberCount: number;
+            /** Format: date-time */
+            joinedAt: string;
         };
         ClubMemberResponse: {
             /** @enum {string} */
@@ -389,6 +444,10 @@ export interface components {
             copies: number;
             bookIds: string[];
         };
+        OrderClubSummaryResponse: {
+            publicId: string;
+            name: string;
+        };
         OrderBookSummaryResponse: {
             publicId: string;
             title: string;
@@ -414,6 +473,7 @@ export interface components {
             copies: number;
             /** Format: date-time */
             createdAt: string;
+            club: components["schemas"]["OrderClubSummaryResponse"];
             member: components["schemas"]["MemberSummaryResponse"];
             books: components["schemas"]["OrderBookSummaryResponse"][];
             history: components["schemas"]["OrderHistoryResponse"][];
@@ -452,6 +512,25 @@ export interface operations {
             };
         };
     };
+    MembersController_findAll: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MemberAccountResponse"][];
+                };
+            };
+        };
+    };
     ClubsController_findAll: {
         parameters: {
             query?: never;
@@ -467,6 +546,25 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["ClubResponse"][];
+                };
+            };
+        };
+    };
+    ClubsController_findMine: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MyClubResponse"][];
                 };
             };
         };
