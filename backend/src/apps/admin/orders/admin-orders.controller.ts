@@ -12,7 +12,7 @@ import {
   OrderResponse,
   PaginatedOrdersResponse,
 } from '../../../shared/orders/dto/order.response';
-import { TransitionOrderDto } from '../../../shared/orders/dto/transition-order.dto';
+import { AdminTransitionOrderDto } from './dto/admin-transition-order.dto';
 import { AdminOrdersService } from './admin-orders.service';
 
 /** 운영자용 — 데모 범위상 별도 인증 없이 /admin 경로로만 분리 (D-003) */
@@ -36,7 +36,7 @@ export class AdminOrdersController {
   @Post(':orderId/transition')
   transition(
     @Param('orderId') orderId: string,
-    @Body() dto: TransitionOrderDto,
+    @Body() dto: AdminTransitionOrderDto,
   ): Promise<OrderResponse> {
     return this.adminOrdersService.transitionAsAdmin(orderId, dto.toStatus);
   }

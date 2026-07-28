@@ -8,24 +8,24 @@ import {
   MaxLength,
   Min,
 } from 'class-validator';
-import { ErrorMessage } from '../../../../shared/constants/error-message';
+import { ErrorCode } from '../../../../shared/constants/error-code';
 
 export class CreateOrderDto {
   /** 문집 제목 */
-  @IsString()
-  @IsNotEmpty({ message: ErrorMessage.ORDER_TITLE_REQUIRED })
-  @MaxLength(100)
+  @IsString({ message: ErrorCode.COMMON_INVALID_INPUT })
+  @IsNotEmpty({ message: ErrorCode.ORDER_TITLE_REQUIRED })
+  @MaxLength(100, { message: ErrorCode.ORDER_TITLE_MAX })
   title: string;
 
   /** 인쇄 부수 */
-  @IsInt()
-  @Min(1, { message: ErrorMessage.ORDER_COPIES_MIN })
-  @Max(100)
+  @IsInt({ message: ErrorCode.COMMON_INVALID_INPUT })
+  @Min(1, { message: ErrorCode.ORDER_COPIES_MIN })
+  @Max(100, { message: ErrorCode.ORDER_COPIES_MAX })
   copies: number;
 
   /** 수록할 책 publicId 목록 */
-  @IsArray()
-  @ArrayNotEmpty({ message: ErrorMessage.ORDER_BOOKS_REQUIRED })
-  @IsString({ each: true })
+  @IsArray({ message: ErrorCode.COMMON_INVALID_INPUT })
+  @ArrayNotEmpty({ message: ErrorCode.ORDER_BOOKS_REQUIRED })
+  @IsString({ each: true, message: ErrorCode.COMMON_INVALID_INPUT })
   bookIds: string[];
 }

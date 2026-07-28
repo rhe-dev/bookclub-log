@@ -1,6 +1,6 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { ActorType, OrderStatus } from '@prisma/client';
-import { ErrorMessage } from '../../../shared/constants/error-message';
+import { ErrorCode } from '../../../shared/constants/error-code';
 import { PaginationQuery } from '../../../shared/dto/pagination.query';
 import { TransitionOrderDto } from '../../../shared/orders/dto/transition-order.dto';
 import { orderInclude, toOrderDto } from '../../../shared/orders/order.mapper';
@@ -38,9 +38,9 @@ export class OrdersService {
       },
     });
     if (books.length !== uniqueBookIds.length)
-      throw new BadRequestException(ErrorMessage.ORDER_BOOK_INVALID);
+      throw new BadRequestException(ErrorCode.ORDER_BOOK_INVALID);
     if (books.some((book) => book.status !== 'DONE'))
-      throw new BadRequestException(ErrorMessage.ORDER_BOOK_NOT_DONE);
+      throw new BadRequestException(ErrorCode.ORDER_BOOK_NOT_DONE);
 
     // 선택(입력) 순서를 수록 순서로 보존
     const bookByPublicId = new Map(books.map((book) => [book.publicId, book]));
@@ -78,10 +78,6 @@ export class OrdersService {
   async listMine(memberPublicId: string | undefined, query: PaginationQuery) {
     const member = await this.clubsService.getMemberOrThrow(memberPublicId);
     return this.ordersShared.paginate({ memberId: member.id }, query);
-  }
-
-  getOne(orderPublicId: string) {
-    return this.ordersShared.getOne(orderPublicId);
   }
 
   /** 주문자 전이 — 취소·구매 확정·환불/재제작 요청(사유 포함) */

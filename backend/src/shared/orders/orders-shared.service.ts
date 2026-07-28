@@ -11,7 +11,7 @@ import {
   OrderStatus,
   Prisma,
 } from '@prisma/client';
-import { ErrorMessage } from '../constants/error-message';
+import { ErrorCode } from '../constants/error-code';
 import { PaginationQuery, toPageMeta } from '../dto/pagination.query';
 import { PrismaService } from '../prisma/prisma.service';
 import { orderInclude, toOrderDto } from './order.mapper';
@@ -26,17 +26,8 @@ export class OrdersSharedService {
     const order = await this.prisma.order.findUnique({
       where: { publicId: orderPublicId },
     });
-    if (!order) throw new NotFoundException(ErrorMessage.ORDER_NOT_FOUND);
+    if (!order) throw new NotFoundException(ErrorCode.ORDER_NOT_FOUND);
     return order;
-  }
-
-  async getOne(orderPublicId: string) {
-    const order = await this.prisma.order.findUnique({
-      where: { publicId: orderPublicId },
-      include: orderInclude,
-    });
-    if (!order) throw new NotFoundException(ErrorMessage.ORDER_NOT_FOUND);
-    return toOrderDto(order);
   }
 
   async paginate(where: Prisma.OrderWhereInput, query: PaginationQuery) {
@@ -73,30 +64,28 @@ export class OrdersSharedService {
       isOrderer,
     });
     if (error === 'INVALID')
-      throw new BadRequestException(ErrorMessage.ORDER_INVALID_TRANSITION);
+      throw new BadRequestException(ErrorCode.ORDER_INVALID_TRANSITION);
     if (error === 'ACTOR_FORBIDDEN')
       throw new ForbiddenException(
         actor === ActorType.USER
-          ? ErrorMessage.ORDER_ADMIN_ONLY_TRANSITION
-          : ErrorMessage.ORDER_ORDERER_ONLY,
+          ? ErrorCode.ORDER_ADMIN_ONLY_TRANSITION
+          : ErrorCode.ORDER_ORDERER_ONLY,
       );
     if (error === 'NOT_ORDERER')
-      throw new ForbiddenException(ErrorMessage.ORDER_ORDERER_ONLY);
+      throw new ForbiddenException(ErrorCode.ORDER_ORDERER_ONLY);
 
     // 환불·재제작 요청은 사유 필수, OTHER는 상세까지 — 그 외 전이에서는 사유를 기록하지 않는다
     const isIssueRequest =
       toStatus === OrderStatus.REFUND_REQUESTED ||
       toStatus === OrderStatus.REMAKE_REQUESTED;
     if (isIssueRequest && !issue?.reason)
-      throw new BadRequestException(ErrorMessage.ORDER_REASON_REQUIRED);
+      throw new BadRequestException(ErrorCode.ORDER_REASON_REQUIRED);
     if (isIssueRequest && issue?.reason === OrderIssueReason.OTHER) {
       const detail = issue.reasonDetail?.trim() ?? '';
       if (!detail)
-        throw new BadRequestException(
-          ErrorMessage.ORDER_REASON_DETAIL_REQUIRED,
-        );
+        throw new BadRequestException(ErrorCode.ORDER_REASON_DETAIL_REQUIRED);
       if (detail.length < 5)
-        throw new BadRequestException(ErrorMessage.ORDER_REASON_DETAIL_MIN);
+        throw new BadRequestException(ErrorCode.ORDER_REASON_DETAIL_MIN);
     }
 
     const [, updated] = await this.prisma.$transaction([

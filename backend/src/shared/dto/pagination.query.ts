@@ -1,18 +1,19 @@
 import { Type } from 'class-transformer';
 import { IsInt, IsOptional, Max, Min } from 'class-validator';
+import { ErrorCode } from '../constants/error-code';
 
 export class PaginationQuery {
   @IsOptional()
   @Type(() => Number)
-  @IsInt()
-  @Min(1)
+  @IsInt({ message: ErrorCode.PAGE_INVALID })
+  @Min(1, { message: ErrorCode.PAGE_INVALID })
   page?: number = 1;
 
   @IsOptional()
   @Type(() => Number)
-  @IsInt()
-  @Min(1)
-  @Max(100)
+  @IsInt({ message: ErrorCode.LIMIT_INVALID })
+  @Min(1, { message: ErrorCode.LIMIT_INVALID })
+  @Max(100, { message: ErrorCode.LIMIT_INVALID })
   limit?: number = 20;
 }
 

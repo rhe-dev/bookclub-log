@@ -43,11 +43,6 @@ export class OrdersController {
     return this.ordersService.listMine(memberId, query);
   }
 
-  @Get('orders/:orderId')
-  getOne(@Param('orderId') orderId: string): Promise<OrderResponse> {
-    return this.ordersService.getOne(orderId);
-  }
-
   /** 주문자 전이 — 취소·구매 확정·환불/재제작 요청 */
   @Post('orders/:orderId/transition')
   transition(

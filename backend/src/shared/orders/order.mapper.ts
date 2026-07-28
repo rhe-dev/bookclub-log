@@ -5,6 +5,7 @@ import { memberSummarySelect } from '../prisma/selects';
 export const orderInclude = {
   club: { select: { publicId: true, name: true } },
   member: memberSummarySelect,
+  // 수록 책은 소프트 딜리트돼도 유지 — 주문은 제작 시점 스냅샷이라 이력을 보존한다
   books: {
     orderBy: { position: 'asc' as const },
     include: {

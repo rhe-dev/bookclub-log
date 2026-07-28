@@ -5,7 +5,7 @@ import {
 } from '@nestjs/common';
 import { BookStatus, Prisma } from '@prisma/client';
 import { ClubsService } from '../clubs/clubs.service';
-import { ErrorMessage } from '../../../shared/constants/error-message';
+import { ErrorCode } from '../../../shared/constants/error-code';
 import { toPageMeta } from '../../../shared/dto/pagination.query';
 import { PrismaService } from '../../../shared/prisma/prisma.service';
 import { memberSummarySelect } from '../../../shared/prisma/selects';
@@ -44,7 +44,7 @@ export class BooksService {
         // 기간 미입력(null) 책이 최상단 — '설정 미완'을 책방 상단에서 바로 발견해 고치게 하려는 의도
         orderBy: [
           { periodFrom: { sort: 'desc', nulls: 'first' } },
-          { id: 'desc' },
+          { createdAt: 'desc' },
         ],
         skip: (page - 1) * limit,
         take: limit,
@@ -97,7 +97,7 @@ export class BooksService {
       where: { publicId: bookPublicId, deletedAt: null },
       include: bookInclude,
     });
-    if (!book) throw new NotFoundException(ErrorMessage.BOOK_NOT_FOUND);
+    if (!book) throw new NotFoundException(ErrorCode.BOOK_NOT_FOUND);
     return this.toDto(book);
   }
 
@@ -136,6 +136,10 @@ export class BooksService {
     if (dto.periodFrom !== undefined) data.periodFrom = nextPeriodFrom;
     if (dto.periodTo !== undefined) data.periodTo = nextPeriodTo;
 
+    // 빈 PATCH는 no-op — updatedAt만 갱신되는 것 방지 (comments.update와 동일 기준)
+    if (Object.keys(data).length === 0 && dto.participantIds === undefined)
+      return this.detail(bookPublicId);
+
     const updated = await this.prisma.$transaction(async (tx) => {
       if (dto.participantIds !== undefined) {
         const participantMemberIds = await this.resolveParticipants(
@@ -173,13 +177,13 @@ export class BooksService {
     const book = await this.prisma.book.findFirst({
       where: { publicId, deletedAt: null },
     });
-    if (!book) throw new NotFoundException(ErrorMessage.BOOK_NOT_FOUND);
+    if (!book) throw new NotFoundException(ErrorCode.BOOK_NOT_FOUND);
     return book;
   }
 
   private assertValidPeriod(from: Date | null, to: Date | null) {
     if (from && to && to < from)
-      throw new BadRequestException(ErrorMessage.BOOK_PERIOD_INVALID);
+      throw new BadRequestException(ErrorCode.BOOK_PERIOD_INVALID);
   }
 
   /** 참여 회원 publicId 목록 → 내부 id 목록. 전원이 해당 모임 멤버인지 검증 */
@@ -190,7 +194,7 @@ export class BooksService {
       where: { clubId, member: { publicId: { in: unique } } },
     });
     if (memberships.length !== unique.length)
-      throw new BadRequestException(ErrorMessage.BOOK_PARTICIPANT_NOT_IN_CLUB);
+      throw new BadRequestException(ErrorCode.BOOK_PARTICIPANT_NOT_IN_CLUB);
     return memberships.map((m) => m.memberId);
   }
 
