@@ -46,7 +46,7 @@
 - 프론트 공통 UI: `shared/components/ui/`의 Common* 컴포넌트(단일 .tsx, 배럴 없음) 우선 사용. 토스트는 `toast.success()/error()/info()` 전역 헬퍼. 페이지 콘텐츠 폭은 `CommonContainer`(양옆 패딩 20px 고정, maxWidth prop) 사용 — MUI Container 직접 사용 금지
 - 프론트 세로 여백: margin·Stack spacing 대신 `VerticalGap`(px 명시)으로 관리 — 여백의 위치·크기가 코드에서 바로 보이게. 반복 목록 아이템 간격만 spacing 허용
 - 프론트 API 호출: `shared/api/axiosClient`(get/post/patch/del 래퍼)만 사용 — X-Member-Id 자동 첨부, 전역 에러 토스트(인라인 표시는 skipErrorToast)
-- 프론트 페이지 구조: 페이지 전용 컴포넌트는 해당 라우트 폴더 하위 `components/`에 co-location(로딩 스켈레톤도 별도 파일로 분리). 루트(`/`)는 리다이렉트 전용 — 실제 화면은 각자 경로를 가진다
+- 프론트 페이지 구조: 페이지 전용 컴포넌트는 해당 라우트 폴더 하위 `components/`에 co-location(로딩 스켈레톤도 별도 파일로 분리). 루트(`/`)는 서비스 소개(랜딩) — 로그인(계정 선택 모달)·모임 시작 CTA의 진입점 (D-024)
 - 프론트 API 타입은 codegen(D-020): 백엔드 DTO·컨트롤러 수정 → backend `npm run openapi:gen`(openapi.json 갱신) → frontend `npm run codegen`(shared/types/api.generated.ts 재생성). 사용처는 `shared/types/` 도메인별 재노출 파일(common·member·club·book·comment)에서만 import — 로컬 재정의·api.generated 직접 import 금지
 - Next 16은 학습 데이터와 API·컨벤션이 다를 수 있음 — 프론트 구현 전 `frontend/node_modules/next/dist/docs/`의 해당 가이드를 먼저 확인
 - 백엔드: Controller → Service → Prisma 레이어링, DTO 검증(class-validator)
