@@ -43,3 +43,9 @@
 - 시도: useRequireMember 가드에 비로그인 안내 토스트 추가 (세션은 zustand persist/localStorage)
 - 결과: 수정 필요. 새 탭에서 로그인 상태로 /my 직접 진입 시 "로그인 후 이용" 토스트와 함께 랜딩으로 튕김 — 헤더는 로그인으로 표시되는 모순을 사용자가 발견
 - 배운 것: zustand v5는 useSyncExternalStore의 서버 스냅샷으로 초기값을 쓰기 때문에, SSR 하이드레이션 첫 렌더의 이펙트에는 localStorage 복원 전 값(null)이 잡힌다. 판정 로직은 렌더 스냅샷 대신 `store.getState()`(현재 값)로 해야 오탐이 없다. 상태 저장소를 쓰는 가드·리다이렉트류는 하이드레이션 타이밍을 항상 의심할 것
+
+### [2026-07-29] Claude Code — 에러 필터의 `split('|', 2)` 오용
+
+- 시도: 검증 에러를 `CODE|상세` 규약으로 던지고 전역 필터에서 코드와 상세로 분리
+- 결과: 수정 필요. 검수에서 발견 — JS `String.split(sep, limit)`의 두 번째 인자는 "결과 배열 길이 제한"이라 `'UNKNOWN_FIELD|a|b'`가 `['UNKNOWN_FIELD','a']`가 되고 `b`가 사라진다. 파이썬 `str.split(sep, maxsplit)`처럼 "분할 횟수"로 착각한 코드였다
+- 배운 것: 같은 이름의 표준 라이브러리 함수라도 언어별 인자 의미가 다르다. 규약(구분자) 파싱은 `indexOf` 기준 수동 분할이 안전하고, 순수 함수라 테스트로 즉시 잡히는 종류였다 — 필터의 `toErrorItem`을 export해 테스트 가능한 형태로 바꿨다

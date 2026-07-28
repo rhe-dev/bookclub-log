@@ -196,4 +196,5 @@
 - 선택지: 한글 메시지 문자열이 계약(기존 D-018) / 에러 타입 enum이 계약이고 메시지는 부속
 - 결정: `shared/constants/error-code.ts`의 **ErrorCode enum이 API 에러 계약**. 서비스 예외·DTO 검증 모두 코드를 던지고, 전역 필터가 코드별 기본 한글 메시지(ERROR_MESSAGE 맵 — 카피 단일 소스)를 붙여 `{ statusCode, errors: [{ code, message }], timestamp, path }`로 응답. 프론트는 **code로 분기**(예: 세션 무효 = MEMBER_NOT_FOUND·MEMBER_HEADER_REQUIRED → 자동 로그아웃)하고 **표시는 서버 message를 그대로** 사용 — 프론트에 별도 한글 맵을 두지 않아 카피 이원화를 막는다. 검증 상세는 `CODE|상세` 규약으로 필터에서 괄호 표기(UNKNOWN_FIELD 등)
 - 이유: 문자열 매칭 분기는 카피 수정만으로 로직이 깨지는 취약 구조(실제로 axiosClient가 한글 문자열을 비교하고 있었음). 코드가 계약이면 FE/BE가 안전하게 분기하고, 카피는 서버 한 곳에서만 관리된다. 다국어·에러 트래킹 확장에도 코드가 기준이 됨
-- 연결: D-018(카피 단일 소스 — 유지, 위치가 ERROR_MESSAGE 맵으로 이동), axiosClient 세션 무효 판정
+- 보강(2026-07-29): 에러 응답 스키마(ApiErrorResponse + ErrorCode enum)를 OpenAPI에 실어 프론트가 생성 타입으로 코드 분기하도록 했다 — 계약을 선언만 하고 스펙에 싣지 않으면 프론트가 문자열을 손으로 재선언하게 되어 D-020(codegen) 취지와 어긋난다. 검증 실패의 필드명은 `CODE|$property` 규약으로 함께 전달
+- 연결: D-018(카피 단일 소스 — 유지, 위치가 ERROR_MESSAGE 맵으로 이동), D-020(codegen), axiosClient 세션 무효 판정
