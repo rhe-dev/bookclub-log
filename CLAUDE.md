@@ -11,8 +11,8 @@
 |---|---|
 | 책방 (책 등록·목록·상세 정보) | `docs/PLAN.md` §3 F1, §5 Book 모델 |
 | 토론 (코멘트·답글) | `docs/PLAN.md` §3 F2, §5 Comment 모델 |
-| 문집 주문·마이페이지 | `docs/PLAN.md` §3 F3, §5 주문 상태 규칙 + `docs/QA.md` "Lv2 로직 검증" |
-| 관리자 (/admin) | `docs/PLAN.md` §3 F4 + `docs/QA.md` "Lv2 로직 검증" |
+| 문집 주문·마이페이지 | `docs/PLAN.md` §3 F3, §5 주문 상태 규칙 + `docs/QA.md` §C(주문-서비스) |
+| 관리자 (/admin) | `docs/PLAN.md` §3 F4 + `docs/QA.md` §D(주문-어드민) |
 | 화면 문구·상태 표시·UX 판단 | `docs/QA.md` 루브릭 + `docs/PLAN.md` §2 페르소나 |
 | 인프라 (Docker·시드) | `docs/TODO.md` 해당 항목 |
 | 범위 판단이 애매할 때 | `docs/PLAN.md` §6 레벨 범위, §7 비목표 |
@@ -44,7 +44,7 @@
 - 프론트: 서버 상태는 TanStack Query, 클라이언트 상태는 Zustand. 컴포넌트는 MUI 우선
 - 프론트 디자인 토큰: 색상은 `shared/styles/colors.ts`의 colorChips만 사용(임의 hex 금지), 텍스트는 `Typo` 컴포넌트 + 타이포 토큰(text_{weight}_{size}). MUI 테마 팔레트도 colorChips에서 파생
 - 프론트 공통 UI: `shared/components/ui/`의 Common* 컴포넌트(단일 .tsx, 배럴 없음) 우선 사용. 토스트는 `toast.success()/error()/info()` 전역 헬퍼. 페이지 콘텐츠 폭은 `CommonContainer`(양옆 패딩 20px 고정, maxWidth prop) 사용 — MUI Container 직접 사용 금지
-- 프론트 세로 여백: margin·Stack spacing 대신 `VerticalGap`(px 명시)으로 관리 — 여백의 위치·크기가 코드에서 바로 보이게. 반복 목록 아이템 간격만 spacing 허용
+- 프론트 세로 여백(D-027): 페이지 레벨·이질 블록 사이 고정 여백은 `VerticalGap`(px 명시). 컴포넌트 내부 소단위 묶음·반복 목록 간격은 Stack spacing 허용. margin(mt/mb)으로 세로 여백 금지
 - 프론트 API 호출: `shared/api/axiosClient`(get/post/patch/del 래퍼)만 사용 — X-Member-Id 자동 첨부, 전역 에러 토스트(인라인 표시는 skipErrorToast)
 - 프론트 페이지 구조: 페이지 전용 컴포넌트는 해당 라우트 폴더 하위 `components/`에 co-location(로딩 스켈레톤도 별도 파일로 분리). 루트(`/`)는 서비스 소개(랜딩) — 로그인(계정 선택 모달)·모임 시작 CTA의 진입점 (D-024)
 - 프론트 API 타입은 codegen(D-020): 백엔드 DTO·컨트롤러 수정 → backend `npm run openapi:gen`(openapi.json 갱신) → frontend `npm run codegen`(shared/types/api.generated.ts 재생성). 사용처는 `shared/types/` 도메인별 재노출 파일(common·member·club·book·comment)에서만 import — 로컬 재정의·api.generated 직접 import 금지
@@ -56,8 +56,8 @@
 - 삭제는 소프트 딜리트(deletedAt)가 기본 — Comment·Book 하드 딜리트 금지
 - 문서 배치: 프/백 공통·기획·프로세스 문서는 루트 `docs/`, 한쪽 앱에만 해당하는 문서는 그 앱의 `docs/`(backend/docs 등)에 둔다. 지엽적 컨벤션 문서는 만들지 않는다 — 기존 코드가 컨벤션의 기준 (D-016)
 - 폴더 구조(프/백 공통): 여러 도메인이 함께 쓰는 코드는 `src/shared/` 아래 기능 단위(dto·constants·filters·utils 등)로 배치. 도메인 폴더에는 그 도메인 전용 코드만
-- 에러 처리(백): 사용자 노출 메시지는 `shared/constants/error-message.ts`의 ErrorMessage enum이 단일 소스 — 도메인 예외·DTO 검증 메시지 모두 여기서 가져온다. 응답 포맷은 전역 필터가 `{ statusCode, messages[], timestamp, path }`로 통일 (D-018)
-- 목록 API는 페이지네이션 기본: `?page=&limit=`(기본 20, 최대 100) → `{ items, meta: { page, limit, totalCount, hasNext } }`
+- 에러 처리(D-018·D-028): 에러 계약은 `shared/constants/error-code.ts`의 **ErrorCode enum** — 도메인 예외·DTO 검증 모두 코드를 던진다. 전역 필터가 코드별 한글 메시지(같은 파일 ERROR_MESSAGE 맵 — 카피 단일 소스)를 붙여 `{ statusCode, errors: [{ code, message }], timestamp, path }`로 응답. 프론트는 code로 분기하고 message를 그대로 표시 — 프론트에 별도 한글 맵을 두지 않는다
+- 목록 API는 페이지네이션 기본(D-026): `?page=&limit=`(기본 20, 최대 100) → `{ items, meta: { page, limit, totalCount, hasNext } }`. 화면은 '더보기'(useInfiniteQuery). 예외(한 화면에 전부 보여야 하는 유한 목록)는 컨트롤러 주석으로 근거 명시
 
 ## 범위 규칙
 
