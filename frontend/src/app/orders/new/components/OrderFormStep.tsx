@@ -78,7 +78,9 @@ export const OrderFormStep = ({
         helperText={
           errors.copies
             ? undefined
-            : `모임 멤버 수만큼 ${memberCount}부를 기본으로 담아뒀어요.`
+            : memberCount > 0
+              ? `모임 멤버 수만큼 ${memberCount}부를 기본으로 담아뒀어요.`
+              : '필요한 부수를 입력해 주세요.'
         }
         slotProps={{ htmlInput: { min: MIN_COPIES, max: MAX_COPIES } }}
         sx={{ maxWidth: 280 }}

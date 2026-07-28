@@ -22,7 +22,7 @@ const ARROW_SX = {
 } as const;
 
 /**
- * 지금 읽는 책 캐러셀 — 여러 권이면 드래그·스와이프·화살표로 넘기고,
+ * 지금 읽는 책 캐러셀 — 여러 권이면 드래그·스와이프·화살표·←/→ 키로 넘기고,
  * 양 끝에 복제 슬라이드를 두어 끝없이 순환한다. 한 권이면 카드만 렌더.
  */
 export const ReadingBookCarousel = ({ books }: { books: Book[] }) => {
@@ -33,21 +33,27 @@ export const ReadingBookCarousel = ({ books }: { books: Book[] }) => {
   const dragStartX = useRef<number | null>(null);
   const dragged = useRef(false);
 
+  if (count === 0) return null;
   if (count === 1) return <ReadingBookCard book={books[0]} />;
 
-  const activeIndex = (((pos - 1) % count) + count) % count;
+  // 목록이 줄어들어도(책 수정·삭제) 트랙 밖을 가리키지 않게 렌더 시점에 클램프
+  const trackPos = Math.min(Math.max(pos, 0), count + 1);
+  const activeIndex = (((trackPos - 1) % count) + count) % count;
 
+  // 전이 중 연타해도 트랙 범위를 벗어나지 않도록 양 끝(복제 슬라이드)에서 멈춘다
   const go = (direction: 1 | -1) => {
     setAnimate(true);
-    setPos((prev) => prev + direction);
+    setPos(Math.min(Math.max(trackPos + direction, 0), count + 1));
   };
 
   // 복제 슬라이드에 도착하면 애니메이션 없이 실제 슬라이드로 스냅 — 무한 순환의 핵심
-  const handleTransitionEnd = () => {
-    if (pos === 0) {
+  const handleTransitionEnd = (e: React.TransitionEvent) => {
+    // 카드의 box-shadow 전이가 버블링돼 조기 스냅되는 것 방지
+    if (e.target !== e.currentTarget || e.propertyName !== 'transform') return;
+    if (trackPos === 0) {
       setAnimate(false);
       setPos(count);
-    } else if (pos === count + 1) {
+    } else if (trackPos === count + 1) {
       setAnimate(false);
       setPos(1);
     }
@@ -77,7 +83,14 @@ export const ReadingBookCarousel = ({ books }: { books: Book[] }) => {
   const track = [books[count - 1], ...books, books[0]];
 
   return (
-    <Box>
+    <Box
+      aria-roledescription="carousel"
+      aria-label="지금 읽는 책"
+      onKeyDown={(e) => {
+        if (e.key === 'ArrowRight') go(1);
+        if (e.key === 'ArrowLeft') go(-1);
+      }}
+    >
       <Box sx={{ position: 'relative' }}>
         <Box
           sx={{
@@ -97,7 +110,7 @@ export const ReadingBookCarousel = ({ books }: { books: Book[] }) => {
             onDragStart={(e) => e.preventDefault()}
             sx={{
               display: 'flex',
-              transform: `translateX(-${pos * 100}%)`,
+              transform: `translateX(-${trackPos * 100}%)`,
               transition: animate ? 'transform 0.35s ease' : 'none',
               touchAction: 'pan-y',
               userSelect: 'none',
@@ -106,7 +119,15 @@ export const ReadingBookCarousel = ({ books }: { books: Book[] }) => {
             {track.map((book, index) => (
               <Box
                 key={`${book.publicId}-${index}`}
-                sx={{ flex: '0 0 100%', minWidth: 0 }}
+                // 화면 밖 슬라이드(복제 포함)는 스크린리더·탭 이동에서 제외
+                aria-hidden={index !== trackPos}
+                sx={{
+                  flex: '0 0 100%',
+                  minWidth: 0,
+                  ...(index === trackPos
+                    ? {}
+                    : { '& a': { pointerEvents: 'none' } }),
+                }}
               >
                 <ReadingBookCard book={book} disableRipple />
               </Box>
@@ -139,6 +160,7 @@ export const ReadingBookCarousel = ({ books }: { books: Book[] }) => {
           <ButtonBase
             key={book.publicId}
             aria-label={`${index + 1}번째 책 보기`}
+            aria-current={index === activeIndex}
             onClick={() => {
               setAnimate(true);
               setPos(index + 1);
