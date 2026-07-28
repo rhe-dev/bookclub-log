@@ -5,6 +5,9 @@ import {
   Box,
   ButtonBase,
   Collapse,
+  FormControlLabel,
+  Radio,
+  RadioGroup,
   Stack,
   Step,
   StepLabel,
@@ -14,11 +17,13 @@ import { useState } from 'react';
 import { useMyOrderTransitionMutation } from '@/shared/api/orderApi';
 import { BookCover } from '@/shared/components/book/BookCover';
 import { CommonButton } from '@/shared/components/ui/CommonButton';
+import { CommonInput } from '@/shared/components/ui/CommonInput';
 import { CommonModal } from '@/shared/components/ui/CommonModal';
 import { Typo } from '@/shared/components/ui/Typo';
 import { VerticalGap } from '@/shared/components/ui/VerticalGap';
 import {
   getOrderStepIndex,
+  ORDER_ISSUE_REASON_LABEL,
   ORDER_STATUS_CHIP,
   ORDER_STATUS_LABEL,
   ORDER_STATUS_LOG_LABEL,
@@ -26,7 +31,11 @@ import {
 } from '@/shared/constants/orderStatus';
 import { toast } from '@/shared/stores/toastStore';
 import { colorChips } from '@/shared/styles/colors';
-import type { Order, OrderStatus } from '@/shared/types/order';
+import type {
+  Order,
+  OrderIssueReason,
+  OrderStatus,
+} from '@/shared/types/order';
 import { formatDate, formatDateTime } from '@/shared/utils/date';
 
 type OrderAction = {
@@ -96,19 +105,46 @@ const ACTIONS_BY_STATUS: Partial<Record<OrderStatus, OrderAction[]>> = {
   ],
 };
 
+/** 기타 사유 상세 글자수 제한 — 서버 검증과 동일 */
+const OTHER_DETAIL_MIN = 5;
+const OTHER_DETAIL_MAX = 500;
+
 /** 마이페이지 주문 카드 — 사용자 언어 상태·진행 스텝·단계별 날짜·주문자 액션 */
 export const OrderCard = ({ order }: { order: Order }) => {
   const [historyOpen, setHistoryOpen] = useState(false);
   const [pendingAction, setPendingAction] = useState<OrderAction | null>(null);
+  const [reason, setReason] = useState<OrderIssueReason | ''>('');
+  const [reasonDetail, setReasonDetail] = useState('');
   const transitionMutation = useMyOrderTransitionMutation();
 
   const stepIndex = getOrderStepIndex(order.status);
   const chip = ORDER_STATUS_CHIP[order.status];
   const actions = ACTIONS_BY_STATUS[order.status] ?? [];
 
+  // 환불·재제작 요청은 사유 필수, 기타는 상세 5~500자 — 서버 검증과 동일 규칙
+  const needsReason =
+    pendingAction?.toStatus === 'REFUND_REQUESTED' ||
+    pendingAction?.toStatus === 'REMAKE_REQUESTED';
+  const detailLength = reasonDetail.trim().length;
+  const confirmDisabled =
+    needsReason &&
+    (!reason || (reason === 'OTHER' && detailLength < OTHER_DETAIL_MIN));
+
+  const openAction = (action: OrderAction) => {
+    setReason('');
+    setReasonDetail('');
+    setPendingAction(action);
+  };
+
   const runAction = (action: OrderAction) => {
     transitionMutation.mutate(
-      { orderPublicId: order.publicId, toStatus: action.toStatus },
+      {
+        orderPublicId: order.publicId,
+        toStatus: action.toStatus,
+        ...(needsReason && reason
+          ? { reason, reasonDetail: reasonDetail.trim() || undefined }
+          : {}),
+      },
       {
         onSuccess: () => {
           toast.success(action.successMessage);
@@ -232,19 +268,30 @@ export const OrderCard = ({ order }: { order: Order }) => {
           }}
         >
           {order.history.map((entry, index) => (
-            <Stack
-              key={`${entry.toStatus}-${index}`}
-              direction="row"
-              spacing={1}
-              sx={{ alignItems: 'baseline', flexWrap: 'wrap' }}
-            >
-              <Typo token="text_m_12" color={colorChips.grayScale[700]}>
-                {ORDER_STATUS_LOG_LABEL[entry.toStatus]}
-              </Typo>
-              <Typo token="text_r_12" color={colorChips.grayScale[400]}>
-                {formatDateTime(entry.changedAt)}
-              </Typo>
-            </Stack>
+            <Box key={`${entry.toStatus}-${index}`}>
+              <Stack
+                direction="row"
+                spacing={1}
+                sx={{ alignItems: 'baseline', flexWrap: 'wrap' }}
+              >
+                <Typo token="text_m_12" color={colorChips.grayScale[700]}>
+                  {ORDER_STATUS_LOG_LABEL[entry.toStatus]}
+                </Typo>
+                <Typo token="text_r_12" color={colorChips.grayScale[400]}>
+                  {formatDateTime(entry.changedAt)}
+                </Typo>
+              </Stack>
+              {entry.reason && (
+                <Typo
+                  token="text_r_12"
+                  color={colorChips.grayScale[500]}
+                  sx={{ wordBreak: 'keep-all' }}
+                >
+                  사유: {ORDER_ISSUE_REASON_LABEL[entry.reason]}
+                  {entry.reasonDetail ? ` — ${entry.reasonDetail}` : ''}
+                </Typo>
+              )}
+            </Box>
           ))}
         </Stack>
       </Collapse>
@@ -264,7 +311,7 @@ export const OrderCard = ({ order }: { order: Order }) => {
                 size="small"
                 buttonColor={action.buttonColor}
                 buttonVariant={action.buttonVariant ?? 'filled'}
-                onClick={() => setPendingAction(action)}
+                onClick={() => openAction(action)}
               />
             ))}
           </Stack>
@@ -291,6 +338,7 @@ export const OrderCard = ({ order }: { order: Order }) => {
                     ? 'primary'
                     : pendingAction.buttonColor
                 }
+                disabled={confirmDisabled}
                 isLoading={transitionMutation.isPending}
                 onClick={() => runAction(pendingAction)}
               />
@@ -305,6 +353,61 @@ export const OrderCard = ({ order }: { order: Order }) => {
         >
           {pendingAction?.confirmBody}
         </Typo>
+        {needsReason && (
+          <>
+            <VerticalGap size={16} />
+            <Typo token="text_sb_14" color={colorChips.grayScale[800]}>
+              사유 선택
+            </Typo>
+            <RadioGroup
+              value={reason}
+              onChange={(e) => {
+                const next = e.target.value as OrderIssueReason;
+                setReason(next);
+                // 상세 입력은 기타 전용 — 다른 사유로 바꾸면 입력값도 비운다
+                if (next !== 'OTHER') setReasonDetail('');
+              }}
+            >
+              {(
+                Object.entries(ORDER_ISSUE_REASON_LABEL) as [
+                  OrderIssueReason,
+                  string,
+                ][]
+              ).map(([value, label]) => (
+                <FormControlLabel
+                  key={value}
+                  value={value}
+                  control={<Radio size="small" />}
+                  label={
+                    <Typo token="text_r_14" color={colorChips.grayScale[700]}>
+                      {label}
+                    </Typo>
+                  }
+                />
+              ))}
+            </RadioGroup>
+            {reason === 'OTHER' && (
+              <>
+                <VerticalGap size={8} />
+                <CommonInput
+                  label="상세 내용"
+                  value={reasonDetail}
+                  onChange={(e) => setReasonDetail(e.target.value)}
+                  multiline
+                  minRows={3}
+                  maxLength={OTHER_DETAIL_MAX}
+                  placeholder="하자 내용을 알려 주시면 확인에 도움이 돼요"
+                  errorMessage={
+                    reasonDetail && detailLength < OTHER_DETAIL_MIN
+                      ? `${OTHER_DETAIL_MIN}자 이상 입력해 주세요.`
+                      : undefined
+                  }
+                  helperText={`${OTHER_DETAIL_MIN}~${OTHER_DETAIL_MAX}자 (${reasonDetail.length}/${OTHER_DETAIL_MAX})`}
+                />
+              </>
+            )}
+          </>
+        )}
       </CommonModal>
     </Box>
   );

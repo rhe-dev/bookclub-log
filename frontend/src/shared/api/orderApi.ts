@@ -1,7 +1,11 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { queryKeys } from '@/shared/constants/queryKeys';
 import type { Paginated } from '@/shared/types/common';
-import type { CreateOrderBody, Order, OrderStatus } from '@/shared/types/order';
+import type {
+  CreateOrderBody,
+  Order,
+  TransitionOrderBody,
+} from '@/shared/types/order';
 import { axiosClient } from './axiosClient';
 
 export const orderApi = {
@@ -24,11 +28,11 @@ export const orderApi = {
   },
   transitionMyOrder: async (
     orderPublicId: string,
-    toStatus: OrderStatus,
+    body: TransitionOrderBody,
   ): Promise<Order> => {
     const { data } = await axiosClient.post<Order>(
       `/orders/${orderPublicId}/transition`,
-      { toStatus },
+      body,
     );
     return data;
   },
@@ -58,17 +62,15 @@ export const useCreateOrderMutation = (clubPublicId?: string) => {
   });
 };
 
-/** 주문자 전이 — 취소·구매 확정·환불/재제작 요청 */
+/** 주문자 전이 — 취소·구매 확정·환불/재제작 요청(사유 포함) */
 export const useMyOrderTransitionMutation = () => {
   const invalidate = useInvalidateOrders();
   return useMutation({
     mutationFn: ({
       orderPublicId,
-      toStatus,
-    }: {
-      orderPublicId: string;
-      toStatus: OrderStatus;
-    }) => orderApi.transitionMyOrder(orderPublicId, toStatus),
+      ...body
+    }: { orderPublicId: string } & TransitionOrderBody) =>
+      orderApi.transitionMyOrder(orderPublicId, body),
     onSuccess: invalidate,
   });
 };

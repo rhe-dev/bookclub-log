@@ -8,6 +8,9 @@ export type OrderStatus = Order['status'];
 /** 상태 전이 이력 1건 */
 export type OrderHistoryEntry = components['schemas']['OrderHistoryResponse'];
 
+/** 환불·재제작 요청 사유 */
+export type OrderIssueReason = NonNullable<OrderHistoryEntry['reason']>;
+
 /** 주문에 수록된 책 요약 */
 export type OrderBookSummary =
   components['schemas']['OrderBookSummaryResponse'];

@@ -462,8 +462,11 @@ export interface components {
             toStatus: "RECEIVED" | "CONFIRMED" | "IN_PRODUCTION" | "PRODUCED" | "SHIPPED" | "IN_TRANSIT" | "DELIVERED" | "PURCHASE_CONFIRMED" | "CANCELED" | "REFUND_REQUESTED" | "REFUNDED" | "REMAKE_REQUESTED";
             /** @enum {string} */
             actor: "USER" | "ADMIN";
+            /** @enum {string|null} */
+            reason: "PRINT_DEFECT" | "BINDING_DEFECT" | "DAMAGED_IN_TRANSIT" | "WRONG_CONTENT" | "OTHER" | null;
             /** Format: date-time */
             changedAt: string;
+            reasonDetail: string | null;
         };
         OrderResponse: {
             /** @enum {string} */
@@ -485,6 +488,9 @@ export interface components {
         TransitionOrderDto: {
             /** @enum {string} */
             toStatus: "RECEIVED" | "CONFIRMED" | "IN_PRODUCTION" | "PRODUCED" | "SHIPPED" | "IN_TRANSIT" | "DELIVERED" | "PURCHASE_CONFIRMED" | "CANCELED" | "REFUND_REQUESTED" | "REFUNDED" | "REMAKE_REQUESTED";
+            /** @enum {string} */
+            reason?: "PRINT_DEFECT" | "BINDING_DEFECT" | "DAMAGED_IN_TRANSIT" | "WRONG_CONTENT" | "OTHER";
+            reasonDetail?: string;
         };
     };
     responses: never;

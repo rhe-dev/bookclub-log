@@ -1,5 +1,5 @@
 import { colorChips } from '@/shared/styles/colors';
-import type { OrderStatus } from '@/shared/types/order';
+import type { OrderIssueReason, OrderStatus } from '@/shared/types/order';
 
 /** 주문 상태의 사용자 언어 라벨 (QA 루브릭 ② — 코드가 아니라 사용자 말로) */
 export const ORDER_STATUS_LABEL: Record<OrderStatus, string> = {
@@ -15,6 +15,15 @@ export const ORDER_STATUS_LABEL: Record<OrderStatus, string> = {
   REFUND_REQUESTED: '환불을 접수했어요',
   REFUNDED: '환불이 완료됐어요',
   REMAKE_REQUESTED: '재제작을 접수했어요',
+};
+
+/** 환불·재제작 요청 사유 — OTHER는 상세 직접 입력 */
+export const ORDER_ISSUE_REASON_LABEL: Record<OrderIssueReason, string> = {
+  PRINT_DEFECT: '인쇄 불량 (번짐·누락 등)',
+  BINDING_DEFECT: '제본 불량 (낙장·순서 뒤섞임 등)',
+  DAMAGED_IN_TRANSIT: '배송 중 파손·훼손',
+  WRONG_CONTENT: '주문 내용과 다르게 제작됨',
+  OTHER: '기타 (직접 입력)',
 };
 
 /** 진행 이력·관리자용 명사형 라벨 — 타임라인은 짧은 명사형이 훑기 좋다 */
