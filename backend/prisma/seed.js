@@ -1,5 +1,5 @@
 // 시드: 모임 2(멀티 클럽 시연 — 서지원·김민준이 두 클럽에 가입, 역할이 다름), 회원 8,
-// 책 15(읽는 중 2·예정 1·완독 12), 코멘트·답글 46, 주문 5(4권 수록·타 클럽 주문 포함)
+// 책 16(읽는 중 3·예정 1·완독 12), 코멘트·답글 46, 주문 7(4권 수록·타 클럽·배송완료 포함)
 // 컨테이너 기동 시 자동 실행되므로 멱등해야 한다 — 데이터가 있으면 건너뜀
 const { PrismaClient } = require('@prisma/client');
 
@@ -105,13 +105,13 @@ const BOOKS = [
   },
 
   // 지난 완독 기록(2025-08~2026-03) — 책방 '더보기' 페이지네이션(12권 초과) 시연용
-  { key: 'dallergut', title: '달러구트 꿈 백화점', author: '이미예', publisher: '팩토리나인', coverColor: '#7E6BC4', coverEmoji: '🌠', status: 'DONE', periodFrom: '2025-12-22T00:00:00', periodTo: '2026-01-18T00:00:00', meetingDate: '2026-01-18T20:00:00', participants: ['jiwon', 'minjun', 'seoyeon', 'haneul'] },
-  { key: 'hyunam', title: '어서 오세요, 휴남동 서점입니다', author: '황보름', publisher: '클레이하우스', coverColor: '#5E8B6B', coverEmoji: '🌿', status: 'DONE', periodFrom: '2026-01-19T00:00:00', periodTo: '2026-02-22T00:00:00', meetingDate: '2026-02-22T20:00:00', participants: ['jiwon', 'seoyeon', 'haneul', 'doyun', 'eunchae'] },
-  { key: 'farewell', title: '작별인사', author: '김영하', publisher: '복복서가', coverColor: '#3C4F76', coverEmoji: '🤖', status: 'DONE', periodFrom: '2025-10-27T00:00:00', periodTo: '2025-11-23T00:00:00', meetingDate: '2025-11-23T20:00:00', participants: ['jiwon', 'minjun', 'doyun', 'eunchae'] },
-  { key: 'pagwa', title: '파과', author: '구병모', publisher: '자음과모음', coverColor: '#8A4B53', coverEmoji: '🌹', status: 'DONE', periodFrom: '2025-09-29T00:00:00', periodTo: '2025-10-26T00:00:00', meetingDate: '2025-10-26T20:00:00', participants: ['jiwon', 'seoyeon', 'haneul', 'eunchae'] },
-  { key: 'longnight', title: '긴긴밤', author: '루리', publisher: '문학동네', coverColor: '#41698C', coverEmoji: '🐧', status: 'DONE', periodFrom: '2025-09-01T00:00:00', periodTo: '2025-09-28T00:00:00', meetingDate: '2025-09-28T20:00:00', participants: ['jiwon', 'minjun', 'seoyeon', 'haneul', 'doyun', 'eunchae'] },
-  { key: 'smallthings', title: '이처럼 사소한 것들', author: '클레어 키건', publisher: '다산책방', coverColor: '#6E7F5C', coverEmoji: '❄️', status: 'DONE', periodFrom: '2025-11-24T00:00:00', periodTo: '2025-12-21T00:00:00', meetingDate: '2025-12-21T20:00:00', participants: ['jiwon', 'minjun', 'haneul'] },
-  { key: 'bluehorse', title: '천 개의 파랑', author: '천선란', publisher: '허블', coverColor: '#2E6E8E', coverEmoji: '🐎', status: 'DONE', periodFrom: '2025-08-04T00:00:00', periodTo: '2025-08-31T00:00:00', meetingDate: '2025-08-31T20:00:00', participants: ['jiwon', 'minjun', 'seoyeon', 'doyun'] },
+  { key: 'dallergut', title: '달러구트 꿈 백화점', author: '이미예', publisher: '팩토리나인', coverColor: '#7E6BC4', coverEmoji: '🌠', status: 'DONE', periodFrom: '2026-01-26T00:00:00', periodTo: '2026-02-22T00:00:00', meetingDate: '2026-02-22T20:00:00', participants: ['jiwon', 'minjun', 'seoyeon', 'haneul'] },
+  { key: 'hyunam', title: '어서 오세요, 휴남동 서점입니다', author: '황보름', publisher: '클레이하우스', coverColor: '#5E8B6B', coverEmoji: '🌿', status: 'DONE', periodFrom: '2026-02-23T00:00:00', periodTo: '2026-03-22T00:00:00', meetingDate: '2026-03-22T20:00:00', participants: ['jiwon', 'seoyeon', 'haneul', 'doyun', 'eunchae'] },
+  { key: 'farewell', title: '작별인사', author: '김영하', publisher: '복복서가', coverColor: '#3C4F76', coverEmoji: '🤖', status: 'DONE', periodFrom: '2025-12-01T00:00:00', periodTo: '2025-12-28T00:00:00', meetingDate: '2025-12-28T20:00:00', participants: ['jiwon', 'minjun', 'doyun', 'eunchae'] },
+  { key: 'pagwa', title: '파과', author: '구병모', publisher: '자음과모음', coverColor: '#8A4B53', coverEmoji: '🌹', status: 'DONE', periodFrom: '2025-11-03T00:00:00', periodTo: '2025-11-30T00:00:00', meetingDate: '2025-11-30T20:00:00', participants: ['jiwon', 'seoyeon', 'haneul', 'eunchae'] },
+  { key: 'longnight', title: '긴긴밤', author: '루리', publisher: '문학동네', coverColor: '#41698C', coverEmoji: '🐧', status: 'DONE', periodFrom: '2025-10-06T00:00:00', periodTo: '2025-11-02T00:00:00', meetingDate: '2025-11-02T20:00:00', participants: ['jiwon', 'minjun', 'seoyeon', 'haneul', 'doyun', 'eunchae'] },
+  { key: 'smallthings', title: '이처럼 사소한 것들', author: '클레어 키건', publisher: '다산책방', coverColor: '#6E7F5C', coverEmoji: '❄️', status: 'DONE', periodFrom: '2025-12-29T00:00:00', periodTo: '2026-01-25T00:00:00', meetingDate: '2026-01-25T20:00:00', participants: ['jiwon', 'minjun', 'haneul'] },
+  { key: 'bluehorse', title: '천 개의 파랑', author: '천선란', publisher: '허블', coverColor: '#2E6E8E', coverEmoji: '🐎', status: 'DONE', periodFrom: '2025-09-08T00:00:00', periodTo: '2025-10-05T00:00:00', meetingDate: '2025-10-05T20:00:00', participants: ['jiwon', 'minjun', 'seoyeon', 'doyun'] },
 ];
 
 const BOOKS2 = [
@@ -127,6 +127,19 @@ const BOOKS2 = [
     periodTo: '2026-08-02T00:00:00',
     meetingDate: '2026-08-02T14:00:00',
     participants: ['seojun', 'yujin', 'jiwon', 'minjun'],
+  },
+  {
+    key: 'villa',
+    title: '여름의 빌라',
+    author: '백수린',
+    publisher: '문학동네',
+    coverColor: '#8E7CC3',
+    coverEmoji: '🏖️',
+    status: 'READING',
+    periodFrom: '2026-07-20T00:00:00',
+    periodTo: '2026-08-16T00:00:00',
+    meetingDate: '2026-08-16T14:00:00',
+    participants: ['seojun', 'yujin', 'minjun'],
   },
   {
     key: 'shoko',
@@ -217,7 +230,7 @@ async function main() {
       name: '페이지 너머',
       description: '한 달에 한 권, 함께 읽고 밑줄과 생각을 나누는 온라인 독서모임',
       inviteCode: 'PAGE-2026',
-      createdAt: kst('2026-03-20T10:00:00'),
+      createdAt: kst('2025-09-01T10:00:00'),
     },
   });
 
@@ -238,7 +251,7 @@ async function main() {
         clubId: club.id,
         memberId: members[key].id,
         role,
-        joinedAt: kst('2026-03-20T10:30:00'),
+        joinedAt: kst('2025-09-01T10:30:00'),
       },
     });
   }
