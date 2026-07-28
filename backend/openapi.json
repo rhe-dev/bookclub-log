@@ -42,7 +42,17 @@
     "/api/clubs/mine": {
       "get": {
         "operationId": "ClubsController_findMine",
-        "parameters": [],
+        "parameters": [
+          {
+            "name": "X-Member-Id",
+            "in": "header",
+            "description": "현재 멤버의 publicId — /clubs/mine에는 필수 (D-017)",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
         "responses": {
           "200": {
             "description": "",
@@ -67,6 +77,15 @@
       "get": {
         "operationId": "ClubsController_findMembers",
         "parameters": [
+          {
+            "name": "X-Member-Id",
+            "in": "header",
+            "description": "현재 멤버의 publicId — /clubs/mine에는 필수 (D-017)",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
           {
             "name": "clubId",
             "required": true,
@@ -822,9 +841,9 @@
         "parameters": [],
         "responses": {
           "200": {
-            "description": "",
+            "description": "주문 전체 CSV (BOM 포함)",
             "content": {
-              "application/json": {
+              "text/csv": {
                 "schema": {
                   "type": "string"
                 }
@@ -1880,6 +1899,100 @@
         },
         "required": [
           "toStatus"
+        ]
+      },
+      "ApiErrorItemResponse": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "enum": [
+              "INTERNAL_ERROR",
+              "MEMBER_HEADER_REQUIRED",
+              "MEMBER_NOT_FOUND",
+              "COMMON_INVALID_INPUT",
+              "UNKNOWN_FIELD",
+              "PAGE_INVALID",
+              "LIMIT_INVALID",
+              "CLUB_NOT_FOUND",
+              "CLUB_MEMBER_ONLY",
+              "LEADER_ONLY",
+              "BOOK_NOT_FOUND",
+              "BOOK_TITLE_REQUIRED",
+              "BOOK_AUTHOR_REQUIRED",
+              "BOOK_COVER_COLOR_FORMAT",
+              "BOOK_TITLE_MAX",
+              "BOOK_AUTHOR_MAX",
+              "BOOK_PUBLISHER_MAX",
+              "BOOK_COVER_EMOJI_INVALID",
+              "BOOK_STATUS_INVALID",
+              "BOOK_DATE_INVALID",
+              "BOOK_PERIOD_INVALID",
+              "BOOK_PARTICIPANT_NOT_IN_CLUB",
+              "ORDER_NOT_FOUND",
+              "ORDER_TITLE_REQUIRED",
+              "ORDER_COPIES_MIN",
+              "ORDER_COPIES_MAX",
+              "ORDER_TITLE_MAX",
+              "ORDER_BOOKS_REQUIRED",
+              "ORDER_BOOK_INVALID",
+              "ORDER_BOOK_NOT_DONE",
+              "ORDER_INVALID_TRANSITION",
+              "ORDER_ADMIN_ONLY_TRANSITION",
+              "ORDER_ORDERER_ONLY",
+              "ORDER_REASON_REQUIRED",
+              "ORDER_REASON_INVALID",
+              "ORDER_REASON_DETAIL_REQUIRED",
+              "ORDER_REASON_DETAIL_MIN",
+              "ORDER_REASON_DETAIL_MAX",
+              "ORDER_STATUS_INVALID",
+              "COMMENT_NOT_FOUND",
+              "COMMENT_AUTHOR_ONLY",
+              "COMMENT_CONTENT_REQUIRED",
+              "COMMENT_CONTENT_TOO_LONG",
+              "COMMENT_PAGE_MIN",
+              "COMMENT_QUOTE_TOO_LONG",
+              "REPLY_TARGET_NOT_FOUND",
+              "REPLY_TO_OTHER_BOOK",
+              "REPLY_DEPTH_EXCEEDED",
+              "REPLY_TO_DELETED",
+              "NOT_FOUND",
+              "UNKNOWN"
+            ],
+            "type": "string"
+          },
+          "message": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "code",
+          "message"
+        ]
+      },
+      "ApiErrorResponse": {
+        "type": "object",
+        "properties": {
+          "statusCode": {
+            "type": "number"
+          },
+          "errors": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ApiErrorItemResponse"
+            }
+          },
+          "timestamp": {
+            "type": "string"
+          },
+          "path": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "statusCode",
+          "errors",
+          "timestamp",
+          "path"
         ]
       }
     }

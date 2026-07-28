@@ -1,7 +1,13 @@
 import { Controller, Get, Headers, Param } from '@nestjs/common';
+import { ApiHeader } from '@nestjs/swagger';
 import { ClubsService } from './clubs.service';
 import { ClubMemberResponse, MyClubResponse } from './dto/club.response';
 
+@ApiHeader({
+  name: 'X-Member-Id',
+  required: false,
+  description: '현재 멤버의 publicId — /clubs/mine에는 필수 (D-017)',
+})
 @Controller('clubs')
 export class ClubsController {
   constructor(private readonly clubsService: ClubsService) {}

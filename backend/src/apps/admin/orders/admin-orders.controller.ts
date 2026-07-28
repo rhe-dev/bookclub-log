@@ -7,6 +7,7 @@ import {
   Post,
   Query,
 } from '@nestjs/common';
+import { ApiProduces, ApiResponse } from '@nestjs/swagger';
 import { PaginationQuery } from '../../../shared/dto/pagination.query';
 import {
   OrderResponse,
@@ -26,6 +27,12 @@ export class AdminOrdersController {
   }
 
   @Get('csv')
+  @ApiProduces('text/csv')
+  @ApiResponse({
+    status: 200,
+    description: '주문 전체 CSV (BOM 포함)',
+    schema: { type: 'string' },
+  })
   @Header('Content-Type', 'text/csv; charset=utf-8')
   @Header('Content-Disposition', 'attachment; filename="orders.csv"')
   csv(): Promise<string> {

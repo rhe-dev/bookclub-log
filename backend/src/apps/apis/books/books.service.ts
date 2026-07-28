@@ -124,6 +124,12 @@ export class BooksService {
         : book.periodTo;
     this.assertValidPeriod(nextPeriodFrom, nextPeriodTo);
 
+    // 제목·저자는 null이 '해제'를 뜻하지 않는 필수 필드 — 조용히 무시하지 않고 거부
+    if (dto.title === null)
+      throw new BadRequestException(ErrorCode.BOOK_TITLE_REQUIRED);
+    if (dto.author === null)
+      throw new BadRequestException(ErrorCode.BOOK_AUTHOR_REQUIRED);
+
     const data: Prisma.BookUpdateInput = {};
     if (dto.title != null) data.title = dto.title;
     if (dto.author != null) data.author = dto.author;

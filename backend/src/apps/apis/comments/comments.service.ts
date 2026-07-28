@@ -13,6 +13,7 @@ import {
   toPageMeta,
 } from '../../../shared/dto/pagination.query';
 import { PrismaService } from '../../../shared/prisma/prisma.service';
+import { isCommentEdited } from '../../../shared/utils/comment';
 import { memberSummarySelect } from '../../../shared/prisma/selects';
 import { CreateCommentDto } from './dto/create-comment.dto';
 import { UpdateCommentDto } from './dto/update-comment.dto';
@@ -114,8 +115,7 @@ export class CommentsService {
         quote: comment.quote,
         content: comment.content,
         createdAt: comment.createdAt,
-        isEdited:
-          comment.updatedAt.getTime() - comment.createdAt.getTime() > 1000,
+        isEdited: isCommentEdited(comment.createdAt, comment.updatedAt),
         likeCount: comment._count.likes,
         book: {
           publicId: comment.book.publicId,
@@ -179,6 +179,10 @@ export class CommentsService {
       commentPublicId,
       memberPublicId,
     );
+
+    // content는 null이 '해제'를 뜻하지 않는 필수 필드 — 조용히 무시하지 않고 거부
+    if (dto.content === null)
+      throw new BadRequestException(ErrorCode.COMMENT_CONTENT_REQUIRED);
 
     const data: Prisma.CommentUpdateInput = {};
     if (dto.content != null) data.content = dto.content;
@@ -311,9 +315,7 @@ export class CommentsService {
       content: comment.content,
       createdAt: comment.createdAt,
       updatedAt: comment.updatedAt,
-      // 생성 시 createdAt·updatedAt이 밀리초 단위로 어긋날 수 있어 1초 여유
-      isEdited:
-        comment.updatedAt.getTime() - comment.createdAt.getTime() > 1000,
+      isEdited: isCommentEdited(comment.createdAt, comment.updatedAt),
       likeCount: comment.likes.length,
       likedByMe:
         viewerId !== null &&

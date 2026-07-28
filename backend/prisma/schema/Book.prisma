@@ -27,6 +27,8 @@ model Book {
   participants BookParticipant[]
   comments     Comment[]
   orderBooks   OrderBook[]
+
+  @@index([clubId, status]) /// 책방 목록·상태 필터
 }
 
 /// 책별 참여 회원 (다대다) — 책 상세의 '함께 읽는 멤버' 표시용

@@ -17,6 +17,9 @@ model Comment {
   parent  Comment?      @relation("CommentReplies", fields: [parentId], references: [id])
   replies Comment[]     @relation("CommentReplies")
   likes   CommentLike[]
+
+  @@index([memberId, createdAt]) /// 마이페이지 '내 코멘트' 조회
+  @@index([bookId, parentId]) /// 책별 토론 스레드 조회
 }
 
 /// 코멘트 공감(좋아요) — 멤버당 코멘트 1회, 재클릭 시 해제(토글)
