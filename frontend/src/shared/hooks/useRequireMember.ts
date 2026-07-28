@@ -24,7 +24,10 @@ export const useRequireMember = (): RequiredSession | null => {
   const hadSessionRef = useRef(false);
 
   useEffect(() => {
-    if (member && club) {
+    // 판정은 렌더 스냅샷이 아니라 스토어 현재 값으로 — SSR 하이드레이션 첫 렌더는
+    // 서버 스냅샷(초기값 null)이라, 로그인 상태에서 직접 진입해도 오탐 리다이렉트됐다
+    const live = useMemberStore.getState();
+    if (live.member && live.club) {
       hadSessionRef.current = true;
       return;
     }
