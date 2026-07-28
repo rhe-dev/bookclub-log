@@ -86,6 +86,9 @@ export class OrdersSharedService {
         throw new BadRequestException(ErrorCode.ORDER_REASON_DETAIL_REQUIRED);
       if (detail.length < 5)
         throw new BadRequestException(ErrorCode.ORDER_REASON_DETAIL_MIN);
+      // DTO의 MaxLength는 원문 기준이라 공백 패딩으로 우회 가능 — trim 후 다시 확인
+      if (detail.length > 500)
+        throw new BadRequestException(ErrorCode.ORDER_REASON_DETAIL_MAX);
     }
 
     const [, updated] = await this.prisma.$transaction([

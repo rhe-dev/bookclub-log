@@ -13,7 +13,7 @@ import {
   OrderResponse,
   PaginatedOrdersResponse,
 } from '../../../shared/orders/dto/order.response';
-import { TransitionOrderDto } from '../../../shared/orders/dto/transition-order.dto';
+import { TransitionOrderDto } from './dto/transition-order.dto';
 import { CreateOrderDto } from './dto/create-order.dto';
 import { OrdersService } from './orders.service';
 

@@ -2,7 +2,7 @@ import { BadRequestException, Injectable } from '@nestjs/common';
 import { ActorType, OrderStatus } from '@prisma/client';
 import { ErrorCode } from '../../../shared/constants/error-code';
 import { PaginationQuery } from '../../../shared/dto/pagination.query';
-import { TransitionOrderDto } from '../../../shared/orders/dto/transition-order.dto';
+import { TransitionOrderDto } from './dto/transition-order.dto';
 import { orderInclude, toOrderDto } from '../../../shared/orders/order.mapper';
 import { OrdersSharedService } from '../../../shared/orders/orders-shared.service';
 import { PrismaService } from '../../../shared/prisma/prisma.service';

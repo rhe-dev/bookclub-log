@@ -1,7 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { OrderIssueReason, OrderStatus } from '@prisma/client';
 import { IsEnum, IsOptional, IsString, MaxLength } from 'class-validator';
-import { ErrorCode } from '../../constants/error-code';
+import { ErrorCode } from '../../../../shared/constants/error-code';
 
 export class TransitionOrderDto {
   @ApiProperty({ enum: OrderStatus })
@@ -16,7 +16,7 @@ export class TransitionOrderDto {
 
   /** 사유 상세 — reason이 OTHER면 필수 */
   @IsOptional()
-  @IsString({ message: ErrorCode.COMMON_INVALID_INPUT })
+  @IsString({ message: `${ErrorCode.COMMON_INVALID_INPUT}|$property` })
   @MaxLength(500, { message: ErrorCode.ORDER_REASON_DETAIL_MAX })
   reasonDetail?: string;
 }

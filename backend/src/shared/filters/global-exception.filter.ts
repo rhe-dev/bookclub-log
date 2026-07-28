@@ -21,14 +21,24 @@ interface ApiErrorItem {
  *   'CODE|상세' 형태면 상세를 메시지 뒤 괄호로 표기한다 (예: UNKNOWN_FIELD|foo).
  *   코드가 아닌 문자열(외부 라이브러리 메시지 등)은 UNKNOWN 코드로 감싸 원문 유지.
  */
-const toErrorItem = (raw: string): ApiErrorItem => {
-  const [codePart, detail] = raw.split('|', 2);
+export const toErrorItem = (raw: string, status?: number): ApiErrorItem => {
+  // split(sep, 2)는 나머지를 버리므로 첫 구분자 기준으로 직접 나눈다
+  const separator = raw.indexOf('|');
+  const codePart = separator === -1 ? raw : raw.slice(0, separator);
+  const detail = separator === -1 ? '' : raw.slice(separator + 1);
   if (isErrorCode(codePart)) {
     return {
       code: codePart,
       message: detail
         ? `${ERROR_MESSAGE[codePart]} (${detail})`
         : ERROR_MESSAGE[codePart],
+    };
+  }
+  // 코드가 아닌 문자열은 Nest 내장 예외(라우트 미매치 등) — 영문 원문 대신 한글 기본 카피
+  if (status === HttpStatus.NOT_FOUND) {
+    return {
+      code: ErrorCode.NOT_FOUND,
+      message: ERROR_MESSAGE[ErrorCode.NOT_FOUND],
     };
   }
   return { code: ErrorCode.UNKNOWN, message: raw };
@@ -63,10 +73,13 @@ export class GlobalExceptionFilter implements ExceptionFilter {
           ? message
           : [message ?? exception.message];
       }
-      errors = rawMessages.map(toErrorItem);
-    } else {
+      errors = rawMessages.map((raw) => toErrorItem(raw, statusCode));
+    }
+
+    // 서버 오류는 원인 추적을 위해 항상 로깅 (HttpException 여부가 아니라 상태 코드 기준)
+    if (statusCode >= HttpStatus.INTERNAL_SERVER_ERROR) {
       this.logger.error(
-        `예상하지 못한 오류: ${request.method} ${request.url}`,
+        `서버 오류: ${request.method} ${request.url}`,
         exception instanceof Error ? exception.stack : String(exception),
       );
     }

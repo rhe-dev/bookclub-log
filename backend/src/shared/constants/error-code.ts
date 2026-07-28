@@ -65,6 +65,7 @@ export enum ErrorCode {
   REPLY_TO_DELETED = 'REPLY_TO_DELETED',
 
   // 분류 불가(외부 라이브러리 메시지 등)
+  NOT_FOUND = 'NOT_FOUND',
   UNKNOWN = 'UNKNOWN',
 }
 
@@ -137,9 +138,11 @@ export const ERROR_MESSAGE: Record<ErrorCode, string> = {
     '다른 책의 코멘트에는 답글을 달 수 없습니다.',
   [ErrorCode.REPLY_DEPTH_EXCEEDED]: '답글에는 답글을 달 수 없습니다.',
   [ErrorCode.REPLY_TO_DELETED]: '삭제된 코멘트에는 답글을 달 수 없습니다.',
+  [ErrorCode.NOT_FOUND]: '요청한 대상을 찾을 수 없습니다.',
   [ErrorCode.UNKNOWN]: '요청을 처리하지 못했습니다.',
 };
 
 /** 임의 문자열이 ErrorCode인지 판별 — 전역 필터에서 사용 */
 export const isErrorCode = (value: string): value is ErrorCode =>
-  value in ERROR_MESSAGE;
+  // in 연산자는 Object.prototype 키('toString' 등)까지 true — 자기 소유 키만 인정
+  Object.prototype.hasOwnProperty.call(ERROR_MESSAGE, value);
