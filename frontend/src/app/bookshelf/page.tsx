@@ -18,9 +18,12 @@ import { useRequireMember } from '@/shared/hooks/useRequireMember';
 import { colorChips } from '@/shared/styles/colors';
 import type { BookStatus } from '@/shared/types/book';
 import { BookCard } from './components/BookCard';
-import { BookshelfSkeleton } from './components/BookshelfSkeleton';
+import {
+  ReadingHeroSkeleton,
+  ShelfGridSkeleton,
+} from './components/BookshelfSkeleton';
 import { EmptyBookshelf } from './components/EmptyBookshelf';
-import { ReadingBookCard } from './components/ReadingBookCard';
+import { ReadingBookCarousel } from './components/ReadingBookCarousel';
 
 type FilterValue = 'ALL' | BookStatus;
 
@@ -49,22 +52,18 @@ export default function BookshelfPage() {
 
   const isLeader = club.role === 'LEADER';
   const readingBooks = readingQuery.data?.items ?? [];
-  const pagedBooks = shelfQuery.data?.pages.flatMap((page) => page.items) ?? [];
-  // 전체 필터에서는 히어로가 READING을 보여주므로 책장 그리드에서는 제외
-  const shelfBooks =
-    filter === 'ALL'
-      ? pagedBooks.filter((b) => b.status !== 'READING')
-      : pagedBooks;
+  // '전체'는 말 그대로 전체 — 읽는 중 책도 히어로(강조)와 그리드(아카이브)에 모두 노출
+  const shelfBooks = shelfQuery.data?.pages.flatMap((page) => page.items) ?? [];
   const allTotal = shelfQuery.data?.pages[0]?.meta.totalCount ?? 0;
-  const readingTotal = readingQuery.data?.meta.totalCount ?? 0;
-  // 책장 카운트 = 그리드에 실제로 나오는 기준 (전체일 땐 READING 제외)
-  const shelfCount = filter === 'ALL' ? allTotal - readingTotal : allTotal;
+  const shelfCount = allTotal;
 
-  const isLoading = readingQuery.isLoading || shelfQuery.isLoading;
+  // 히어로는 최초 1회만 로딩, 책장은 필터가 바뀔 때마다 로딩 — 스켈레톤을 영역별로 분리
+  const heroLoading = readingQuery.isLoading;
+  const shelfLoading = shelfQuery.isLoading;
   const isError = readingQuery.isError || shelfQuery.isError;
   // '빈 책방' 판단은 필터와 무관한 전체 기준 — 필터 결과가 0이어도 CTA는 유지한다
   const collectionEmpty =
-    filter === 'ALL' && !isLoading && !isError && allTotal === 0;
+    filter === 'ALL' && !shelfLoading && !isError && allTotal === 0;
 
   return (
     <>
@@ -118,8 +117,6 @@ export default function BookshelfPage() {
               void shelfQuery.refetch();
             }}
           />
-        ) : isLoading ? (
-          <BookshelfSkeleton />
         ) : collectionEmpty ? (
           <EmptyBookshelf
             isLeader={isLeader}
@@ -127,13 +124,16 @@ export default function BookshelfPage() {
           />
         ) : (
           <>
-            {filter === 'ALL' && readingBooks.length > 0 && (
-              <Stack spacing={1.5}>
-                <Typo token="text_sb_18">지금 읽는 책</Typo>
-                {readingBooks.map((book) => (
-                  <ReadingBookCard key={book.publicId} book={book} />
-                ))}
-              </Stack>
+            {/* 히어로는 필터와 무관하게 항시 고정 — 여러 권이면 순환 캐러셀 */}
+            {heroLoading ? (
+              <ReadingHeroSkeleton />
+            ) : (
+              readingBooks.length > 0 && (
+                <Stack spacing={1.5}>
+                  <Typo token="text_sb_18">지금 읽는 책</Typo>
+                  <ReadingBookCarousel books={readingBooks} />
+                </Stack>
+              )
             )}
 
             <Stack spacing={1.5}>
@@ -152,9 +152,11 @@ export default function BookshelfPage() {
                   sx={{ alignItems: 'baseline' }}
                 >
                   <Typo token="text_sb_18">우리 책장</Typo>
-                  <Typo token="text_m_12" color={colorChips.grayScale[500]}>
-                    {shelfCount}권
-                  </Typo>
+                  {!shelfLoading && (
+                    <Typo token="text_m_12" color={colorChips.grayScale[500]}>
+                      {shelfCount}권
+                    </Typo>
+                  )}
                 </Stack>
                 <Stack direction="row" spacing={1}>
                   {FILTERS.map(({ value, label }) => (
@@ -170,7 +172,9 @@ export default function BookshelfPage() {
                 </Stack>
               </Stack>
 
-              {shelfBooks.length === 0 ? (
+              {shelfLoading ? (
+                <ShelfGridSkeleton />
+              ) : shelfBooks.length === 0 ? (
                 <Typo
                   token="text_r_14"
                   color={colorChips.grayScale[500]}
@@ -198,12 +202,15 @@ export default function BookshelfPage() {
                     ))}
                   </Box>
                   {shelfQuery.hasNextPage && (
-                    <CommonButton
-                      label="책 더 보기"
-                      buttonColor="tertiary"
-                      isLoading={shelfQuery.isFetchingNextPage}
-                      onClick={() => void shelfQuery.fetchNextPage()}
-                    />
+                    <Stack sx={{ alignItems: 'center' }}>
+                      <CommonButton
+                        label="책 더 보기"
+                        buttonColor="tertiary"
+                        isLoading={shelfQuery.isFetchingNextPage}
+                        onClick={() => void shelfQuery.fetchNextPage()}
+                        sx={{ px: 5 }}
+                      />
+                    </Stack>
                   )}
                 </>
               )}

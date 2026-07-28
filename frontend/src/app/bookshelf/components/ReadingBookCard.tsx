@@ -13,11 +13,19 @@ import { lineClamp } from '@/shared/styles/mixins';
 import type { Book } from '@/shared/types/book';
 
 /** '지금 읽는 책' 히어로 카드 — 표지 + 일정·참여 멤버·코멘트 수 */
-export const ReadingBookCard = ({ book }: { book: Book }) => {
+export const ReadingBookCard = ({
+  book,
+  disableRipple = false,
+}: {
+  book: Book;
+  /** 캐러셀 슬라이드용 — 드래그 시작(mousedown)마다 리플이 튀는 것 방지 */
+  disableRipple?: boolean;
+}) => {
   return (
     <ButtonBase
       component={Link}
       href={ROUTES.bookDetail(book.publicId)}
+      disableRipple={disableRipple}
       sx={{
         display: 'flex',
         alignItems: 'stretch',
