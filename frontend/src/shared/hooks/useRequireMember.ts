@@ -20,6 +20,7 @@ export interface RequiredSession {
 export const useRequireMember = (): RequiredSession | null => {
   const member = useMemberStore((s) => s.member);
   const club = useMemberStore((s) => s.club);
+  const isAdmin = useMemberStore((s) => s.isAdmin);
   const router = useRouter();
   const hadSessionRef = useRef(false);
 
@@ -27,6 +28,12 @@ export const useRequireMember = (): RequiredSession | null => {
     // 판정은 렌더 스냅샷이 아니라 스토어 현재 값으로 — SSR 하이드레이션 첫 렌더는
     // 서버 스냅샷(초기값 null)이라, 로그인 상태에서 직접 진입해도 오탐 리다이렉트됐다
     const live = useMemberStore.getState();
+    if (live.isAdmin) {
+      // 운영자 세션은 서비스 화면을 쓰지 않는다 (D-029)
+      toast.info('운영자 화면에서는 이용할 수 없어요.');
+      router.replace(ROUTES.adminOrders);
+      return;
+    }
     if (live.member && live.club) {
       hadSessionRef.current = true;
       return;
@@ -35,7 +42,7 @@ export const useRequireMember = (): RequiredSession | null => {
       toast.info('로그인 후 이용할 수 있어요.');
     }
     router.replace(ROUTES.home);
-  }, [member, club, router]);
+  }, [member, club, isAdmin, router]);
 
-  return member && club ? { member, club } : null;
+  return !isAdmin && member && club ? { member, club } : null;
 };

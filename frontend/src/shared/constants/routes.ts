@@ -8,6 +8,10 @@ export const ROUTES = {
   bookDetail: (bookPublicId: string) => `/books/${bookPublicId}`,
   /** 문집 내보내기(주문 만들기) */
   orderNew: '/orders/new',
-  /** 마이페이지(내 주문) */
+  /** 마이페이지(내 주문·코멘트) */
   myPage: '/my',
+  /** 운영자 — 주문 관리 */
+  adminOrders: '/admin/orders',
+  /** 운영자 — 회원 관리 */
+  adminMembers: '/admin/members',
 } as const;
