@@ -1,5 +1,5 @@
 // 시드: 모임 2(멀티 클럽 시연 — 서지원·김민준이 두 클럽에 가입, 역할이 다름), 회원 8,
-// 책 16(읽는 중 3·예정 1·완독 12), 코멘트·답글 46, 주문 7(4권 수록·타 클럽·배송완료 포함)
+// 책 16(읽는 중 3·예정 1·완독 12), 코멘트·답글 46, 주문 17(상태·클럽·기간 분산 — 어드민 필터·페이지네이션 확인용)
 // 컨테이너 기동 시 자동 실행되므로 멱등해야 한다 — 데이터가 있으면 건너뜀
 const { PrismaClient } = require('@prisma/client');
 
@@ -384,6 +384,123 @@ async function main() {
         ['IN_PRODUCTION', '2026-07-22T09:00:00', 'ADMIN'],
       ],
     },
+    // 어드민 목록 페이지네이션·필터 확인용 — 클럽·주문자·상태·기간을 흩어 배치
+    {
+      by: 'minjun',
+      title: '봄 문집 — 첫 계절의 기록',
+      copies: 4,
+      books: ['pachinko', 'library'],
+      history: [
+        ['RECEIVED', '2026-04-22T20:10:00', 'USER'],
+        ['CONFIRMED', '2026-04-23T09:40:00', 'ADMIN'],
+        ['IN_PRODUCTION', '2026-04-24T10:00:00', 'ADMIN'],
+        ['PRODUCED', '2026-04-29T16:00:00', 'ADMIN'],
+        ['SHIPPED', '2026-04-30T09:30:00', 'ADMIN'],
+        ['IN_TRANSIT', '2026-04-30T18:00:00', 'ADMIN'],
+        ['DELIVERED', '2026-05-01T13:20:00', 'ADMIN'],
+        ['PURCHASE_CONFIRMED', '2026-05-02T21:00:00', 'USER'],
+      ],
+    },
+    {
+      by: 'seoyeon',
+      title: '아몬드 독후감 모음',
+      copies: 5,
+      books: ['almond'],
+      history: [
+        ['RECEIVED', '2026-06-20T19:00:00', 'USER'],
+        ['CONFIRMED', '2026-06-21T10:00:00', 'ADMIN'],
+        ['IN_PRODUCTION', '2026-06-22T09:00:00', 'ADMIN'],
+        ['PRODUCED', '2026-06-26T17:00:00', 'ADMIN'],
+        ['SHIPPED', '2026-06-27T10:00:00', 'ADMIN'],
+      ],
+    },
+    {
+      by: 'haneul',
+      title: '불편한 편의점 — 하늘의 소장본',
+      copies: 1,
+      books: ['store'],
+      history: [
+        ['RECEIVED', '2026-07-02T21:15:00', 'USER'],
+        ['CONFIRMED', '2026-07-03T09:20:00', 'ADMIN'],
+      ],
+    },
+    {
+      by: 'doyun',
+      title: '완독 3권 합본 — 도윤의 서재',
+      copies: 2,
+      books: ['store', 'library', 'pachinko'],
+      history: [
+        ['RECEIVED', '2026-07-09T22:30:00', 'USER'],
+        ['CONFIRMED', '2026-07-10T10:10:00', 'ADMIN'],
+        ['IN_PRODUCTION', '2026-07-11T09:00:00', 'ADMIN'],
+        ['PRODUCED', '2026-07-16T18:00:00', 'ADMIN'],
+      ],
+    },
+    {
+      by: 'eunchae',
+      title: '미드나잇 라이브러리 — 은채의 밑줄',
+      copies: 1,
+      books: ['library'],
+      history: [['RECEIVED', '2026-07-27T20:05:00', 'USER']],
+    },
+    {
+      by: 'seoyeon',
+      title: '여름 완독 기념 문집',
+      copies: 3,
+      books: ['store', 'almond'],
+      history: [
+        ['RECEIVED', '2026-07-28T09:40:00', 'USER'],
+        ['CONFIRMED', '2026-07-28T11:00:00', 'ADMIN'],
+        ['IN_PRODUCTION', '2026-07-29T09:00:00', 'ADMIN'],
+      ],
+    },
+    {
+      by: 'haneul',
+      title: '취소된 문집 — 부수 변경 예정',
+      copies: 2,
+      books: ['almond'],
+      history: [
+        ['RECEIVED', '2026-05-11T20:00:00', 'USER'],
+        ['CANCELED', '2026-05-11T20:30:00', 'USER'],
+      ],
+    },
+    {
+      club: 'margin',
+      by: 'yujin',
+      title: '밑줄과 여백 — 봄 단편 모음',
+      copies: 3,
+      books: ['shoko'],
+      history: [
+        ['RECEIVED', '2026-06-25T21:00:00', 'USER'],
+        ['CONFIRMED', '2026-06-26T10:00:00', 'ADMIN'],
+        ['IN_PRODUCTION', '2026-06-27T09:00:00', 'ADMIN'],
+        ['PRODUCED', '2026-07-01T17:00:00', 'ADMIN'],
+        ['SHIPPED', '2026-07-02T10:00:00', 'ADMIN'],
+        ['IN_TRANSIT', '2026-07-02T18:00:00', 'ADMIN'],
+        ['DELIVERED', '2026-07-03T14:00:00', 'ADMIN'],
+        ['REFUND_REQUESTED', '2026-07-04T09:10:00', 'USER', 'PRINT_DEFECT', '20~24쪽 인쇄가 겹쳐 나왔어요.'],
+        ['REFUNDED', '2026-07-05T11:00:00', 'ADMIN'],
+      ],
+    },
+    {
+      club: 'margin',
+      by: 'seojun',
+      title: '쇼코의 미소 — 모임 기록본',
+      copies: 2,
+      books: ['shoko'],
+      history: [['RECEIVED', '2026-07-29T21:40:00', 'USER']],
+    },
+    {
+      club: 'margin',
+      by: 'minjun',
+      title: '밑줄과 여백 — 민준의 첫 문집',
+      copies: 1,
+      books: ['shoko'],
+      history: [
+        ['RECEIVED', '2026-07-25T20:20:00', 'USER'],
+        ['CONFIRMED', '2026-07-26T10:00:00', 'ADMIN'],
+      ],
+    },
     // 다른 클럽(밑줄과 여백)의 주문 — 마이페이지 클럽 구분 표시 확인용
     {
       club: 'margin',
@@ -436,12 +553,16 @@ async function main() {
     },
   ];
   for (const orderDef of ORDERS) {
-    const historyRows = orderDef.history.map(([toStatus, at, actor], i) => ({
-      fromStatus: i === 0 ? null : orderDef.history[i - 1][0],
-      toStatus,
-      actor,
-      changedAt: kst(at),
-    }));
+    const historyRows = orderDef.history.map(
+      ([toStatus, at, actor, reason, reasonDetail], i) => ({
+        fromStatus: i === 0 ? null : orderDef.history[i - 1][0],
+        toStatus,
+        actor,
+        changedAt: kst(at),
+        reason: reason ?? null,
+        reasonDetail: reasonDetail ?? null,
+      }),
+    );
     const last = orderDef.history[orderDef.history.length - 1];
     await prisma.order.create({
       data: {
@@ -451,6 +572,7 @@ async function main() {
         copies: orderDef.copies,
         status: last[0],
         createdAt: kst(orderDef.history[0][1]),
+        statusChangedAt: kst(last[1]),
         books: {
           create: orderDef.books.map((bookKey, index) => ({
             bookId: books[bookKey].id,
