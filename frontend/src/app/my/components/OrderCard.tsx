@@ -13,6 +13,7 @@ import {
 import { useState } from 'react';
 import { useMyOrderTransitionMutation } from '@/shared/api/orderApi';
 import { BookCover } from '@/shared/components/book/BookCover';
+import { OrderHistoryList } from '@/shared/components/order/OrderHistoryList';
 import { CommonButton } from '@/shared/components/ui/CommonButton';
 import { Typo } from '@/shared/components/ui/Typo';
 import { VerticalGap } from '@/shared/components/ui/VerticalGap';
@@ -29,7 +30,6 @@ import type { Order } from '@/shared/types/order';
 import { formatDate } from '@/shared/utils/date';
 import { ACTIONS_BY_STATUS, type OrderAction } from './orderActions';
 import { OrderActionModal } from './OrderActionModal';
-import { OrderHistoryList } from './OrderHistoryList';
 
 /** 마이페이지 주문 카드 — 사용자 언어 상태·진행 스텝·단계별 날짜·주문자 액션 */
 export const OrderCard = ({ order }: { order: Order }) => {
