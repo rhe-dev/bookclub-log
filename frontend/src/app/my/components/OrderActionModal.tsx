@@ -46,10 +46,12 @@ export const OrderActionModal = ({
   }
 
   const showReason = action !== null && needsReason(action.toStatus);
+  const isOtherReason = reason === 'OTHER';
   const detailLength = reasonDetail.trim().length;
+  // 기타는 상세가 필수(5자 이상), 정형 사유는 상세 없이도 접수 가능
   const confirmDisabled =
     showReason &&
-    (!reason || (reason === 'OTHER' && detailLength < OTHER_DETAIL_MIN));
+    (!reason || (isOtherReason && detailLength < OTHER_DETAIL_MIN));
 
   const handleConfirm = () => {
     if (!action) return;
@@ -104,12 +106,7 @@ export const OrderActionModal = ({
           </Typo>
           <RadioGroup
             value={reason}
-            onChange={(e) => {
-              const next = e.target.value as OrderIssueReason;
-              setReason(next);
-              // 상세 입력은 기타 전용 — 다른 사유로 바꾸면 입력값도 비운다
-              if (next !== 'OTHER') setReasonDetail('');
-            }}
+            onChange={(e) => setReason(e.target.value as OrderIssueReason)}
           >
             {(
               Object.entries(ORDER_ISSUE_REASON_LABEL) as [
@@ -129,23 +126,34 @@ export const OrderActionModal = ({
               />
             ))}
           </RadioGroup>
-          {reason === 'OTHER' && (
+          {/* 사유를 고른 뒤에만 상세 입력 노출 — 어떤 사유든 쓸 수 있고 '기타'만 필수 */}
+          {reason && (
             <>
               <VerticalGap size={8} />
               <CommonInput
-                label="상세 내용"
+                label={isOtherReason ? '상세 내용' : '상세 내용 (선택)'}
                 value={reasonDetail}
                 onChange={(e) => setReasonDetail(e.target.value)}
                 multiline
                 minRows={3}
                 maxLength={OTHER_DETAIL_MAX}
-                placeholder="하자 내용을 알려 주시면 확인에 도움이 돼요"
+                placeholder={
+                  isOtherReason
+                    ? '어떤 문제였는지 알려 주세요'
+                    : '어느 부분이 어떻게 문제였는지 적어 주시면 확인이 빨라요'
+                }
                 errorMessage={
-                  reasonDetail && detailLength < OTHER_DETAIL_MIN
+                  isOtherReason &&
+                  reasonDetail &&
+                  detailLength < OTHER_DETAIL_MIN
                     ? `${OTHER_DETAIL_MIN}자 이상 입력해 주세요.`
                     : undefined
                 }
-                helperText={`${OTHER_DETAIL_MIN}~${OTHER_DETAIL_MAX}자 (${reasonDetail.length}/${OTHER_DETAIL_MAX})`}
+                helperText={
+                  isOtherReason
+                    ? `${OTHER_DETAIL_MIN}~${OTHER_DETAIL_MAX}자 (${reasonDetail.length}/${OTHER_DETAIL_MAX})`
+                    : `${reasonDetail.length}/${OTHER_DETAIL_MAX}자`
+                }
               />
             </>
           )}
