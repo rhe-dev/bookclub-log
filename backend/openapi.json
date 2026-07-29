@@ -816,6 +816,106 @@
               "default": 20,
               "type": "number"
             }
+          },
+          {
+            "name": "status",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "RECEIVED",
+                "CONFIRMED",
+                "IN_PRODUCTION",
+                "PRODUCED",
+                "SHIPPED",
+                "IN_TRANSIT",
+                "DELIVERED",
+                "PURCHASE_CONFIRMED",
+                "CANCELED",
+                "REFUND_REQUESTED",
+                "REFUNDED",
+                "REMAKE_REQUESTED"
+              ]
+            }
+          },
+          {
+            "name": "clubId",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "q",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "maxLength": 100,
+              "type": "string"
+            }
+          },
+          {
+            "name": "from",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "to",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "actionRequired",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "boolean"
+            }
+          },
+          {
+            "name": "ids",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          },
+          {
+            "name": "sort",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "latest",
+                "oldest",
+                "changed_latest",
+                "changed_oldest"
+              ]
+            }
+          },
+          {
+            "name": "scope",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "selected",
+                "page"
+              ]
+            }
           }
         ],
         "responses": {
@@ -824,7 +924,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/PaginatedOrdersResponse"
+                  "$ref": "#/components/schemas/PaginatedAdminOrdersResponse"
                 }
               }
             }
@@ -838,7 +938,129 @@
     "/api/admin/orders/csv": {
       "get": {
         "operationId": "AdminOrdersController_csv",
-        "parameters": [],
+        "parameters": [
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "minimum": 1,
+              "default": 1,
+              "type": "number"
+            }
+          },
+          {
+            "name": "limit",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "minimum": 1,
+              "maximum": 100,
+              "default": 20,
+              "type": "number"
+            }
+          },
+          {
+            "name": "status",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "RECEIVED",
+                "CONFIRMED",
+                "IN_PRODUCTION",
+                "PRODUCED",
+                "SHIPPED",
+                "IN_TRANSIT",
+                "DELIVERED",
+                "PURCHASE_CONFIRMED",
+                "CANCELED",
+                "REFUND_REQUESTED",
+                "REFUNDED",
+                "REMAKE_REQUESTED"
+              ]
+            }
+          },
+          {
+            "name": "clubId",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "q",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "maxLength": 100,
+              "type": "string"
+            }
+          },
+          {
+            "name": "from",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "to",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "actionRequired",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "boolean"
+            }
+          },
+          {
+            "name": "ids",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          },
+          {
+            "name": "sort",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "latest",
+                "oldest",
+                "changed_latest",
+                "changed_oldest"
+              ]
+            }
+          },
+          {
+            "name": "scope",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "selected",
+                "page"
+              ]
+            }
+          }
+        ],
         "responses": {
           "200": {
             "description": "주문 전체 CSV (BOM 포함)",
@@ -885,7 +1107,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/OrderResponse"
+                  "$ref": "#/components/schemas/AdminOrderResponse"
                 }
               }
             }
@@ -893,6 +1115,54 @@
         },
         "tags": [
           "AdminOrders"
+        ]
+      }
+    },
+    "/api/admin/orders/bulk-transition": {
+      "post": {
+        "operationId": "AdminOrdersController_bulkTransition",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AdminBulkTransitionDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "AdminOrders"
+        ]
+      }
+    },
+    "/api/admin/clubs": {
+      "get": {
+        "operationId": "AdminClubsController_findAll",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/AdminClubResponse"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "AdminClubs"
         ]
       }
     }
@@ -1744,6 +2014,10 @@
           "reasonDetail": {
             "type": "string",
             "nullable": true
+          },
+          "adminNote": {
+            "type": "string",
+            "nullable": true
           }
         },
         "required": [
@@ -1752,7 +2026,8 @@
           "actor",
           "reason",
           "changedAt",
-          "reasonDetail"
+          "reasonDetail",
+          "adminNote"
         ]
       },
       "OrderResponse": {
@@ -1788,6 +2063,10 @@
             "format": "date-time",
             "type": "string"
           },
+          "statusChangedAt": {
+            "format": "date-time",
+            "type": "string"
+          },
           "club": {
             "$ref": "#/components/schemas/OrderClubSummaryResponse"
           },
@@ -1813,6 +2092,7 @@
           "title",
           "copies",
           "createdAt",
+          "statusChangedAt",
           "club",
           "member",
           "books",
@@ -1876,6 +2156,114 @@
           "toStatus"
         ]
       },
+      "AdminOrderResponse": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "enum": [
+              "RECEIVED",
+              "CONFIRMED",
+              "IN_PRODUCTION",
+              "PRODUCED",
+              "SHIPPED",
+              "IN_TRANSIT",
+              "DELIVERED",
+              "PURCHASE_CONFIRMED",
+              "CANCELED",
+              "REFUND_REQUESTED",
+              "REFUNDED",
+              "REMAKE_REQUESTED"
+            ],
+            "type": "string"
+          },
+          "nextStatuses": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "enum": [
+                "RECEIVED",
+                "CONFIRMED",
+                "IN_PRODUCTION",
+                "PRODUCED",
+                "SHIPPED",
+                "IN_TRANSIT",
+                "DELIVERED",
+                "PURCHASE_CONFIRMED",
+                "CANCELED",
+                "REFUND_REQUESTED",
+                "REFUNDED",
+                "REMAKE_REQUESTED"
+              ]
+            }
+          },
+          "publicId": {
+            "type": "string"
+          },
+          "title": {
+            "type": "string"
+          },
+          "copies": {
+            "type": "number"
+          },
+          "createdAt": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "statusChangedAt": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "club": {
+            "$ref": "#/components/schemas/OrderClubSummaryResponse"
+          },
+          "member": {
+            "$ref": "#/components/schemas/MemberSummaryResponse"
+          },
+          "books": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/OrderBookSummaryResponse"
+            }
+          },
+          "history": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/OrderHistoryResponse"
+            }
+          }
+        },
+        "required": [
+          "status",
+          "nextStatuses",
+          "publicId",
+          "title",
+          "copies",
+          "createdAt",
+          "statusChangedAt",
+          "club",
+          "member",
+          "books",
+          "history"
+        ]
+      },
+      "PaginatedAdminOrdersResponse": {
+        "type": "object",
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/AdminOrderResponse"
+            }
+          },
+          "meta": {
+            "$ref": "#/components/schemas/PageMetaResponse"
+          }
+        },
+        "required": [
+          "items",
+          "meta"
+        ]
+      },
       "AdminTransitionOrderDto": {
         "type": "object",
         "properties": {
@@ -1895,10 +2283,71 @@
               "REMAKE_REQUESTED"
             ],
             "type": "string"
+          },
+          "adminNote": {
+            "type": "string",
+            "maxLength": 300
           }
         },
         "required": [
           "toStatus"
+        ]
+      },
+      "AdminBulkTransitionDto": {
+        "type": "object",
+        "properties": {
+          "toStatus": {
+            "enum": [
+              "RECEIVED",
+              "CONFIRMED",
+              "IN_PRODUCTION",
+              "PRODUCED",
+              "SHIPPED",
+              "IN_TRANSIT",
+              "DELIVERED",
+              "PURCHASE_CONFIRMED",
+              "CANCELED",
+              "REFUND_REQUESTED",
+              "REFUNDED",
+              "REMAKE_REQUESTED"
+            ],
+            "type": "string"
+          },
+          "adminNote": {
+            "type": "string",
+            "maxLength": 300
+          },
+          "orderIds": {
+            "minItems": 1,
+            "maxItems": 50,
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "required": [
+          "toStatus",
+          "orderIds"
+        ]
+      },
+      "AdminClubResponse": {
+        "type": "object",
+        "properties": {
+          "publicId": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "memberCount": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "publicId",
+          "name",
+          "memberCount"
         ]
       },
       "ApiErrorItemResponse": {
@@ -1945,6 +2394,9 @@
               "ORDER_REASON_DETAIL_MIN",
               "ORDER_REASON_DETAIL_MAX",
               "ORDER_STATUS_INVALID",
+              "ORDER_ADMIN_NOTE_MAX",
+              "ORDER_BULK_EMPTY",
+              "ORDER_BULK_TOO_MANY",
               "COMMENT_NOT_FOUND",
               "COMMENT_AUTHOR_ONLY",
               "COMMENT_CONTENT_REQUIRED",

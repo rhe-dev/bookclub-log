@@ -260,6 +260,38 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/admin/orders/bulk-transition": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["AdminOrdersController_bulkTransition"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/clubs": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["AdminClubsController_findAll"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -469,6 +501,7 @@ export interface components {
             /** Format: date-time */
             changedAt: string;
             reasonDetail: string | null;
+            adminNote: string | null;
         };
         OrderResponse: {
             /** @enum {string} */
@@ -478,6 +511,8 @@ export interface components {
             copies: number;
             /** Format: date-time */
             createdAt: string;
+            /** Format: date-time */
+            statusChangedAt: string;
             club: components["schemas"]["OrderClubSummaryResponse"];
             member: components["schemas"]["MemberSummaryResponse"];
             books: components["schemas"]["OrderBookSummaryResponse"][];
@@ -494,13 +529,45 @@ export interface components {
             reason?: "PRINT_DEFECT" | "BINDING_DEFECT" | "DAMAGED_IN_TRANSIT" | "WRONG_CONTENT" | "OTHER";
             reasonDetail?: string;
         };
+        AdminOrderResponse: {
+            /** @enum {string} */
+            status: "RECEIVED" | "CONFIRMED" | "IN_PRODUCTION" | "PRODUCED" | "SHIPPED" | "IN_TRANSIT" | "DELIVERED" | "PURCHASE_CONFIRMED" | "CANCELED" | "REFUND_REQUESTED" | "REFUNDED" | "REMAKE_REQUESTED";
+            nextStatuses: ("RECEIVED" | "CONFIRMED" | "IN_PRODUCTION" | "PRODUCED" | "SHIPPED" | "IN_TRANSIT" | "DELIVERED" | "PURCHASE_CONFIRMED" | "CANCELED" | "REFUND_REQUESTED" | "REFUNDED" | "REMAKE_REQUESTED")[];
+            publicId: string;
+            title: string;
+            copies: number;
+            /** Format: date-time */
+            createdAt: string;
+            /** Format: date-time */
+            statusChangedAt: string;
+            club: components["schemas"]["OrderClubSummaryResponse"];
+            member: components["schemas"]["MemberSummaryResponse"];
+            books: components["schemas"]["OrderBookSummaryResponse"][];
+            history: components["schemas"]["OrderHistoryResponse"][];
+        };
+        PaginatedAdminOrdersResponse: {
+            items: components["schemas"]["AdminOrderResponse"][];
+            meta: components["schemas"]["PageMetaResponse"];
+        };
         AdminTransitionOrderDto: {
             /** @enum {string} */
             toStatus: "RECEIVED" | "CONFIRMED" | "IN_PRODUCTION" | "PRODUCED" | "SHIPPED" | "IN_TRANSIT" | "DELIVERED" | "PURCHASE_CONFIRMED" | "CANCELED" | "REFUND_REQUESTED" | "REFUNDED" | "REMAKE_REQUESTED";
+            adminNote?: string;
+        };
+        AdminBulkTransitionDto: {
+            /** @enum {string} */
+            toStatus: "RECEIVED" | "CONFIRMED" | "IN_PRODUCTION" | "PRODUCED" | "SHIPPED" | "IN_TRANSIT" | "DELIVERED" | "PURCHASE_CONFIRMED" | "CANCELED" | "REFUND_REQUESTED" | "REFUNDED" | "REMAKE_REQUESTED";
+            adminNote?: string;
+            orderIds: string[];
+        };
+        AdminClubResponse: {
+            publicId: string;
+            name: string;
+            memberCount: number;
         };
         ApiErrorItemResponse: {
             /** @enum {string} */
-            code: "INTERNAL_ERROR" | "MEMBER_HEADER_REQUIRED" | "MEMBER_NOT_FOUND" | "COMMON_INVALID_INPUT" | "UNKNOWN_FIELD" | "PAGE_INVALID" | "LIMIT_INVALID" | "CLUB_NOT_FOUND" | "CLUB_MEMBER_ONLY" | "LEADER_ONLY" | "BOOK_NOT_FOUND" | "BOOK_TITLE_REQUIRED" | "BOOK_AUTHOR_REQUIRED" | "BOOK_COVER_COLOR_FORMAT" | "BOOK_TITLE_MAX" | "BOOK_AUTHOR_MAX" | "BOOK_PUBLISHER_MAX" | "BOOK_COVER_EMOJI_INVALID" | "BOOK_STATUS_INVALID" | "BOOK_DATE_INVALID" | "BOOK_PERIOD_INVALID" | "BOOK_PARTICIPANT_NOT_IN_CLUB" | "ORDER_NOT_FOUND" | "ORDER_TITLE_REQUIRED" | "ORDER_COPIES_MIN" | "ORDER_COPIES_MAX" | "ORDER_TITLE_MAX" | "ORDER_BOOKS_REQUIRED" | "ORDER_BOOK_INVALID" | "ORDER_BOOK_NOT_DONE" | "ORDER_INVALID_TRANSITION" | "ORDER_ADMIN_ONLY_TRANSITION" | "ORDER_ORDERER_ONLY" | "ORDER_REASON_REQUIRED" | "ORDER_REASON_INVALID" | "ORDER_REASON_DETAIL_REQUIRED" | "ORDER_REASON_DETAIL_MIN" | "ORDER_REASON_DETAIL_MAX" | "ORDER_STATUS_INVALID" | "COMMENT_NOT_FOUND" | "COMMENT_AUTHOR_ONLY" | "COMMENT_CONTENT_REQUIRED" | "COMMENT_CONTENT_TOO_LONG" | "COMMENT_PAGE_MIN" | "COMMENT_QUOTE_TOO_LONG" | "REPLY_TARGET_NOT_FOUND" | "REPLY_TO_OTHER_BOOK" | "REPLY_DEPTH_EXCEEDED" | "REPLY_TO_DELETED" | "NOT_FOUND" | "UNKNOWN";
+            code: "INTERNAL_ERROR" | "MEMBER_HEADER_REQUIRED" | "MEMBER_NOT_FOUND" | "COMMON_INVALID_INPUT" | "UNKNOWN_FIELD" | "PAGE_INVALID" | "LIMIT_INVALID" | "CLUB_NOT_FOUND" | "CLUB_MEMBER_ONLY" | "LEADER_ONLY" | "BOOK_NOT_FOUND" | "BOOK_TITLE_REQUIRED" | "BOOK_AUTHOR_REQUIRED" | "BOOK_COVER_COLOR_FORMAT" | "BOOK_TITLE_MAX" | "BOOK_AUTHOR_MAX" | "BOOK_PUBLISHER_MAX" | "BOOK_COVER_EMOJI_INVALID" | "BOOK_STATUS_INVALID" | "BOOK_DATE_INVALID" | "BOOK_PERIOD_INVALID" | "BOOK_PARTICIPANT_NOT_IN_CLUB" | "ORDER_NOT_FOUND" | "ORDER_TITLE_REQUIRED" | "ORDER_COPIES_MIN" | "ORDER_COPIES_MAX" | "ORDER_TITLE_MAX" | "ORDER_BOOKS_REQUIRED" | "ORDER_BOOK_INVALID" | "ORDER_BOOK_NOT_DONE" | "ORDER_INVALID_TRANSITION" | "ORDER_ADMIN_ONLY_TRANSITION" | "ORDER_ORDERER_ONLY" | "ORDER_REASON_REQUIRED" | "ORDER_REASON_INVALID" | "ORDER_REASON_DETAIL_REQUIRED" | "ORDER_REASON_DETAIL_MIN" | "ORDER_REASON_DETAIL_MAX" | "ORDER_STATUS_INVALID" | "ORDER_ADMIN_NOTE_MAX" | "ORDER_BULK_EMPTY" | "ORDER_BULK_TOO_MANY" | "COMMENT_NOT_FOUND" | "COMMENT_AUTHOR_ONLY" | "COMMENT_CONTENT_REQUIRED" | "COMMENT_CONTENT_TOO_LONG" | "COMMENT_PAGE_MIN" | "COMMENT_QUOTE_TOO_LONG" | "REPLY_TARGET_NOT_FOUND" | "REPLY_TO_OTHER_BOOK" | "REPLY_DEPTH_EXCEEDED" | "REPLY_TO_DELETED" | "NOT_FOUND" | "UNKNOWN";
             message: string;
         };
         ApiErrorResponse: {
@@ -974,6 +1041,15 @@ export interface operations {
             query?: {
                 page?: number;
                 limit?: number;
+                status?: "RECEIVED" | "CONFIRMED" | "IN_PRODUCTION" | "PRODUCED" | "SHIPPED" | "IN_TRANSIT" | "DELIVERED" | "PURCHASE_CONFIRMED" | "CANCELED" | "REFUND_REQUESTED" | "REFUNDED" | "REMAKE_REQUESTED";
+                clubId?: string;
+                q?: string;
+                from?: string;
+                to?: string;
+                actionRequired?: boolean;
+                ids?: string[];
+                sort?: "latest" | "oldest" | "changed_latest" | "changed_oldest";
+                scope?: "selected" | "page";
             };
             header?: never;
             path?: never;
@@ -986,14 +1062,26 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["PaginatedOrdersResponse"];
+                    "application/json": components["schemas"]["PaginatedAdminOrdersResponse"];
                 };
             };
         };
     };
     AdminOrdersController_csv: {
         parameters: {
-            query?: never;
+            query?: {
+                page?: number;
+                limit?: number;
+                status?: "RECEIVED" | "CONFIRMED" | "IN_PRODUCTION" | "PRODUCED" | "SHIPPED" | "IN_TRANSIT" | "DELIVERED" | "PURCHASE_CONFIRMED" | "CANCELED" | "REFUND_REQUESTED" | "REFUNDED" | "REMAKE_REQUESTED";
+                clubId?: string;
+                q?: string;
+                from?: string;
+                to?: string;
+                actionRequired?: boolean;
+                ids?: string[];
+                sort?: "latest" | "oldest" | "changed_latest" | "changed_oldest";
+                scope?: "selected" | "page";
+            };
             header?: never;
             path?: never;
             cookie?: never;
@@ -1031,7 +1119,47 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["OrderResponse"];
+                    "application/json": components["schemas"]["AdminOrderResponse"];
+                };
+            };
+        };
+    };
+    AdminOrdersController_bulkTransition: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AdminBulkTransitionDto"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    AdminClubsController_findAll: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AdminClubResponse"][];
                 };
             };
         };
