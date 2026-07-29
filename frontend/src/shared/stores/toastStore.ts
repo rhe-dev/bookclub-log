@@ -24,6 +24,11 @@ interface ToastState {
 export const useToastStore = create<ToastState>((set, get) => ({
   toasts: [],
   showToast: (message, type = 'info', duration = TOAST_AUTO_CLOSE_DURATION) => {
+    // 같은 메시지가 아직 떠 있으면 다시 쌓지 않는다 — 리다이렉트 가드가 두 번 도는 경우 등
+    const duplicated = get().toasts.some(
+      (t) => t.message === message && !t.isExiting,
+    );
+    if (duplicated) return;
     const id = `toast-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`;
     set((state) => ({
       toasts: [...state.toasts, { id, type, message, isExiting: false }],
