@@ -33,6 +33,7 @@ export const toOrderDto = (order: OrderWithRelations) => ({
   copies: order.copies,
   status: order.status,
   createdAt: order.createdAt,
+  statusChangedAt: order.statusChangedAt,
   club: order.club,
   member: order.member,
   books: order.books.map((ob) => ob.book),
@@ -43,5 +44,6 @@ export const toOrderDto = (order: OrderWithRelations) => ({
     actor: h.actor,
     reason: h.reason,
     reasonDetail: h.reasonDetail,
+    adminNote: h.adminNote,
   })),
 });

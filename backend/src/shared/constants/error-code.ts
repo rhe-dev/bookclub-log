@@ -51,6 +51,9 @@ export enum ErrorCode {
   ORDER_REASON_DETAIL_MIN = 'ORDER_REASON_DETAIL_MIN',
   ORDER_REASON_DETAIL_MAX = 'ORDER_REASON_DETAIL_MAX',
   ORDER_STATUS_INVALID = 'ORDER_STATUS_INVALID',
+  ORDER_ADMIN_NOTE_MAX = 'ORDER_ADMIN_NOTE_MAX',
+  ORDER_BULK_EMPTY = 'ORDER_BULK_EMPTY',
+  ORDER_BULK_TOO_MANY = 'ORDER_BULK_TOO_MANY',
 
   // 코멘트
   COMMENT_NOT_FOUND = 'COMMENT_NOT_FOUND',
@@ -124,6 +127,9 @@ export const ERROR_MESSAGE: Record<ErrorCode, string> = {
   [ErrorCode.ORDER_REASON_DETAIL_MAX]:
     '사유 상세는 500자 이하로 입력해 주세요.',
   [ErrorCode.ORDER_STATUS_INVALID]: '올바른 주문 상태 값이 아닙니다.',
+  [ErrorCode.ORDER_ADMIN_NOTE_MAX]: '운영자 메모는 300자 이하로 입력해 주세요.',
+  [ErrorCode.ORDER_BULK_EMPTY]: '처리할 주문을 선택해 주세요.',
+  [ErrorCode.ORDER_BULK_TOO_MANY]: '한 번에 최대 50건까지 처리할 수 있습니다.',
 
   // 코멘트
   [ErrorCode.COMMENT_NOT_FOUND]: '코멘트를 찾을 수 없습니다.',

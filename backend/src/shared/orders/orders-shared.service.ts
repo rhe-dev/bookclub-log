@@ -30,7 +30,11 @@ export class OrdersSharedService {
     return order;
   }
 
-  async paginate(where: Prisma.OrderWhereInput, query: PaginationQuery) {
+  async paginate(
+    where: Prisma.OrderWhereInput,
+    query: PaginationQuery,
+    orderBy: Prisma.OrderOrderByWithRelationInput = { createdAt: 'desc' },
+  ) {
     const page = query.page ?? 1;
     const limit = query.limit ?? 20;
     const [totalCount, orders] = await this.prisma.$transaction([
@@ -38,7 +42,7 @@ export class OrdersSharedService {
       this.prisma.order.findMany({
         where,
         include: orderInclude,
-        orderBy: { createdAt: 'desc' },
+        orderBy,
         skip: (page - 1) * limit,
         take: limit,
       }),
@@ -55,7 +59,11 @@ export class OrdersSharedService {
     toStatus: OrderStatus,
     actor: ActorType,
     isOrderer: boolean,
-    issue?: { reason?: OrderIssueReason; reasonDetail?: string },
+    issue?: {
+      reason?: OrderIssueReason;
+      reasonDetail?: string;
+      adminNote?: string;
+    },
   ) {
     const error = validateTransition({
       from: order.status,
@@ -102,11 +110,13 @@ export class OrdersSharedService {
           reasonDetail: isIssueRequest
             ? (issue!.reasonDetail?.trim() ?? null)
             : null,
+          // 운영자 메모는 어느 전이에서든 남길 수 있다 (D-031)
+          adminNote: issue?.adminNote?.trim() || null,
         },
       }),
       this.prisma.order.update({
         where: { id: order.id },
-        data: { status: toStatus },
+        data: { status: toStatus, statusChangedAt: new Date() },
         include: orderInclude,
       }),
     ]);

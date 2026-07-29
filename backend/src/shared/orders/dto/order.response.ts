@@ -35,6 +35,9 @@ export class OrderHistoryResponse {
   reason: OrderIssueReason | null;
 
   reasonDetail: string | null;
+
+  /** 운영자가 단계 진행 시 남긴 메모 (D-031) */
+  adminNote: string | null;
 }
 
 export class OrderResponse {
@@ -46,6 +49,10 @@ export class OrderResponse {
   status: OrderStatus;
 
   createdAt: Date;
+
+  /** 마지막 상태 변경 시각 — 운영자 목록의 '최근 변경' */
+  statusChangedAt: Date;
+
   club: OrderClubSummaryResponse;
   member: MemberSummaryResponse;
   books: OrderBookSummaryResponse[];

@@ -43,6 +43,7 @@ model Order {
   copies    Int /// 인쇄 부수
   status    OrderStatus @default(RECEIVED)
   createdAt DateTime    @default(now()) /// 주문일
+  statusChangedAt DateTime @default(now()) /// 마지막 상태 변경 시각 — 운영자 목록 정렬·표시용
 
   club    Club                 @relation(fields: [clubId], references: [id])
   member  Member               @relation(fields: [memberId], references: [id])
@@ -50,6 +51,7 @@ model Order {
   history OrderStatusHistory[]
 
   @@index([memberId]) /// 마이페이지 '내 주문' 조회
+  @@index([statusChangedAt]) /// 운영자 목록 변경일 정렬
 }
 
 /// 문집에 수록된 책 (다대다) — position은 수록 순서
@@ -74,6 +76,7 @@ model OrderStatusHistory {
   actor        ActorType
   reason       OrderIssueReason? /// 환불·재제작 요청 전이에만 기록
   reasonDetail String? /// 사유 상세 — OTHER면 필수, 그 외 선택
+  adminNote    String? /// 운영자 메모 — 단계 진행 시 남기는 처리 기록 (D-031)
 
   order Order @relation(fields: [orderId], references: [id])
 }

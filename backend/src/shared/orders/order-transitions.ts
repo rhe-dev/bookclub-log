@@ -37,6 +37,16 @@ export const ORDER_TRANSITIONS: Record<OrderStatus, TransitionRule[]> = {
   REFUNDED: [],
 };
 
+/** 해당 행위자가 지금 진행할 수 있는 다음 상태들 — 화면이 전이 맵을 복제하지 않도록 서버가 알려준다 */
+export function getAvailableTransitions(
+  from: OrderStatus,
+  actor: ActorType,
+): OrderStatus[] {
+  return ORDER_TRANSITIONS[from]
+    .filter((rule) => rule.actors.includes(actor))
+    .map((rule) => rule.to);
+}
+
 export type TransitionError = 'INVALID' | 'ACTOR_FORBIDDEN' | 'NOT_ORDERER';
 
 /** 전이 가능 여부 판정 — 실패 사유를 반환, 통과면 null */
