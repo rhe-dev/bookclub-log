@@ -4,6 +4,7 @@ import axios, {
   type AxiosResponse,
 } from 'axios';
 import { useMemberStore } from '@/shared/stores/memberStore';
+import { resetSession } from '@/shared/stores/resetSession';
 import type { ApiErrorItem, ErrorCode } from '@/shared/types/common';
 import { toast } from '@/shared/stores/toastStore';
 
@@ -59,7 +60,7 @@ apiInstance.interceptors.response.use(
   (error: AxiosError) => {
     // 무효 세션이면 자동 로그아웃 — 깨진 세션으로 계속 실패하는 것 방지
     if (useMemberStore.getState().member && isInvalidSessionError(error)) {
-      useMemberStore.getState().logout();
+      resetSession();
       toast.error(
         '로그인 정보가 더 이상 유효하지 않아요. 다시 로그인해 주세요.',
       );

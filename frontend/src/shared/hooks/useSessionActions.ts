@@ -3,6 +3,7 @@
 import { useRouter } from 'next/navigation';
 import { ROUTES } from '@/shared/constants/routes';
 import { useMemberStore } from '@/shared/stores/memberStore';
+import { resetSession } from '@/shared/stores/resetSession';
 import { toast } from '@/shared/stores/toastStore';
 import type { MyClub } from '@/shared/types/club';
 
@@ -11,7 +12,6 @@ export const useSessionActions = () => {
   const router = useRouter();
   const club = useMemberStore((s) => s.club);
   const switchClub = useMemberStore((s) => s.switchClub);
-  const clearSession = useMemberStore((s) => s.logout);
 
   /** 클럽 선택 — 다른 클럽이면 컨텍스트 전환, 어느 쪽이든 그 클럽 책방으로 */
   const goClub = (target: MyClub) => {
@@ -27,7 +27,7 @@ export const useSessionActions = () => {
   };
 
   const logout = () => {
-    clearSession();
+    resetSession();
     toast.info('로그아웃했어요. 다음에 또 만나요!');
     router.replace(ROUTES.home);
   };
