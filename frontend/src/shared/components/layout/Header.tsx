@@ -7,6 +7,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { useState } from 'react';
+import { useAdminPendingCountQuery } from '@/shared/api/adminApi';
 import { useMyClubsQuery } from '@/shared/api/clubApi';
 import { ClubRoleTag } from '@/shared/components/club/ClubRoleTag';
 import { CommonButton } from '@/shared/components/ui/CommonButton';
@@ -22,7 +23,7 @@ import { CommonContainer } from './CommonContainer';
 import { LoginModal } from './LoginModal';
 
 /** 로그인 후 사용 가능한 서비스가 GNB 메뉴 — 현재 위치는 활성 스타일로 표시 */
-const NAV_ITEMS = [
+const MEMBER_NAV = [
   {
     label: '책방',
     href: ROUTES.bookshelf,
@@ -30,6 +31,20 @@ const NAV_ITEMS = [
     prefixes: [ROUTES.bookshelf, '/books'],
   },
   { label: '문집 만들기', href: ROUTES.orderNew, prefixes: [ROUTES.orderNew] },
+];
+
+/** 운영자 GNB — 서비스 메뉴와 배타적으로 노출 (D-029) */
+const ADMIN_NAV = [
+  {
+    label: '주문 관리',
+    href: ROUTES.adminOrders,
+    prefixes: [ROUTES.adminOrders],
+  },
+  {
+    label: '회원 관리',
+    href: ROUTES.adminMembers,
+    prefixes: [ROUTES.adminMembers],
+  },
 ];
 
 /**
@@ -40,7 +55,10 @@ const NAV_ITEMS = [
 export const Header = () => {
   const member = useMemberStore((s) => s.member);
   const club = useMemberStore((s) => s.club);
+  const isAdmin = useMemberStore((s) => s.isAdmin);
   const { goClub, logout } = useSessionActions();
+  // 운영자가 처리해야 할 건수 — 메뉴에 배지로 노출
+  const pendingCountQuery = useAdminPendingCountQuery(isAdmin);
   const openLoginModal = useLoginModalStore((s) => s.open);
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
   const router = useRouter();
@@ -92,7 +110,13 @@ export const Header = () => {
         >
           <Box
             component={Link}
-            href={member ? ROUTES.bookshelf : ROUTES.home}
+            href={
+              isAdmin
+                ? ROUTES.adminOrders
+                : member
+                  ? ROUTES.bookshelf
+                  : ROUTES.home
+            }
             sx={{
               display: 'flex',
               alignItems: 'center',
@@ -120,13 +144,13 @@ export const Header = () => {
                 display: { xs: 'none', md: 'block' },
               }}
             >
-              북클럽 로그
+              북클럽 로그{isAdmin ? ' 운영' : ''}
             </Typo>
           </Box>
 
-          {member && (
+          {(member || isAdmin) && (
             <Stack direction="row" spacing={{ xs: 0.25, md: 0.5 }}>
-              {NAV_ITEMS.map((item) => {
+              {(isAdmin ? ADMIN_NAV : MEMBER_NAV).map((item) => {
                 const isActive = item.prefixes.some((prefix) =>
                   pathname.startsWith(prefix),
                 );
@@ -143,17 +167,40 @@ export const Header = () => {
                       '&:hover': { backgroundColor: colorChips.grayScale[100] },
                     }}
                   >
-                    <Typo
-                      token={isActive ? 'text_sb_14' : 'text_m_14'}
-                      color={
-                        isActive
-                          ? colorChips.primary[500]
-                          : colorChips.grayScale[600]
-                      }
-                      sx={{ whiteSpace: 'nowrap' }}
+                    <Stack
+                      direction="row"
+                      spacing={0.5}
+                      sx={{ alignItems: 'center' }}
                     >
-                      {item.label}
-                    </Typo>
+                      <Typo
+                        token={isActive ? 'text_sb_14' : 'text_m_14'}
+                        color={
+                          isActive
+                            ? colorChips.primary[500]
+                            : colorChips.grayScale[600]
+                        }
+                        sx={{ whiteSpace: 'nowrap' }}
+                      >
+                        {item.label}
+                      </Typo>
+                      {item.href === ROUTES.adminOrders &&
+                        (pendingCountQuery.data ?? 0) > 0 && (
+                          <Box
+                            sx={{
+                              px: 0.75,
+                              borderRadius: 999,
+                              backgroundColor: colorChips.secondary[500],
+                            }}
+                          >
+                            <Typo
+                              token="text_sb_10"
+                              color={colorChips.basic.white}
+                            >
+                              {pendingCountQuery.data}
+                            </Typo>
+                          </Box>
+                        )}
+                    </Stack>
                   </Box>
                 );
               })}
@@ -161,7 +208,24 @@ export const Header = () => {
           )}
         </Box>
 
-        {member ? (
+        {isAdmin ? (
+          <Stack direction="row" spacing={1} sx={{ alignItems: 'center' }}>
+            <Typo
+              token="text_sb_14"
+              color={colorChips.secondary[500]}
+              sx={{ display: { xs: 'none', sm: 'block' } }}
+            >
+              운영자
+            </Typo>
+            <CommonButton
+              label="로그아웃"
+              size="small"
+              buttonColor="tertiary"
+              buttonVariant="outlined"
+              onClick={logout}
+            />
+          </Stack>
+        ) : member ? (
           <>
             <ButtonBase
               onClick={(e) => setAnchorEl(e.currentTarget)}
