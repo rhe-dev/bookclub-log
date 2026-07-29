@@ -7,8 +7,11 @@ import { useMemberStore } from '@/shared/stores/memberStore';
 import type { ApiErrorItem, ErrorCode } from '@/shared/types/common';
 import { toast } from '@/shared/stores/toastStore';
 
+/** API 베이스 — 파일 다운로드처럼 axios를 거치지 않는 링크에서도 쓴다 */
+export const API_BASE_URL = `${process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:4000'}/api`;
+
 const apiInstance = axios.create({
-  baseURL: `${process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:4000'}/api`,
+  baseURL: API_BASE_URL,
   timeout: 10000,
   headers: { 'Content-Type': 'application/json' },
 });

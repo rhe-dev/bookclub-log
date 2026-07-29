@@ -15,6 +15,11 @@ export const queryKeys = {
   ordersMine: (memberPublicId: string) =>
     ['orders', 'mine', memberPublicId] as const,
   ordersMineRoot: ['orders', 'mine'] as const,
+  adminOrders: (page: number, filters: object) =>
+    ['admin', 'orders', page, filters] as const,
+  adminOrdersRoot: ['admin', 'orders'] as const,
+  adminClubs: ['admin', 'clubs'] as const,
+  adminPendingCount: ['admin', 'orders', 'pending-count'] as const,
   comments: (bookPublicId: string) =>
     ['books', bookPublicId, 'comments'] as const,
   commentsMine: (memberPublicId: string) =>

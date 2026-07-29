@@ -5,6 +5,9 @@ export type Order = components['schemas']['OrderResponse'];
 
 export type OrderStatus = Order['status'];
 
+/** 운영자 화면용 주문 — 진행 가능한 다음 단계 포함 */
+export type AdminOrder = components['schemas']['AdminOrderResponse'];
+
 /** 상태 전이 이력 1건 */
 export type OrderHistoryEntry = components['schemas']['OrderHistoryResponse'];
 
