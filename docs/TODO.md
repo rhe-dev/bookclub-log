@@ -57,16 +57,16 @@
 
 **백엔드**
 
-- [ ] `shared/bookprint/` 신설 — 판형 카탈로그(표준 3종: A5_SC 50~200 / A4_SC 24~130 / SQUAREBOOK_HC 24~130, `pageIncrement=2`, 가격)
-- [ ] 분량 산출기 — 속표지1 + 모임소개1 + Σ(표제지1 + 코멘트수) + 맺음말1, 홀수면 여백면 +1
-- [ ] 사양 검증기 — `pageMin`/`pageMax`/`pageIncrement` 판정 → 판형별 가능 여부 + 불가 사유
-- [ ] 견적기 — `priceBase + ((pageCount-pageMin)/inc) × pricePerIncrement`, ×부수, +배송비 3,000원
-- [ ] 예상 수령일 — 제작 3~4영업일(주말 제외) + 배송 1~2일
-- [ ] 목 벤더 클라이언트 — 6필드 응답·`ERR_*` 코드·`fieldErrors[].constraint` 재현, 발주(`createOrder`)·취소
-- [ ] 벤더 에러 → 도메인 ErrorCode 번역 + 재시도 가능 여부 표기 (D-028 계약 유지 + `fieldErrors` 채택)
-- [ ] 스키마: Order에 `bookSpecUid`·`coverColor`·`coverEmoji`·`pageCount`·`productAmount`·`shippingFee`·`vendorOrderUid`·`vendorStatus`·`vendorStatusAt`·`trackingCarrier`·`trackingNumber`, ActorType에 `VENDOR`
-- [ ] 상태 7단계로 축소 — `IN_TRANSIT` 제거 + 전이 맵·시드 정리
-- [ ] 주문 생성 API에 판형·표지·분량 검증 추가 / 시드에 판형·표지·견적 반영
+- [x] `shared/bookprint/` 신설 — 판형 카탈로그(표준 3종: A5_SC 50~200 / A4_SC 24~130 / SQUAREBOOK_HC 24~130, `pageIncrement=2`, 가격)
+- [x] 분량 산출기 — 속표지1 + 모임소개1 + Σ(표제지1 + 코멘트수) + 맺음말1, 홀수면 여백면 +1
+- [x] 사양 검증기 — `pageMin`/`pageMax`/`pageIncrement` 판정 → 판형별 가능 여부 + 불가 사유
+- [x] 견적기 — `priceBase + ((pageCount-pageMin)/inc) × pricePerIncrement`, ×부수, +배송비 3,000원
+- [x] 예상 수령일 — 제작 3~4영업일(주말 제외) + 배송 1~2일
+- [x] 목 벤더 클라이언트 — 6필드 응답·`ERR_*` 코드·`fieldErrors[].constraint` 재현, 발주(`createOrder`)·취소
+- [x] 벤더 에러 → 도메인 ErrorCode 번역 + 재시도 가능 여부 표기 (D-028 계약 유지 + `fieldErrors` 채택)
+- [x] 스키마: Order에 `bookSpecUid`·`coverColor`·`coverEmoji`·`pageCount`·`productAmount`·`shippingFee`·`vendorOrderUid`·`vendorStatus`·`vendorStatusAt`·`trackingCarrier`·`trackingNumber`, ActorType에 `VENDOR`
+- [x] 상태 7단계로 축소 — `IN_TRANSIT` 제거 + 전이 맵·시드 정리
+- [x] 주문 생성 API에 판형·표지·분량 검증 추가 / 시드에 판형·표지·견적 반영
 
 **프론트 (서비스)**
 
@@ -75,9 +75,9 @@
 
 **프론트 (어드민)**
 
-- [ ] 주문 상세에 북프린트 연동 패널 — 사양 검증 → PDF 생성 → 발주, 벤더 주문번호·상태·송장번호
-- [ ] 벤더 이벤트 시뮬레이터(데모용) — 제작 확정/시작/완료·발송·배송완료 웹훅 수신 재현
-- [ ] 목록·CSV에 판형·분량·금액 컬럼 반영
+- [x] 주문 상세에 북프린트 연동 패널 — 사양 검증 → PDF 생성 → 발주, 벤더 주문번호·상태·송장번호
+- [x] 벤더 이벤트 시뮬레이터(데모용) — 제작 확정/시작/완료·발송·배송완료 웹훅 수신 재현
+- [ ] 목록·CSV에 판형·분량·금액 컬럼 반영 (CSV·API는 완료, 테이블 표시 남음)
 
 ## Lv3 (docs/QA.md 체크리스트로 검증)
 
