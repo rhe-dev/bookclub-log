@@ -19,6 +19,8 @@ export const BookCard = ({ book }: { book: Book }) => {
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'stretch',
+        justifyContent: 'flex-start',
+        width: '100%',
         textAlign: 'left',
         borderRadius: 3,
         p: 1,

@@ -189,12 +189,15 @@ export default function BookshelfPage() {
                   <Box
                     sx={{
                       display: 'grid',
+                      // minmax(0, 1fr) — 그냥 1fr이면 긴 제목·날짜의 최소 폭이 열을 넓힌다
                       gridTemplateColumns: {
-                        xs: 'repeat(2, 1fr)',
-                        sm: 'repeat(3, 1fr)',
-                        md: 'repeat(4, 1fr)',
+                        xs: 'repeat(2, minmax(0, 1fr))',
+                        sm: 'repeat(3, minmax(0, 1fr))',
+                        md: 'repeat(4, minmax(0, 1fr))',
                       },
                       gap: { xs: 1.5, md: 2 },
+                      // 제목이 두 줄인 카드가 섞이면 행 높이에 맞춰 늘어나며 표지 위치가 어긋난다
+                      alignItems: 'start',
                     }}
                   >
                     {shelfBooks.map((book) => (
