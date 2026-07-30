@@ -58,8 +58,17 @@ export const theme = createTheme({
   components: {
     MuiCssBaseline: {
       styleOverrides: {
-        // iOS 사파리 러버밴드(위아래 바운스) 방지 — 스크롤 자체에는 영향 없음
-        html: { overscrollBehavior: 'none' },
+        html: {
+          // iOS 사파리 러버밴드(위아래 바운스) 방지 — 스크롤 자체에는 영향 없음
+          overscrollBehavior: 'none',
+          /*
+           * 세로 스크롤바 자리를 항상 비워 둔다.
+           * 창을 줄이면 텍스트가 접히며 높이가 바뀌어 스크롤바가 나타났다 사라지는데,
+           * 그때마다 폭이 스크롤바 너비만큼 달라져 줄바꿈이 다시 뒤집히는 진동이 생긴다.
+           * (오버레이 스크롤바를 쓰는 환경에서는 원래 자리를 차지하지 않아 영향이 없다.)
+           */
+          scrollbarGutter: 'stable',
+        },
         body: { overscrollBehavior: 'none' },
       },
     },
