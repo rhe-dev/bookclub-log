@@ -30,6 +30,8 @@ const COLUMNS = [
   '주문자',
   '문집 제목',
   '부수',
+  '판형·쪽수',
+  '금액',
   '',
 ];
 
@@ -43,6 +45,7 @@ const StatusChip = ({ status }: { status: AdminOrder['status'] }) => {
         py: 0.25,
         borderRadius: 1,
         backgroundColor: chip.bg,
+        border: chip.border ? `1px solid ${chip.border}` : 'none',
       }}
     >
       <Typo token="text_sb_12" color={chip.text} sx={{ whiteSpace: 'nowrap' }}>
@@ -84,8 +87,17 @@ export const AdminOrderTable = ({
         contain: 'inline-size',
       }}
     >
-      <Table size="small" sx={{ minWidth: 1140 }}>
-        <TableHead>
+      <Table size="small" sx={{ minWidth: 1400 }}>
+        {/* 헤더는 배경과 굵은 아래선으로 본문과 확실히 끊는다 — 열이 많아 눈이 헤맨다 */}
+        <TableHead
+          sx={{
+            // 배경은 TableHead가 아니라 셀에 칠해야 실제로 보인다 (셀이 위에 덮인다)
+            '& .MuiTableCell-root': {
+              backgroundColor: colorChips.grayScale[200],
+              borderBottom: `2px solid ${colorChips.grayScale[300]}`,
+            },
+          }}
+        >
           <TableRow>
             <TableCell padding="checkbox">
               <Checkbox
@@ -196,6 +208,20 @@ export const AdminOrderTable = ({
               </TableCell>
               <TableCell>
                 <Typo token="text_r_14">{order.copies}</Typo>
+              </TableCell>
+              <TableCell>
+                <Typo
+                  token="text_r_12"
+                  color={colorChips.grayScale[600]}
+                  sx={{ whiteSpace: 'nowrap' }}
+                >
+                  {order.bookSpec.name} · {order.pageCount}쪽
+                </Typo>
+              </TableCell>
+              <TableCell>
+                <Typo token="text_r_14" sx={{ whiteSpace: 'nowrap' }}>
+                  {order.totalAmount.toLocaleString()}원
+                </Typo>
               </TableCell>
               <TableCell align="right" sx={{ width: 40 }}>
                 <ChevronRightRoundedIcon

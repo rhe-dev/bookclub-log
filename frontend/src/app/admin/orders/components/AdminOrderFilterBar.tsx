@@ -14,6 +14,7 @@ import {
 } from '@mui/material';
 import { useState } from 'react';
 import type { AdminOrderFilters } from '@/shared/api/adminApi';
+import { ADMIN_PAGE_SIZE_OPTIONS } from '@/shared/constants/adminOrders';
 import { CommonButton } from '@/shared/components/ui/CommonButton';
 import { Typo } from '@/shared/components/ui/Typo';
 import { ORDER_STATUS_LOG_LABEL } from '@/shared/constants/orderStatus';
@@ -32,6 +33,9 @@ interface AdminOrderFilterBarProps {
   clubs?: AdminClub[];
   onChange: (next: AdminOrderFilters) => void;
   onReset: () => void;
+  /** 한 페이지에 볼 건수 */
+  pageSize: number;
+  onPageSizeChange: (limit: number) => void;
 }
 
 /** 주문 관리 필터 — 상태·클럽·기간·검색·정렬 + 처리 대기 토글 */
@@ -40,6 +44,8 @@ export const AdminOrderFilterBar = ({
   clubs,
   onChange,
   onReset,
+  pageSize,
+  onPageSizeChange,
 }: AdminOrderFilterBarProps) => {
   // 입력 중 매 글자 조회하지 않도록 검색어는 제출(Enter·포커스 아웃) 시점에만 반영
   const [keyword, setKeyword] = useState(filters.q ?? '');
@@ -159,6 +165,20 @@ export const AdminOrderFilterBar = ({
           justifyContent: 'flex-start',
         }}
       >
+        <TextField
+          select
+          size="small"
+          label="표시 건수"
+          value={pageSize}
+          onChange={(e) => onPageSizeChange(Number(e.target.value))}
+          sx={{ ...FIELD_SX, minWidth: 120 }}
+        >
+          {ADMIN_PAGE_SIZE_OPTIONS.map((size) => (
+            <MenuItem key={size} value={size}>
+              {size}건씩
+            </MenuItem>
+          ))}
+        </TextField>
         <TextField
           size="small"
           type="date"

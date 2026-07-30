@@ -4,7 +4,6 @@
 import DownloadRoundedIcon from '@mui/icons-material/DownloadRounded';
 import { Skeleton, Stack, Tooltip } from '@mui/material';
 import {
-  ADMIN_ORDERS_PAGE_SIZE,
   buildAdminOrdersCsvUrl,
   useAdminClubsQuery,
   useAdminOrdersQuery,
@@ -19,7 +18,6 @@ import { VerticalGap } from '@/shared/components/ui/VerticalGap';
 import { useRequireAdmin } from '@/shared/hooks/useRequireAdmin';
 import { useAdminFilterStore } from '@/shared/stores/adminFilterStore';
 import { colorChips } from '@/shared/styles/colors';
-import type { AdminOrder } from '@/shared/types/order';
 import { useState } from 'react';
 import { AdminBulkActionBar } from './components/AdminBulkActionBar';
 import { AdminOrderDetailModal } from './components/AdminOrderDetailModal';
@@ -33,17 +31,22 @@ export default function AdminOrdersPage() {
   const page = useAdminFilterStore((s) => s.orderPage);
   const setFilters = useAdminFilterStore((s) => s.setOrderFilters);
   const setPage = useAdminFilterStore((s) => s.setOrderPage);
+  const pageSize = useAdminFilterStore((s) => s.orderPageSize);
+  const setPageSize = useAdminFilterStore((s) => s.setOrderPageSize);
   const resetFilters = useAdminFilterStore((s) => s.resetOrderFilters);
-  const [selected, setSelected] = useState<AdminOrder | null>(null);
+  // 상세는 id로만 들고 있는다 — 목록이 갱신되면 모달 내용도 함께 최신이 되도록
+  const [selectedId, setSelectedId] = useState<string | null>(null);
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
 
-  const ordersQuery = useAdminOrdersQuery(page, filters);
+  const ordersQuery = useAdminOrdersQuery(page, pageSize, filters);
   const clubsQuery = useAdminClubsQuery();
 
   if (!isAdmin) return null;
 
   const orders = ordersQuery.data?.items ?? [];
   const totalCount = ordersQuery.data?.meta.totalCount ?? 0;
+  const selected =
+    orders.find((order) => order.publicId === selectedId) ?? null;
   const selectedOrders = orders.filter((order) =>
     selectedIds.includes(order.publicId),
   );
@@ -127,6 +130,8 @@ export default function AdminOrdersPage() {
         clubs={clubsQuery.data}
         onChange={setFilters}
         onReset={resetFilters}
+        pageSize={pageSize}
+        onPageSizeChange={setPageSize}
       />
 
       <VerticalGap size={16} />
@@ -159,7 +164,7 @@ export default function AdminOrdersPage() {
             selectedIds={selectedIds}
             onToggleSelect={toggleSelect}
             onToggleSelectAll={toggleSelectAll}
-            onSelect={setSelected}
+            onSelect={(order) => setSelectedId(order.publicId)}
           />
         </>
       )}
@@ -167,13 +172,13 @@ export default function AdminOrdersPage() {
       <CommonPagination
         page={page}
         totalCount={totalCount}
-        pageSize={ADMIN_ORDERS_PAGE_SIZE}
+        pageSize={pageSize}
         onChange={setPage}
       />
 
       <AdminOrderDetailModal
         order={selected}
-        onClose={() => setSelected(null)}
+        onClose={() => setSelectedId(null)}
       />
     </CommonContainer>
   );
