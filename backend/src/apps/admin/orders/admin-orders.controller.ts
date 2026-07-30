@@ -91,6 +91,11 @@ export class AdminOrdersController {
     );
   }
 
+  @Get(':orderId')
+  findOne(@Param('orderId') orderId: string): Promise<AdminOrderResponse> {
+    return this.adminOrdersService.findOne(orderId);
+  }
+
   /** 발주 전 사양 재확인 — 주문 당시 쪽수와 지금 쪽수를 함께 본다 */
   @Get(':orderId/production')
   checkProduction(

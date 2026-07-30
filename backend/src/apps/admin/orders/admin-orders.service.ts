@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { HttpException } from '@nestjs/common';
 import { ActorType, OrderStatus } from '@prisma/client';
 import { findBookSpec } from '../../../shared/bookprint/book-specs';
@@ -31,6 +31,16 @@ export class AdminOrdersService {
       toAdminOrderDto,
     );
     return page;
+  }
+
+  /** 단건 조회 — 상세가 별도 페이지라 목록 없이도 열린다 */
+  async findOne(orderPublicId: string) {
+    const order = await this.prisma.order.findUnique({
+      where: { publicId: orderPublicId },
+      include: orderInclude,
+    });
+    if (!order) throw new NotFoundException(ErrorCode.ORDER_NOT_FOUND);
+    return toAdminOrderDto(order);
   }
 
   /** 운영자 전이 — 단계 진행·환불 처리·재제작 승인 */
@@ -196,6 +206,13 @@ const toWhere = (query: AdminOrdersQuery): Prisma.OrderWhereInput => {
                 name: { contains: keyword, mode: 'insensitive' as const },
               },
             },
+            // 클럽도 한 필드에서 — 클럽이 늘어날수록 드롭다운은 감당이 안 된다
+            {
+              club: {
+                name: { contains: keyword, mode: 'insensitive' as const },
+              },
+            },
+            { club: { publicId: { contains: keyword } } },
           ],
         }
       : {}),

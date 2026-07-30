@@ -1189,6 +1189,36 @@
         ]
       }
     },
+    "/api/admin/orders/{orderId}": {
+      "get": {
+        "operationId": "AdminOrdersController_findOne",
+        "parameters": [
+          {
+            "name": "orderId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AdminOrderResponse"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "AdminOrders"
+        ]
+      }
+    },
     "/api/admin/orders/{orderId}/production": {
       "get": {
         "operationId": "AdminOrdersController_checkProduction",
@@ -1300,7 +1330,32 @@
     "/api/admin/clubs": {
       "get": {
         "operationId": "AdminClubsController_findAll",
-        "parameters": [],
+        "parameters": [
+          {
+            "name": "q",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "from",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "to",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
         "responses": {
           "200": {
             "description": "",
@@ -1318,6 +1373,221 @@
         },
         "tags": [
           "AdminClubs"
+        ]
+      }
+    },
+    "/api/admin/clubs/{clubId}": {
+      "get": {
+        "operationId": "AdminClubsController_detail",
+        "parameters": [
+          {
+            "name": "clubId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AdminClubDetailResponse"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "AdminClubs"
+        ]
+      }
+    },
+    "/api/admin/clubs/{clubId}/note": {
+      "patch": {
+        "operationId": "AdminClubsController_updateNote",
+        "parameters": [
+          {
+            "name": "clubId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AdminNoteDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AdminNoteResponse"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "AdminClubs"
+        ]
+      }
+    },
+    "/api/admin/members": {
+      "get": {
+        "operationId": "AdminMembersController_list",
+        "parameters": [
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "minimum": 1,
+              "default": 1,
+              "type": "number"
+            }
+          },
+          {
+            "name": "limit",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "minimum": 1,
+              "maximum": 100,
+              "default": 20,
+              "type": "number"
+            }
+          },
+          {
+            "name": "clubId",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "q",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "from",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "to",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PaginatedAdminMembersResponse"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "AdminMembers"
+        ]
+      }
+    },
+    "/api/admin/members/{memberId}": {
+      "get": {
+        "operationId": "AdminMembersController_detail",
+        "parameters": [
+          {
+            "name": "memberId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AdminMemberDetailResponse"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "AdminMembers"
+        ]
+      }
+    },
+    "/api/admin/members/{memberId}/note": {
+      "patch": {
+        "operationId": "AdminMembersController_updateNote",
+        "parameters": [
+          {
+            "name": "memberId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AdminNoteDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AdminNoteResponse"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "AdminMembers"
         ]
       }
     }
@@ -2997,14 +3267,393 @@
           "name": {
             "type": "string"
           },
+          "description": {
+            "type": "string"
+          },
+          "createdAt": {
+            "format": "date-time",
+            "type": "string"
+          },
           "memberCount": {
             "type": "number"
+          },
+          "bookCount": {
+            "type": "number"
+          },
+          "orderCount": {
+            "type": "number"
+          },
+          "hasAdminNote": {
+            "type": "boolean"
           }
         },
         "required": [
           "publicId",
           "name",
-          "memberCount"
+          "description",
+          "createdAt",
+          "memberCount",
+          "bookCount",
+          "orderCount",
+          "hasAdminNote"
+        ]
+      },
+      "AdminClubMemberResponse": {
+        "type": "object",
+        "properties": {
+          "role": {
+            "enum": [
+              "LEADER",
+              "MEMBER"
+            ],
+            "type": "string"
+          },
+          "publicId": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "avatarEmoji": {
+            "type": "string"
+          },
+          "color": {
+            "type": "string"
+          },
+          "joinedAt": {
+            "format": "date-time",
+            "type": "string"
+          }
+        },
+        "required": [
+          "role",
+          "publicId",
+          "name",
+          "avatarEmoji",
+          "color",
+          "joinedAt"
+        ]
+      },
+      "AdminClubOrderResponse": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "enum": [
+              "RECEIVED",
+              "CONFIRMED",
+              "IN_PRODUCTION",
+              "PRODUCED",
+              "SHIPPED",
+              "DELIVERED",
+              "PURCHASE_CONFIRMED",
+              "CANCELED",
+              "REFUND_REQUESTED",
+              "REFUNDED",
+              "REMAKE_REQUESTED"
+            ],
+            "type": "string"
+          },
+          "publicId": {
+            "type": "string"
+          },
+          "title": {
+            "type": "string"
+          },
+          "copies": {
+            "type": "number"
+          },
+          "createdAt": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "memberName": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "status",
+          "publicId",
+          "title",
+          "copies",
+          "createdAt",
+          "memberName"
+        ]
+      },
+      "AdminClubDetailResponse": {
+        "type": "object",
+        "properties": {
+          "adminNote": {
+            "type": "string",
+            "nullable": true
+          },
+          "publicId": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "inviteCode": {
+            "type": "string"
+          },
+          "createdAt": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "memberCount": {
+            "type": "number"
+          },
+          "bookCount": {
+            "type": "number"
+          },
+          "orderCount": {
+            "type": "number"
+          },
+          "members": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/AdminClubMemberResponse"
+            }
+          },
+          "recentOrders": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/AdminClubOrderResponse"
+            }
+          }
+        },
+        "required": [
+          "adminNote",
+          "publicId",
+          "name",
+          "description",
+          "inviteCode",
+          "createdAt",
+          "memberCount",
+          "bookCount",
+          "orderCount",
+          "members",
+          "recentOrders"
+        ]
+      },
+      "AdminNoteDto": {
+        "type": "object",
+        "properties": {
+          "note": {
+            "type": "string",
+            "maxLength": 1000
+          }
+        }
+      },
+      "AdminNoteResponse": {
+        "type": "object",
+        "properties": {
+          "adminNote": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "required": [
+          "adminNote"
+        ]
+      },
+      "AdminMemberClubResponse": {
+        "type": "object",
+        "properties": {
+          "role": {
+            "enum": [
+              "LEADER",
+              "MEMBER"
+            ],
+            "type": "string"
+          },
+          "publicId": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "joinedAt": {
+            "format": "date-time",
+            "type": "string"
+          }
+        },
+        "required": [
+          "role",
+          "publicId",
+          "name",
+          "joinedAt"
+        ]
+      },
+      "AdminMemberResponse": {
+        "type": "object",
+        "properties": {
+          "publicId": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "avatarEmoji": {
+            "type": "string"
+          },
+          "color": {
+            "type": "string"
+          },
+          "createdAt": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "clubs": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/AdminMemberClubResponse"
+            }
+          },
+          "commentCount": {
+            "type": "number"
+          },
+          "orderCount": {
+            "type": "number"
+          },
+          "hasAdminNote": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "publicId",
+          "name",
+          "avatarEmoji",
+          "color",
+          "createdAt",
+          "clubs",
+          "commentCount",
+          "orderCount",
+          "hasAdminNote"
+        ]
+      },
+      "PaginatedAdminMembersResponse": {
+        "type": "object",
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/AdminMemberResponse"
+            }
+          },
+          "meta": {
+            "$ref": "#/components/schemas/PageMetaResponse"
+          }
+        },
+        "required": [
+          "items",
+          "meta"
+        ]
+      },
+      "AdminMemberOrderResponse": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "enum": [
+              "RECEIVED",
+              "CONFIRMED",
+              "IN_PRODUCTION",
+              "PRODUCED",
+              "SHIPPED",
+              "DELIVERED",
+              "PURCHASE_CONFIRMED",
+              "CANCELED",
+              "REFUND_REQUESTED",
+              "REFUNDED",
+              "REMAKE_REQUESTED"
+            ],
+            "type": "string"
+          },
+          "publicId": {
+            "type": "string"
+          },
+          "title": {
+            "type": "string"
+          },
+          "copies": {
+            "type": "number"
+          },
+          "createdAt": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "clubName": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "status",
+          "publicId",
+          "title",
+          "copies",
+          "createdAt",
+          "clubName"
+        ]
+      },
+      "AdminMemberDetailResponse": {
+        "type": "object",
+        "properties": {
+          "adminNote": {
+            "type": "string",
+            "nullable": true
+          },
+          "publicId": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "avatarEmoji": {
+            "type": "string"
+          },
+          "color": {
+            "type": "string"
+          },
+          "createdAt": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "clubs": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/AdminMemberClubResponse"
+            }
+          },
+          "commentCount": {
+            "type": "number"
+          },
+          "likeCount": {
+            "type": "number"
+          },
+          "orderCount": {
+            "type": "number"
+          },
+          "recentOrders": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/AdminMemberOrderResponse"
+            }
+          }
+        },
+        "required": [
+          "adminNote",
+          "publicId",
+          "name",
+          "avatarEmoji",
+          "color",
+          "createdAt",
+          "clubs",
+          "commentCount",
+          "likeCount",
+          "orderCount",
+          "recentOrders"
         ]
       },
       "ApiErrorItemResponse": {
@@ -3015,6 +3664,7 @@
               "INTERNAL_ERROR",
               "MEMBER_HEADER_REQUIRED",
               "MEMBER_NOT_FOUND",
+              "ADMIN_NOTE_MAX",
               "COMMON_INVALID_INPUT",
               "UNKNOWN_FIELD",
               "PAGE_INVALID",
