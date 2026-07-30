@@ -6,8 +6,8 @@
 const TYPO_WEIGHTS = { b: 700, sb: 600, m: 500, r: 400 } as const;
 const TYPO_SIZES = [8, 10, 12, 14, 16, 18, 20, 24, 28] as const;
 
-export type TypoWeight = keyof typeof TYPO_WEIGHTS;
-export type TypoSize = (typeof TYPO_SIZES)[number];
+type TypoWeight = keyof typeof TYPO_WEIGHTS;
+type TypoSize = (typeof TYPO_SIZES)[number];
 export type TypoToken = `text_${TypoWeight}_${TypoSize}`;
 
 export interface TypoStyle {

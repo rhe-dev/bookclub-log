@@ -14,7 +14,7 @@ import type {
 } from '@/shared/types/order';
 import { axiosClient } from './axiosClient';
 
-export const orderApi = {
+const orderApi = {
   createOrder: async (
     clubPublicId: string,
     body: CreateOrderBody,

@@ -7,13 +7,13 @@
  */
 
 /** 속표지 · 모임 소개 · 목차 */
-export const FRONT_MATTER_PAGES = 3;
+const FRONT_MATTER_PAGES = 3;
 /** 책마다 들어가는 표제지 · 책 정보(참여자·모임 일정) */
-export const BOOK_HEADER_PAGES = 2;
+const BOOK_HEADER_PAGES = 2;
 /** 코멘트 1개 = 1쪽 — 인용문·본문·작성자를 한 쪽에 여유 있게 앉힌다 */
-export const PAGES_PER_COMMENT = 1;
+const PAGES_PER_COMMENT = 1;
 /** 참여자 명단 · 맺음말 */
-export const BACK_MATTER_PAGES = 2;
+const BACK_MATTER_PAGES = 2;
 
 export interface PageEstimateItem {
   /** 수록 책 1권의 살아있는 코멘트 수 (답글 포함, 삭제분 제외) */

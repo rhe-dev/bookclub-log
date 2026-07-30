@@ -21,7 +21,7 @@ interface ApiErrorItem {
  *   'CODE|상세' 형태면 상세를 메시지 뒤 괄호로 표기한다 (예: UNKNOWN_FIELD|foo).
  *   코드가 아닌 문자열(외부 라이브러리 메시지 등)은 UNKNOWN 코드로 감싸 원문 유지.
  */
-export const toErrorItem = (raw: string, status?: number): ApiErrorItem => {
+const toErrorItem = (raw: string, status?: number): ApiErrorItem => {
   // split(sep, 2)는 나머지를 버리므로 첫 구분자 기준으로 직접 나눈다
   const separator = raw.indexOf('|');
   const codePart = separator === -1 ? raw : raw.slice(0, separator);

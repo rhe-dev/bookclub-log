@@ -4,7 +4,7 @@ import type { ClubMember, MyClub } from '@/shared/types/club';
 import { axiosClient } from './axiosClient';
 
 // 조회 실패는 화면 단위 에러 뷰로 보여주므로 전역 토스트는 끈다
-export const clubApi = {
+const clubApi = {
   getMyClubs: async (): Promise<MyClub[]> => {
     const { data } = await axiosClient.get<MyClub[]>('/clubs/mine', {
       skipErrorToast: true,

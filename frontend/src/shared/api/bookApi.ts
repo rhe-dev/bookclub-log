@@ -14,7 +14,7 @@ import type {
 import type { Paginated } from '@/shared/types/common';
 import { axiosClient } from './axiosClient';
 
-export const bookApi = {
+const bookApi = {
   getBook: async (bookPublicId: string): Promise<Book> => {
     const { data } = await axiosClient.get<Book>(`/books/${bookPublicId}`, {
       skipErrorToast: true,

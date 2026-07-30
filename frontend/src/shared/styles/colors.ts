@@ -44,6 +44,3 @@ export const colorChips = {
     disabledText: '#B3BCC8',
   },
 } as const;
-
-type Leaf<T> = T extends string ? T : { [K in keyof T]: Leaf<T[K]> }[keyof T];
-export type ColorToken = Leaf<typeof colorChips>;

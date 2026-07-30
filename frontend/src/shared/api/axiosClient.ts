@@ -18,7 +18,7 @@ const apiInstance = axios.create({
 });
 
 /** 백엔드 전역 에러 포맷에서 에러 목록을 꺼낸다 — 네트워크·미상 오류는 UNKNOWN으로 합성 */
-export function getApiErrors(error: unknown): ApiErrorItem[] {
+function getApiErrors(error: unknown): ApiErrorItem[] {
   if (axios.isAxiosError(error)) {
     const errors = (error.response?.data as { errors?: ApiErrorItem[] })
       ?.errors;

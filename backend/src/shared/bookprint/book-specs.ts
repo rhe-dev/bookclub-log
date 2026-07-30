@@ -91,8 +91,3 @@ const SPEC_BY_UID = new Map(BOOK_SPECS.map((spec) => [spec.bookSpecUid, spec]));
 
 export const findBookSpec = (bookSpecUid: string): BookSpec | undefined =>
   SPEC_BY_UID.get(bookSpecUid);
-
-/** 카탈로그 전체에서 가장 낮은 최소 페이지 — 어떤 판형으로도 만들 수 없는 분량인지 판정용 */
-export const CATALOG_PAGE_MIN = Math.min(
-  ...BOOK_SPECS.map((spec) => spec.pageMin),
-);

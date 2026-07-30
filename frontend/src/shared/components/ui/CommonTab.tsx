@@ -3,7 +3,7 @@
 import { Tab, Tabs } from '@mui/material';
 import { colorChips } from '@/shared/styles/colors';
 
-export interface TabItem<T extends string> {
+interface TabItem<T extends string> {
   value: T;
   label: string;
 }

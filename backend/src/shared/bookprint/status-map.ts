@@ -8,10 +8,7 @@ import type { VendorOrderStatus, VendorWebhookEvent } from './vendor-contract';
  * 벤더 상태는 `Order.vendorStatus`에 그대로 보관해 어드민에서만 노출한다.
  * 여러 벤더 상태가 우리 한 단계(문집 제작)로 접히는 구간이 있다.
  */
-export const VENDOR_TO_ORDER_STATUS: Record<
-  VendorOrderStatus,
-  OrderStatus | null
-> = {
+const VENDOR_TO_ORDER_STATUS: Record<VendorOrderStatus, OrderStatus | null> = {
   // 발주 직후 구간 — 우리는 전부 '문집 제작'으로 묶어 보여준다
   PAID: OrderStatus.IN_PRODUCTION,
   PDF_READY: OrderStatus.IN_PRODUCTION,
@@ -27,18 +24,16 @@ export const VENDOR_TO_ORDER_STATUS: Record<
 };
 
 /** 웹훅 이벤트가 알려주는 벤더 상태 */
-export const WEBHOOK_TO_VENDOR_STATUS: Record<
-  VendorWebhookEvent,
-  VendorOrderStatus
-> = {
-  'order.created': 'PAID',
-  'production.confirmed': 'CONFIRMED',
-  'production.started': 'IN_PRODUCTION',
-  'production.completed': 'PRODUCTION_COMPLETE',
-  'shipping.departed': 'SHIPPED',
-  'shipping.delivered': 'DELIVERED',
-  'order.cancelled': 'CANCELLED_REFUND',
-};
+const WEBHOOK_TO_VENDOR_STATUS: Record<VendorWebhookEvent, VendorOrderStatus> =
+  {
+    'order.created': 'PAID',
+    'production.confirmed': 'CONFIRMED',
+    'production.started': 'IN_PRODUCTION',
+    'production.completed': 'PRODUCTION_COMPLETE',
+    'shipping.departed': 'SHIPPED',
+    'shipping.delivered': 'DELIVERED',
+    'order.cancelled': 'CANCELLED_REFUND',
+  };
 
 /**
  * 웹훅 수신 시 우리 상태를 어디로 옮길지.

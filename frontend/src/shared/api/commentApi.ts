@@ -16,7 +16,7 @@ import type {
 import type { Paginated } from '@/shared/types/common';
 import { axiosClient } from './axiosClient';
 
-export const commentApi = {
+const commentApi = {
   getComments: async (
     bookPublicId: string,
   ): Promise<Paginated<CommentThread>> => {

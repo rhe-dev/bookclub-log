@@ -60,7 +60,7 @@ export const buildAdminOrdersCsvUrl = (
   return `${API_BASE_URL}/admin/orders/csv${query ? `?${query}` : ''}`;
 };
 
-export const adminApi = {
+const adminApi = {
   getOrder: async (orderPublicId: string): Promise<AdminOrder> => {
     const { data } = await axiosClient.get<AdminOrder>(
       `/admin/orders/${orderPublicId}`,

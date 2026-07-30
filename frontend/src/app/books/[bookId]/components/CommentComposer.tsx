@@ -8,7 +8,7 @@ import { CommonInput } from '@/shared/components/ui/CommonInput';
 import { Typo } from '@/shared/components/ui/Typo';
 import { colorChips } from '@/shared/styles/colors';
 
-export interface CommentFormValues {
+interface CommentFormValues {
   content: string;
   page: number | null;
   quote: string | null;

@@ -8,10 +8,10 @@
  * 그래서 화면에서는 확정일이 아니라 '쯤'으로 안내한다.
  */
 
-export const PRODUCTION_BUSINESS_DAYS_MIN = 3;
-export const PRODUCTION_BUSINESS_DAYS_MAX = 4;
-export const SHIPPING_DAYS_MIN = 1;
-export const SHIPPING_DAYS_MAX = 2;
+const PRODUCTION_BUSINESS_DAYS_MIN = 3;
+const PRODUCTION_BUSINESS_DAYS_MAX = 4;
+const SHIPPING_DAYS_MIN = 1;
+const SHIPPING_DAYS_MAX = 2;
 
 export interface DeliveryEstimate {
   /** 가장 빠른 예상 수령일 */
@@ -27,7 +27,7 @@ const addDays = (base: Date, days: number): Date => {
 };
 
 /** 주말을 건너뛰며 영업일을 더한다 */
-export function addBusinessDays(base: Date, days: number): Date {
+function addBusinessDays(base: Date, days: number): Date {
   let result = new Date(base);
   let remaining = days;
   while (remaining > 0) {

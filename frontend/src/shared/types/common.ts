@@ -1,7 +1,7 @@
 import type { components } from './api.generated';
 
 /** 목록 API 공통 meta — 스펙 생성 타입 재노출 */
-export type PageMeta = components['schemas']['PageMetaResponse'];
+type PageMeta = components['schemas']['PageMetaResponse'];
 
 /** 전역 에러 응답 (D-018·D-028) — code가 계약, message는 서버가 준 카피 */
 export type ApiErrorItem = components['schemas']['ApiErrorItemResponse'];
