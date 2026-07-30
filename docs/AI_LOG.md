@@ -49,3 +49,10 @@
 - 시도: 검증 에러를 `CODE|상세` 규약으로 던지고 전역 필터에서 코드와 상세로 분리
 - 결과: 수정 필요. 검수에서 발견 — JS `String.split(sep, limit)`의 두 번째 인자는 "결과 배열 길이 제한"이라 `'UNKNOWN_FIELD|a|b'`가 `['UNKNOWN_FIELD','a']`가 되고 `b`가 사라진다. 파이썬 `str.split(sep, maxsplit)`처럼 "분할 횟수"로 착각한 코드였다
 - 배운 것: 같은 이름의 표준 라이브러리 함수라도 언어별 인자 의미가 다르다. 규약(구분자) 파싱은 `indexOf` 기준 수동 분할이 안전하고, 순수 함수라 테스트로 즉시 잡히는 종류였다 — 필터의 `toErrorItem`을 export해 테스트 가능한 형태로 바꿨다
+
+### [2026-07-30] Claude Code — 값 임포트 하나로 만든 런타임 순환 참조
+
+- 시도: 어드민 목록 페이지 크기를 고를 수 있게 하면서, 기본값 상수 `ADMIN_ORDERS_PAGE_SIZE`를 `shared/api/adminApi.ts`에 선언하고 필터 스토어에서 가져다 씀
+- 결과: 실패 — 브라우저에서 `Cannot access 'ADMIN_ORDERS_PAGE_SIZE' before initialization`. `axiosClient → resetSession → adminFilterStore → adminApi → axiosClient` 순환이 생겨 TDZ에 걸렸다. 상수를 `shared/constants/adminOrders.ts`로 옮겨 해결
+- 배운 것: 그 스토어는 원래 같은 모듈에서 **타입만** 가져오고 있었다(`import type`은 컴파일 시 사라져 순환이 안 생긴다). 값 하나를 추가하는 순간 성격이 바뀌는데 **타입 체크도 lint도 이걸 잡지 못한다** — 통과했다고 안심하고 브라우저를 다시 열어보지 않은 것이 문제였다. 상수는 API 모듈이 아니라 의존성이 없는 상수 모듈에 두는 것이 순환을 구조적으로 막는 방법
+
