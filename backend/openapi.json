@@ -642,6 +642,55 @@
         ]
       }
     },
+    "/api/clubs/{clubId}/orders/estimate": {
+      "post": {
+        "operationId": "OrdersController_estimate",
+        "parameters": [
+          {
+            "name": "X-Member-Id",
+            "in": "header",
+            "description": "현재 멤버의 publicId — 주문·전이 요청에 필요 (D-017)",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "clubId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/EstimateOrderDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OrderEstimateResponse"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Orders"
+        ]
+      }
+    },
     "/api/clubs/{clubId}/orders": {
       "post": {
         "operationId": "OrdersController_create",
@@ -829,7 +878,6 @@
                 "IN_PRODUCTION",
                 "PRODUCED",
                 "SHIPPED",
-                "IN_TRANSIT",
                 "DELIVERED",
                 "PURCHASE_CONFIRMED",
                 "CANCELED",
@@ -972,7 +1020,6 @@
                 "IN_PRODUCTION",
                 "PRODUCED",
                 "SHIPPED",
-                "IN_TRANSIT",
                 "DELIVERED",
                 "PURCHASE_CONFIRMED",
                 "CANCELED",
@@ -1135,6 +1182,107 @@
         "responses": {
           "201": {
             "description": ""
+          }
+        },
+        "tags": [
+          "AdminOrders"
+        ]
+      }
+    },
+    "/api/admin/orders/{orderId}/production": {
+      "get": {
+        "operationId": "AdminOrdersController_checkProduction",
+        "parameters": [
+          {
+            "name": "orderId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "AdminOrders"
+        ]
+      },
+      "post": {
+        "operationId": "AdminOrdersController_dispatch",
+        "parameters": [
+          {
+            "name": "orderId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AdminDispatchDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AdminOrderResponse"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "AdminOrders"
+        ]
+      }
+    },
+    "/api/admin/orders/{orderId}/vendor-events": {
+      "post": {
+        "operationId": "AdminOrdersController_receiveVendorEvent",
+        "parameters": [
+          {
+            "name": "orderId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AdminVendorEventDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AdminOrderResponse"
+                }
+              }
+            }
           }
         },
         "tags": [
@@ -1883,6 +2031,203 @@
           "likeCount"
         ]
       },
+      "EstimateOrderDto": {
+        "type": "object",
+        "properties": {
+          "bookIds": {
+            "minItems": 1,
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "copies": {
+            "type": "number",
+            "minimum": 1,
+            "maximum": 100
+          }
+        },
+        "required": [
+          "bookIds",
+          "copies"
+        ]
+      },
+      "PageBreakdownResponse": {
+        "type": "object",
+        "properties": {
+          "frontMatter": {
+            "type": "number"
+          },
+          "bookHeaders": {
+            "type": "number"
+          },
+          "comments": {
+            "type": "number"
+          },
+          "backMatter": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "frontMatter",
+          "bookHeaders",
+          "comments",
+          "backMatter"
+        ]
+      },
+      "BookSpecOptionResponse": {
+        "type": "object",
+        "properties": {
+          "coverType": {
+            "type": "string",
+            "enum": [
+              "SOFTCOVER",
+              "HARDCOVER"
+            ]
+          },
+          "bindingType": {
+            "type": "string",
+            "enum": [
+              "PUR",
+              "LAYFLAT"
+            ]
+          },
+          "ineligibleReason": {
+            "nullable": true,
+            "enum": [
+              "PAGE_MIN",
+              "PAGE_MAX",
+              "PAGE_INCREMENT"
+            ],
+            "type": "string"
+          },
+          "requiredValue": {
+            "type": "number",
+            "nullable": true
+          },
+          "bookSpecUid": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "innerTrimWidthMm": {
+            "type": "number"
+          },
+          "innerTrimHeightMm": {
+            "type": "number"
+          },
+          "pageMin": {
+            "type": "number"
+          },
+          "pageMax": {
+            "type": "number"
+          },
+          "pageIncrement": {
+            "type": "number"
+          },
+          "priceBase": {
+            "type": "number"
+          },
+          "pricePerIncrement": {
+            "type": "number"
+          },
+          "description": {
+            "type": "string"
+          },
+          "eligible": {
+            "type": "boolean"
+          },
+          "unitPrice": {
+            "type": "number"
+          },
+          "productAmount": {
+            "type": "number"
+          },
+          "shippingFee": {
+            "type": "number"
+          },
+          "totalAmount": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "coverType",
+          "bindingType",
+          "ineligibleReason",
+          "requiredValue",
+          "bookSpecUid",
+          "name",
+          "innerTrimWidthMm",
+          "innerTrimHeightMm",
+          "pageMin",
+          "pageMax",
+          "pageIncrement",
+          "priceBase",
+          "pricePerIncrement",
+          "description",
+          "eligible",
+          "unitPrice",
+          "productAmount",
+          "shippingFee",
+          "totalAmount"
+        ]
+      },
+      "DeliveryEstimateResponse": {
+        "type": "object",
+        "properties": {
+          "earliest": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "latest": {
+            "format": "date-time",
+            "type": "string"
+          }
+        },
+        "required": [
+          "earliest",
+          "latest"
+        ]
+      },
+      "OrderEstimateResponse": {
+        "type": "object",
+        "properties": {
+          "pageCount": {
+            "type": "number"
+          },
+          "blankPages": {
+            "type": "number"
+          },
+          "breakdown": {
+            "$ref": "#/components/schemas/PageBreakdownResponse"
+          },
+          "printable": {
+            "type": "boolean"
+          },
+          "specs": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/BookSpecOptionResponse"
+            }
+          },
+          "shippingFee": {
+            "type": "number"
+          },
+          "delivery": {
+            "$ref": "#/components/schemas/DeliveryEstimateResponse"
+          }
+        },
+        "required": [
+          "pageCount",
+          "blankPages",
+          "breakdown",
+          "printable",
+          "specs",
+          "shippingFee",
+          "delivery"
+        ]
+      },
       "CreateOrderDto": {
         "type": "object",
         "properties": {
@@ -1901,12 +2246,69 @@
             "items": {
               "type": "string"
             }
+          },
+          "bookSpecUid": {
+            "type": "string"
+          },
+          "coverColor": {
+            "type": "string",
+            "pattern": "^#[0-9a-fA-F]{6}$"
+          },
+          "coverEmoji": {
+            "type": "string",
+            "maxLength": 16
           }
         },
         "required": [
           "title",
           "copies",
-          "bookIds"
+          "bookIds",
+          "bookSpecUid",
+          "coverColor",
+          "coverEmoji"
+        ]
+      },
+      "OrderBookSpecResponse": {
+        "type": "object",
+        "properties": {
+          "coverType": {
+            "type": "string",
+            "nullable": true,
+            "enum": [
+              "SOFTCOVER",
+              "HARDCOVER"
+            ]
+          },
+          "bindingType": {
+            "type": "string",
+            "nullable": true,
+            "enum": [
+              "PUR",
+              "LAYFLAT"
+            ]
+          },
+          "innerTrimWidthMm": {
+            "type": "number",
+            "nullable": true
+          },
+          "innerTrimHeightMm": {
+            "type": "number",
+            "nullable": true
+          },
+          "bookSpecUid": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "coverType",
+          "bindingType",
+          "innerTrimWidthMm",
+          "innerTrimHeightMm",
+          "bookSpecUid",
+          "name"
         ]
       },
       "OrderClubSummaryResponse": {
@@ -1962,7 +2364,6 @@
               "IN_PRODUCTION",
               "PRODUCED",
               "SHIPPED",
-              "IN_TRANSIT",
               "DELIVERED",
               "PURCHASE_CONFIRMED",
               "CANCELED",
@@ -1979,7 +2380,6 @@
               "IN_PRODUCTION",
               "PRODUCED",
               "SHIPPED",
-              "IN_TRANSIT",
               "DELIVERED",
               "PURCHASE_CONFIRMED",
               "CANCELED",
@@ -1992,7 +2392,8 @@
           "actor": {
             "enum": [
               "USER",
-              "ADMIN"
+              "ADMIN",
+              "VENDOR"
             ],
             "type": "string"
           },
@@ -2040,7 +2441,6 @@
               "IN_PRODUCTION",
               "PRODUCED",
               "SHIPPED",
-              "IN_TRANSIT",
               "DELIVERED",
               "PURCHASE_CONFIRMED",
               "CANCELED",
@@ -2049,6 +2449,14 @@
               "REMAKE_REQUESTED"
             ],
             "type": "string"
+          },
+          "trackingCarrier": {
+            "type": "string",
+            "nullable": true
+          },
+          "trackingNumber": {
+            "type": "string",
+            "nullable": true
           },
           "publicId": {
             "type": "string"
@@ -2066,6 +2474,30 @@
           "statusChangedAt": {
             "format": "date-time",
             "type": "string"
+          },
+          "bookSpec": {
+            "$ref": "#/components/schemas/OrderBookSpecResponse"
+          },
+          "coverColor": {
+            "type": "string"
+          },
+          "coverEmoji": {
+            "type": "string"
+          },
+          "pageCount": {
+            "type": "number"
+          },
+          "unitPrice": {
+            "type": "number"
+          },
+          "productAmount": {
+            "type": "number"
+          },
+          "shippingFee": {
+            "type": "number"
+          },
+          "totalAmount": {
+            "type": "number"
           },
           "club": {
             "$ref": "#/components/schemas/OrderClubSummaryResponse"
@@ -2088,11 +2520,21 @@
         },
         "required": [
           "status",
+          "trackingCarrier",
+          "trackingNumber",
           "publicId",
           "title",
           "copies",
           "createdAt",
           "statusChangedAt",
+          "bookSpec",
+          "coverColor",
+          "coverEmoji",
+          "pageCount",
+          "unitPrice",
+          "productAmount",
+          "shippingFee",
+          "totalAmount",
           "club",
           "member",
           "books",
@@ -2127,7 +2569,6 @@
               "IN_PRODUCTION",
               "PRODUCED",
               "SHIPPED",
-              "IN_TRANSIT",
               "DELIVERED",
               "PURCHASE_CONFIRMED",
               "CANCELED",
@@ -2166,7 +2607,6 @@
               "IN_PRODUCTION",
               "PRODUCED",
               "SHIPPED",
-              "IN_TRANSIT",
               "DELIVERED",
               "PURCHASE_CONFIRMED",
               "CANCELED",
@@ -2175,6 +2615,14 @@
               "REMAKE_REQUESTED"
             ],
             "type": "string"
+          },
+          "trackingCarrier": {
+            "type": "string",
+            "nullable": true
+          },
+          "trackingNumber": {
+            "type": "string",
+            "nullable": true
           },
           "nextStatuses": {
             "type": "array",
@@ -2186,7 +2634,6 @@
                 "IN_PRODUCTION",
                 "PRODUCED",
                 "SHIPPED",
-                "IN_TRANSIT",
                 "DELIVERED",
                 "PURCHASE_CONFIRMED",
                 "CANCELED",
@@ -2195,6 +2642,23 @@
                 "REMAKE_REQUESTED"
               ]
             }
+          },
+          "vendorOrderUid": {
+            "type": "string",
+            "nullable": true
+          },
+          "vendorStatus": {
+            "type": "string",
+            "nullable": true
+          },
+          "vendorStatusDisplay": {
+            "type": "string",
+            "nullable": true
+          },
+          "vendorStatusAt": {
+            "format": "date-time",
+            "type": "string",
+            "nullable": true
           },
           "publicId": {
             "type": "string"
@@ -2212,6 +2676,30 @@
           "statusChangedAt": {
             "format": "date-time",
             "type": "string"
+          },
+          "bookSpec": {
+            "$ref": "#/components/schemas/OrderBookSpecResponse"
+          },
+          "coverColor": {
+            "type": "string"
+          },
+          "coverEmoji": {
+            "type": "string"
+          },
+          "pageCount": {
+            "type": "number"
+          },
+          "unitPrice": {
+            "type": "number"
+          },
+          "productAmount": {
+            "type": "number"
+          },
+          "shippingFee": {
+            "type": "number"
+          },
+          "totalAmount": {
+            "type": "number"
           },
           "club": {
             "$ref": "#/components/schemas/OrderClubSummaryResponse"
@@ -2234,12 +2722,26 @@
         },
         "required": [
           "status",
+          "trackingCarrier",
+          "trackingNumber",
           "nextStatuses",
+          "vendorOrderUid",
+          "vendorStatus",
+          "vendorStatusDisplay",
+          "vendorStatusAt",
           "publicId",
           "title",
           "copies",
           "createdAt",
           "statusChangedAt",
+          "bookSpec",
+          "coverColor",
+          "coverEmoji",
+          "pageCount",
+          "unitPrice",
+          "productAmount",
+          "shippingFee",
+          "totalAmount",
           "club",
           "member",
           "books",
@@ -2274,7 +2776,6 @@
               "IN_PRODUCTION",
               "PRODUCED",
               "SHIPPED",
-              "IN_TRANSIT",
               "DELIVERED",
               "PURCHASE_CONFIRMED",
               "CANCELED",
@@ -2303,7 +2804,6 @@
               "IN_PRODUCTION",
               "PRODUCED",
               "SHIPPED",
-              "IN_TRANSIT",
               "DELIVERED",
               "PURCHASE_CONFIRMED",
               "CANCELED",
@@ -2329,6 +2829,33 @@
         "required": [
           "toStatus",
           "orderIds"
+        ]
+      },
+      "AdminDispatchDto": {
+        "type": "object",
+        "properties": {
+          "adminNote": {
+            "type": "string",
+            "maxLength": 300
+          }
+        }
+      },
+      "AdminVendorEventDto": {
+        "type": "object",
+        "properties": {
+          "event": {
+            "enum": [
+              "production.confirmed",
+              "production.started",
+              "production.completed",
+              "shipping.departed",
+              "shipping.delivered"
+            ],
+            "type": "string"
+          }
+        },
+        "required": [
+          "event"
         ]
       },
       "AdminClubResponse": {
@@ -2397,6 +2924,20 @@
               "ORDER_ADMIN_NOTE_MAX",
               "ORDER_BULK_EMPTY",
               "ORDER_BULK_TOO_MANY",
+              "ORDER_COVER_COLOR_FORMAT",
+              "ORDER_COVER_EMOJI_INVALID",
+              "PRINT_SPEC_NOT_FOUND",
+              "PRINT_PAGE_MIN",
+              "PRINT_PAGE_MAX",
+              "PRINT_PAGE_INCREMENT",
+              "PRINT_NO_ELIGIBLE_SPEC",
+              "PRINT_ALREADY_ORDERED",
+              "PRINT_NOT_ORDERED",
+              "PRINT_VENDOR_REJECTED",
+              "PRINT_VENDOR_UNAVAILABLE",
+              "PRINT_VENDOR_RATE_LIMITED",
+              "PRINT_INSUFFICIENT_CREDIT",
+              "PRINT_WEBHOOK_EVENT_INVALID",
               "COMMENT_NOT_FOUND",
               "COMMENT_AUTHOR_ONLY",
               "COMMENT_CONTENT_REQUIRED",

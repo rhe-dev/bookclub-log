@@ -8,7 +8,6 @@ export const ORDER_STATUS_LABEL: Record<OrderStatus, string> = {
   IN_PRODUCTION: '문집을 만들고 있어요',
   PRODUCED: '제작이 끝났어요',
   SHIPPED: '배송을 시작했어요',
-  IN_TRANSIT: '배송 중이에요',
   DELIVERED: '배송이 완료됐어요',
   PURCHASE_CONFIRMED: '구매를 확정했어요',
   CANCELED: '주문이 취소됐어요',
@@ -33,7 +32,6 @@ export const ORDER_STATUS_LOG_LABEL: Record<OrderStatus, string> = {
   IN_PRODUCTION: '제작 시작',
   PRODUCED: '제작 완료',
   SHIPPED: '배송 시작',
-  IN_TRANSIT: '배송 중',
   DELIVERED: '배송 완료',
   PURCHASE_CONFIRMED: '구매 확정',
   CANCELED: '주문 취소',
@@ -53,7 +51,6 @@ const STEP_INDEX_BY_STATUS: Partial<Record<OrderStatus, number>> = {
   // 재제작 승인 후 제작 재진입까지 제작 그룹으로 표시
   REMAKE_REQUESTED: 1,
   SHIPPED: 2,
-  IN_TRANSIT: 2,
   DELIVERED: 3,
   PURCHASE_CONFIRMED: 3,
 };
@@ -77,7 +74,6 @@ export const ORDER_STATUS_CHIP: Record<
   IN_PRODUCTION: PROGRESS_CHIP,
   PRODUCED: PROGRESS_CHIP,
   SHIPPED: PROGRESS_CHIP,
-  IN_TRANSIT: PROGRESS_CHIP,
   DELIVERED: PROGRESS_CHIP,
   PURCHASE_CONFIRMED: {
     bg: colorChips.system.successBg,
