@@ -211,7 +211,8 @@ export const CommentThreadItem = ({
   return (
     <Box
       sx={{
-        borderBottom: `1px solid ${colorChips.grayScale[200]}`,
+        // 스레드 사이 경계 — 200은 배경과 거의 같아 구분이 안 됐다
+        borderBottom: `1px solid ${colorChips.grayScale[300]}`,
         pb: 1.5,
       }}
     >
@@ -227,7 +228,7 @@ export const CommentThreadItem = ({
           sx={{
             ml: { xs: 3, md: 5 },
             pl: 1.5,
-            borderLeft: `2px solid ${colorChips.grayScale[200]}`,
+            borderLeft: `2px solid ${colorChips.grayScale[300]}`,
           }}
         >
           {thread.replies.map((reply) => (

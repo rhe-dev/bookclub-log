@@ -43,7 +43,8 @@ export const CommentAnchor = ({
         <Box
           sx={{
             borderLeft: `3px solid ${colorChips.secondary[300]}`,
-            backgroundColor: colorChips.grayScale[50],
+            // 페이지 배경(grayScale 100)과 거의 같아 인용이 배경에 묻혔다 — 흰색으로 띄운다
+            backgroundColor: colorChips.basic.white,
             borderRadius: 1,
             px: 1.5,
             py: compact ? 0.75 : 1,
@@ -51,7 +52,7 @@ export const CommentAnchor = ({
         >
           <Typo
             token={compact ? 'text_r_12' : 'text_r_14'}
-            color={colorChips.grayScale[600]}
+            color={colorChips.grayScale[700]}
             sx={compact ? lineClamp(1) : undefined}
           >
             “{quote}”
