@@ -295,7 +295,8 @@ export const BookFormModal = ({
           </Stack>
         </Box>
 
-        <Stack direction="row" spacing={1.5}>
+        {/* 좁은 화면에서 날짜 3개를 가로로 두면 라벨·값이 모두 잘린다 */}
+        <Stack direction={{ xs: 'column', sm: 'row' }} spacing={1.5}>
           <CommonInput
             label="함께 읽기 시작"
             type="date"

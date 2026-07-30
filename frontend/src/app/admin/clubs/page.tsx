@@ -55,7 +55,11 @@ export default function AdminClubsPage() {
       </Typo>
 
       <VerticalGap size={16} />
-      <Stack direction="row" sx={{ flexWrap: 'wrap', gap: 1 }}>
+      <Stack
+        direction="row"
+        // 좁은 화면에선 줄바꿈이 잦아 세로 간격을 넉넉히
+        sx={{ flexWrap: 'wrap', gap: { xs: 1.5, md: 1 } }}
+      >
         <TextField
           size="small"
           placeholder="클럽명·클럽 ID"

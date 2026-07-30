@@ -67,7 +67,8 @@ export const AdminOrderFilterBar = ({
         direction="row"
         sx={{
           flexWrap: 'wrap',
-          gap: 1,
+          // 좁은 화면에선 줄바꿈이 잦아 세로 간격을 넉넉히
+          gap: { xs: 1.5, md: 1 },
           alignItems: 'center',
           justifyContent: 'flex-start',
         }}
@@ -126,7 +127,8 @@ export const AdminOrderFilterBar = ({
         direction="row"
         sx={{
           flexWrap: 'wrap',
-          gap: 1,
+          // 좁은 화면에선 줄바꿈이 잦아 세로 간격을 넉넉히
+          gap: { xs: 1.5, md: 1 },
           alignItems: 'center',
           justifyContent: 'flex-start',
         }}

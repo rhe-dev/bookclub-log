@@ -73,11 +73,17 @@ export const AdminBulkActionBar = ({
             선택한 주문들의 다음 단계가 서로 달라 일괄 진행할 수 없어요.
           </Typo>
         )}
+        {/* 옅은 파란 배경 위라 투명·회색 버튼은 묻힌다 — 흰 배경과 테두리로 경계를 만든다 */}
         <CommonButton
           label={`선택 항목 CSV (${selectedOrders.length}건)`}
           size="small"
           buttonColor="tertiary"
+          buttonVariant="outlined"
           onClick={onDownloadSelected}
+          sx={{
+            backgroundColor: colorChips.basic.white,
+            borderColor: colorChips.primary[300],
+          }}
         />
         <CommonButton
           label="선택 해제"
@@ -85,6 +91,10 @@ export const AdminBulkActionBar = ({
           buttonColor="tertiary"
           buttonVariant="outlined"
           onClick={onClearSelection}
+          sx={{
+            backgroundColor: colorChips.basic.white,
+            borderColor: colorChips.primary[300],
+          }}
         />
       </Stack>
 

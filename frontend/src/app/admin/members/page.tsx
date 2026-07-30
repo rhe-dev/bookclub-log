@@ -87,7 +87,11 @@ export default function AdminMembersPage() {
       </Typo>
 
       <VerticalGap size={16} />
-      <Stack direction="row" sx={{ flexWrap: 'wrap', gap: 1 }}>
+      <Stack
+        direction="row"
+        // 좁은 화면에선 줄바꿈이 잦아 세로 간격을 넉넉히
+        sx={{ flexWrap: 'wrap', gap: { xs: 1.5, md: 1 } }}
+      >
         {/* 이름·회원 ID·클럽명을 한 필드로 — 클럽이 늘어날수록 드롭다운은 감당이 안 된다 */}
         <TextField
           size="small"
