@@ -8,11 +8,13 @@ import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { useAdminPendingCountQuery } from '@/shared/api/adminApi';
+import { useBooksQuery } from '@/shared/api/bookApi';
 import { useMyClubsQuery } from '@/shared/api/clubApi';
 import { ClubRoleTag } from '@/shared/components/club/ClubRoleTag';
 import { CommonButton } from '@/shared/components/ui/CommonButton';
 import { ROUTES } from '@/shared/constants/routes';
 import { useAdminFilterStore } from '@/shared/stores/adminFilterStore';
+import { toast } from '@/shared/stores/toastStore';
 import { useSessionActions } from '@/shared/hooks/useSessionActions';
 import { useLoginModalStore } from '@/shared/stores/loginModalStore';
 import { useMemberStore } from '@/shared/stores/memberStore';
@@ -82,6 +84,12 @@ export const Header = () => {
   // 운영자가 처리해야 할 건수 — 메뉴에 배지로 노출
   const pendingCountQuery = useAdminPendingCountQuery(isAdmin);
   const withLastQuery = useWithLastQuery();
+  // 문집 만들기 진입 가능 여부 — 책방과 같은 쿼리라 대개 캐시에서 읽힌다
+  const doneBooksQuery = useBooksQuery(
+    member ? club?.publicId : undefined,
+    'DONE',
+  );
+  const canMakeAnthology = (doneBooksQuery.data?.items.length ?? 0) > 0;
   const openLoginModal = useLoginModalStore((s) => s.open);
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
   const router = useRouter();
@@ -183,6 +191,15 @@ export const Header = () => {
                     component={Link}
                     // 다른 메뉴에 갔다 돌아와도 보던 조건이 살아나게 — 필터는 URL에 있다
                     href={withLastQuery(item.href)}
+                    onClick={(e: React.MouseEvent) => {
+                      // 완독한 책이 없으면 문집을 만들 수 없다 — 빈 마법사로 보내는 대신 이유를 알린다
+                      if (item.href === ROUTES.orderNew && !canMakeAnthology) {
+                        e.preventDefault();
+                        toast.info(
+                          '완독한 책이 있어야 문집을 만들 수 있어요. 책방에서 완독 처리를 먼저 해 주세요.',
+                        );
+                      }
+                    }}
                     sx={{
                       px: { xs: 1, md: 1.25 },
                       py: 0.75,
