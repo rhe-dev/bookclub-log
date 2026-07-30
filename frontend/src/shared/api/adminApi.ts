@@ -7,10 +7,13 @@ import {
 import { queryKeys } from '@/shared/constants/queryKeys';
 import type { AdminClub } from '@/shared/types/club';
 import type { Paginated } from '@/shared/types/common';
-import type { AdminOrder, OrderStatus } from '@/shared/types/order';
+import type {
+  AdminOrder,
+  OrderProductionCheck,
+  OrderStatus,
+  VendorEvent,
+} from '@/shared/types/order';
 import { API_BASE_URL, axiosClient } from './axiosClient';
-
-export const ADMIN_ORDERS_PAGE_SIZE = 10;
 
 /** 주문 목록 필터 — 화면·CSV가 같은 조건을 공유한다 */
 export interface AdminOrderFilters {
@@ -57,14 +60,43 @@ export const buildAdminOrdersCsvUrl = (
 };
 
 export const adminApi = {
+  getProduction: async (
+    orderPublicId: string,
+  ): Promise<OrderProductionCheck> => {
+    const { data } = await axiosClient.get<OrderProductionCheck>(
+      `/admin/orders/${orderPublicId}/production`,
+    );
+    return data;
+  },
+  dispatch: async (
+    orderPublicId: string,
+    adminNote?: string,
+  ): Promise<AdminOrder> => {
+    const { data } = await axiosClient.post<AdminOrder>(
+      `/admin/orders/${orderPublicId}/production`,
+      { adminNote },
+    );
+    return data;
+  },
+  receiveVendorEvent: async (
+    orderPublicId: string,
+    event: VendorEvent,
+  ): Promise<AdminOrder> => {
+    const { data } = await axiosClient.post<AdminOrder>(
+      `/admin/orders/${orderPublicId}/vendor-events`,
+      { event },
+    );
+    return data;
+  },
   getOrders: async (
     page: number,
+    limit: number,
     filters: AdminOrderFilters,
   ): Promise<Paginated<AdminOrder>> => {
     const { data } = await axiosClient.get<Paginated<AdminOrder>>(
       '/admin/orders',
       {
-        params: { page, limit: ADMIN_ORDERS_PAGE_SIZE, ...toParams(filters) },
+        params: { page, limit, ...toParams(filters) },
         skipErrorToast: true,
       },
     );
@@ -106,10 +138,14 @@ export interface BulkTransitionResult {
   failed: { orderId: string; code: string }[];
 }
 
-export const useAdminOrdersQuery = (page: number, filters: AdminOrderFilters) =>
+export const useAdminOrdersQuery = (
+  page: number,
+  limit: number,
+  filters: AdminOrderFilters,
+) =>
   useQuery({
-    queryKey: queryKeys.adminOrders(page, filters),
-    queryFn: () => adminApi.getOrders(page, filters),
+    queryKey: queryKeys.adminOrders(page, limit, filters),
+    queryFn: () => adminApi.getOrders(page, limit, filters),
     placeholderData: keepPreviousData,
   });
 
@@ -142,6 +178,49 @@ export const useAdminTransitionMutation = () => {
   });
 };
 
+/**
+ * 발주 전 사양 재확인 — 주문 당시 쪽수와 지금 다시 계산한 쪽수를 함께 받는다 (D-035).
+ * 주문 뒤 코멘트가 바뀌면 제작처가 거부할 수 있어, 발주 직전에 한 번 더 본다.
+ */
+export const useAdminProductionQuery = (orderPublicId?: string) =>
+  useQuery({
+    queryKey: queryKeys.adminProduction(orderPublicId ?? ''),
+    queryFn: () => adminApi.getProduction(orderPublicId as string),
+    enabled: Boolean(orderPublicId),
+  });
+
+/** 북프린트 발주 — 이 시점에 제작이 시작되고 주문자 취소가 닫힌다 (D-034) */
+export const useAdminDispatchMutation = (orderPublicId?: string) => {
+  const invalidate = useInvalidateAdminOrders();
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (adminNote?: string) =>
+      adminApi.dispatch(orderPublicId as string, adminNote),
+    onSuccess: () => {
+      invalidate();
+      void queryClient.invalidateQueries({
+        queryKey: queryKeys.adminProduction(orderPublicId ?? ''),
+      });
+    },
+  });
+};
+
+/** 제작처 이벤트 수신 (데모 시뮬레이터) — 실제로는 웹훅이 들어오는 경로 */
+export const useAdminVendorEventMutation = (orderPublicId?: string) => {
+  const invalidate = useInvalidateAdminOrders();
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (event: VendorEvent) =>
+      adminApi.receiveVendorEvent(orderPublicId as string, event),
+    onSuccess: () => {
+      invalidate();
+      void queryClient.invalidateQueries({
+        queryKey: queryKeys.adminProduction(orderPublicId ?? ''),
+      });
+    },
+  });
+};
+
 /** 선택한 주문을 같은 단계로 일괄 진행 */
 export const useAdminBulkTransitionMutation = () => {
   const invalidate = useInvalidateAdminOrders();
@@ -164,7 +243,8 @@ export const useAdminPendingCountQuery = (enabled: boolean) =>
   useQuery({
     queryKey: queryKeys.adminPendingCount,
     queryFn: async () => {
-      const data = await adminApi.getOrders(1, { actionRequired: true });
+      // 건수만 필요해 1건만 받아 meta로 읽는다
+      const data = await adminApi.getOrders(1, 1, { actionRequired: true });
       return data.meta.totalCount;
     },
     enabled,
