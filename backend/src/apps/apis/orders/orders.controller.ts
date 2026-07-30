@@ -15,6 +15,8 @@ import {
 } from '../../../shared/orders/dto/order.response';
 import { TransitionOrderDto } from './dto/transition-order.dto';
 import { CreateOrderDto } from './dto/create-order.dto';
+import { EstimateOrderDto } from './dto/estimate-order.dto';
+import { OrderEstimateResponse } from './dto/order-estimate.response';
 import { OrdersService } from './orders.service';
 
 @ApiHeader({
@@ -25,6 +27,19 @@ import { OrdersService } from './orders.service';
 @Controller()
 export class OrdersController {
   constructor(private readonly ordersService: OrdersService) {}
+
+  /**
+   * 문집 견적 — 수록 책이 정해질 때마다 호출한다.
+   * 목록 조회가 아니라 선택 목록을 본문으로 받는 계산이라 POST (벤더의 POST /orders/estimate와 동형)
+   */
+  @Post('clubs/:clubId/orders/estimate')
+  estimate(
+    @Param('clubId') clubId: string,
+    @Headers('x-member-id') memberId: string | undefined,
+    @Body() dto: EstimateOrderDto,
+  ): Promise<OrderEstimateResponse> {
+    return this.ordersService.estimate(clubId, memberId, dto);
+  }
 
   @Post('clubs/:clubId/orders')
   create(

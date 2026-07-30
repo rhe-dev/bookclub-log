@@ -14,7 +14,11 @@ import {
 import { ErrorCode } from '../constants/error-code';
 import { PaginationQuery, toPageMeta } from '../dto/pagination.query';
 import { PrismaService } from '../prisma/prisma.service';
-import { orderInclude, toOrderDto } from './order.mapper';
+import {
+  orderInclude,
+  type OrderWithRelations,
+  toOrderDto,
+} from './order.mapper';
 import { validateTransition } from './order-transitions';
 
 /** 서비스/어드민 앱이 공유하는 주문 공통 로직 — 조회·페이지네이션·전이 실행 */
@@ -30,10 +34,12 @@ export class OrdersSharedService {
     return order;
   }
 
-  async paginate(
+  async paginate<T = ReturnType<typeof toOrderDto>>(
     where: Prisma.OrderWhereInput,
     query: PaginationQuery,
     orderBy: Prisma.OrderOrderByWithRelationInput = { createdAt: 'desc' },
+    /** 앱별 응답 매퍼 — 기본은 서비스(주문자) 응답 */
+    map: (order: OrderWithRelations) => T = toOrderDto as never,
   ) {
     const page = query.page ?? 1;
     const limit = query.limit ?? 20;
@@ -48,7 +54,7 @@ export class OrdersSharedService {
       }),
     ]);
     return {
-      items: orders.map(toOrderDto),
+      items: orders.map(map),
       meta: toPageMeta(page, limit, totalCount),
     };
   }
@@ -64,6 +70,8 @@ export class OrdersSharedService {
       reasonDetail?: string;
       adminNote?: string;
     },
+    /** 전이와 함께 갱신할 주문 필드 — 발주·웹훅 수신이 벤더 정보를 같은 트랜잭션에 쓴다 */
+    orderData?: Prisma.OrderUpdateInput,
   ) {
     const error = validateTransition({
       from: order.status,
@@ -116,10 +124,11 @@ export class OrdersSharedService {
       }),
       this.prisma.order.update({
         where: { id: order.id },
-        data: { status: toStatus, statusChangedAt: new Date() },
+        data: { ...orderData, status: toStatus, statusChangedAt: new Date() },
         include: orderInclude,
       }),
     ]);
-    return toOrderDto(updated);
+    // DTO 변환은 앱별 매퍼가 한다 — 어드민은 여기에 제작처 정보를 덧붙인다 (D-034)
+    return updated;
   }
 }

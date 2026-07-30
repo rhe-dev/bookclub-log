@@ -40,6 +40,24 @@ export class OrderHistoryResponse {
   adminNote: string | null;
 }
 
+/** 주문에 찍힌 판형 — 이름·크기는 카탈로그에서 붙인 값이다 */
+export class OrderBookSpecResponse {
+  bookSpecUid: string;
+  name: string;
+
+  @ApiProperty({ enum: ['SOFTCOVER', 'HARDCOVER'], nullable: true })
+  coverType: string | null;
+
+  @ApiProperty({ enum: ['PUR', 'LAYFLAT'], nullable: true })
+  bindingType: string | null;
+
+  @ApiProperty({ nullable: true })
+  innerTrimWidthMm: number | null;
+
+  @ApiProperty({ nullable: true })
+  innerTrimHeightMm: number | null;
+}
+
 export class OrderResponse {
   publicId: string;
   title: string;
@@ -52,6 +70,26 @@ export class OrderResponse {
 
   /** 마지막 상태 변경 시각 — 운영자 목록의 '최근 변경' */
   statusChangedAt: Date;
+
+  /** --- 제작 사양 (D-033) --- */
+  bookSpec: OrderBookSpecResponse;
+  coverColor: string;
+  coverEmoji: string;
+  /** 주문 시점에 산출한 내지 쪽수 */
+  pageCount: number;
+
+  /** --- 견적 스냅샷 (원) --- */
+  unitPrice: number;
+  productAmount: number;
+  shippingFee: number;
+  totalAmount: number;
+
+  /** 배송 정보 — 제작처 발송 이벤트로 채워진다 */
+  @ApiProperty({ nullable: true })
+  trackingCarrier: string | null;
+
+  @ApiProperty({ nullable: true })
+  trackingNumber: string | null;
 
   club: OrderClubSummaryResponse;
   member: MemberSummaryResponse;

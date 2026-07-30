@@ -4,6 +4,7 @@ import {
   IsInt,
   IsNotEmpty,
   IsString,
+  Matches,
   Max,
   MaxLength,
   Min,
@@ -31,4 +32,19 @@ export class CreateOrderDto {
     message: `${ErrorCode.COMMON_INVALID_INPUT}|$property`,
   })
   bookIds: string[];
+
+  /** 판형 — 북프린트 카탈로그의 bookSpecUid (검증은 서비스에서 카탈로그 대조) */
+  @IsString({ message: `${ErrorCode.COMMON_INVALID_INPUT}|$property` })
+  @IsNotEmpty({ message: ErrorCode.PRINT_SPEC_NOT_FOUND })
+  bookSpecUid: string;
+
+  /** 문집 표지 색 — 책 표지와 같은 컨벤션 */
+  @IsString({ message: `${ErrorCode.COMMON_INVALID_INPUT}|$property` })
+  @Matches(/^#[0-9a-fA-F]{6}$/, { message: ErrorCode.ORDER_COVER_COLOR_FORMAT })
+  coverColor: string;
+
+  @IsString({ message: `${ErrorCode.COMMON_INVALID_INPUT}|$property` })
+  @IsNotEmpty({ message: ErrorCode.ORDER_COVER_EMOJI_INVALID })
+  @MaxLength(16, { message: ErrorCode.ORDER_COVER_EMOJI_INVALID })
+  coverEmoji: string;
 }

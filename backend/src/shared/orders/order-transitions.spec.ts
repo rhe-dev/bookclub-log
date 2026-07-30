@@ -4,14 +4,13 @@ import { ORDER_TRANSITIONS, validateTransition } from './order-transitions';
 const { USER, ADMIN } = ActorType;
 
 describe('주문 상태 전이 맵 (PLAN §5, D-013)', () => {
-  describe('순방향 8단계', () => {
+  describe('순방향 7단계', () => {
     const forward: [OrderStatus, OrderStatus, ActorType][] = [
       [OrderStatus.RECEIVED, OrderStatus.CONFIRMED, ADMIN],
       [OrderStatus.CONFIRMED, OrderStatus.IN_PRODUCTION, ADMIN],
       [OrderStatus.IN_PRODUCTION, OrderStatus.PRODUCED, ADMIN],
       [OrderStatus.PRODUCED, OrderStatus.SHIPPED, ADMIN],
-      [OrderStatus.SHIPPED, OrderStatus.IN_TRANSIT, ADMIN],
-      [OrderStatus.IN_TRANSIT, OrderStatus.DELIVERED, ADMIN],
+      [OrderStatus.SHIPPED, OrderStatus.DELIVERED, ADMIN],
       [OrderStatus.DELIVERED, OrderStatus.PURCHASE_CONFIRMED, USER],
     ];
 
@@ -158,7 +157,7 @@ describe('주문 상태 전이 맵 (PLAN §5, D-013)', () => {
     it('배송완료 전에는 환불을 요청할 수 없다', () => {
       expect(
         validateTransition({
-          from: OrderStatus.IN_TRANSIT,
+          from: OrderStatus.SHIPPED,
           to: OrderStatus.REFUND_REQUESTED,
           actor: USER,
           isOrderer: true,

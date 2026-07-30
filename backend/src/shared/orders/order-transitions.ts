@@ -7,7 +7,9 @@ interface TransitionRule {
 
 /**
  * 주문 상태 전이 맵 — 단일 소스 (PLAN §5, D-013).
- * 순방향 8단계 + 분기(취소·환불·재제작). USER 전이는 주문자 본인만 가능하다.
+ * 순방향 7단계 + 분기(취소·환불·재제작). USER 전이는 주문자 본인만 가능하다.
+ * 제작·배송 단계(IN_PRODUCTION 이후)는 운영자가 임의로 누르는 것이 아니라
+ * 제작처 웹훅 수신으로 전이된다 — ADMIN·VENDOR 둘 다 주체가 될 수 있다 (D-034).
  */
 export const ORDER_TRANSITIONS: Record<OrderStatus, TransitionRule[]> = {
   RECEIVED: [
@@ -18,10 +20,15 @@ export const ORDER_TRANSITIONS: Record<OrderStatus, TransitionRule[]> = {
     { to: OrderStatus.IN_PRODUCTION, actors: [ActorType.ADMIN] },
     { to: OrderStatus.CANCELED, actors: [ActorType.USER, ActorType.ADMIN] },
   ],
-  IN_PRODUCTION: [{ to: OrderStatus.PRODUCED, actors: [ActorType.ADMIN] }],
-  PRODUCED: [{ to: OrderStatus.SHIPPED, actors: [ActorType.ADMIN] }],
-  SHIPPED: [{ to: OrderStatus.IN_TRANSIT, actors: [ActorType.ADMIN] }],
-  IN_TRANSIT: [{ to: OrderStatus.DELIVERED, actors: [ActorType.ADMIN] }],
+  IN_PRODUCTION: [
+    { to: OrderStatus.PRODUCED, actors: [ActorType.ADMIN, ActorType.VENDOR] },
+  ],
+  PRODUCED: [
+    { to: OrderStatus.SHIPPED, actors: [ActorType.ADMIN, ActorType.VENDOR] },
+  ],
+  SHIPPED: [
+    { to: OrderStatus.DELIVERED, actors: [ActorType.ADMIN, ActorType.VENDOR] },
+  ],
   DELIVERED: [
     { to: OrderStatus.PURCHASE_CONFIRMED, actors: [ActorType.USER] },
     { to: OrderStatus.REFUND_REQUESTED, actors: [ActorType.USER] },
