@@ -5,7 +5,7 @@ import SearchRoundedIcon from '@mui/icons-material/SearchRounded';
 import StickyNote2OutlinedIcon from '@mui/icons-material/StickyNote2Outlined';
 import { Box, InputAdornment, Skeleton, Stack, TextField } from '@mui/material';
 import { useRouter } from 'next/navigation';
-import { useState } from 'react';
+import { Suspense, useState } from 'react';
 import { useAdminClubsQuery } from '@/shared/api/adminApi';
 import { CommonContainer } from '@/shared/components/layout/CommonContainer';
 import { CommonButton } from '@/shared/components/ui/CommonButton';
@@ -26,7 +26,17 @@ const FIELD_SX = {
   '& .MuiOutlinedInput-root': { backgroundColor: colorChips.basic.white },
 } as const;
 
+// useSearchParams(필터를 URL에 두는 D-038)는 Suspense 경계가 필요하다 —
+// 없으면 프로덕션 빌드의 프리렌더가 실패한다. 페이지는 래퍼만 두고 본문은 아래 컴포넌트
 export default function AdminClubsPage() {
+  return (
+    <Suspense fallback={null}>
+      <AdminClubsContent />
+    </Suspense>
+  );
+}
+
+function AdminClubsContent() {
   const isAdmin = useRequireAdmin();
   const router = useRouter();
   // 필터는 URL 쿼리가 단일 소스 — 조합을 링크로 공유할 수 있어야 한다 (D-038)

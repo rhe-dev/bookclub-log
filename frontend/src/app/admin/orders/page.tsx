@@ -19,13 +19,23 @@ import { ROUTES } from '@/shared/constants/routes';
 import { useRequireAdmin } from '@/shared/hooks/useRequireAdmin';
 import { colorChips } from '@/shared/styles/colors';
 import { useRouter } from 'next/navigation';
-import { useState } from 'react';
+import { Suspense, useState } from 'react';
 import { useAdminOrderParams } from '../adminListParams';
 import { AdminBulkActionBar } from './components/AdminBulkActionBar';
 import { AdminOrderFilterBar } from './components/AdminOrderFilterBar';
 import { AdminOrderTable } from './components/AdminOrderTable';
 
+// useSearchParams(필터를 URL에 두는 D-038)는 Suspense 경계가 필요하다 —
+// 없으면 프로덕션 빌드의 프리렌더가 실패한다. 페이지는 래퍼만 두고 본문은 아래 컴포넌트
 export default function AdminOrdersPage() {
+  return (
+    <Suspense fallback={null}>
+      <AdminOrdersContent />
+    </Suspense>
+  );
+}
+
+function AdminOrdersContent() {
   const isAdmin = useRequireAdmin();
   const router = useRouter();
   // 필터는 URL 쿼리가 단일 소스 — 조합을 링크로 공유할 수 있어야 한다
