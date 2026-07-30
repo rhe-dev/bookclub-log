@@ -54,6 +54,22 @@ export enum ErrorCode {
   ORDER_ADMIN_NOTE_MAX = 'ORDER_ADMIN_NOTE_MAX',
   ORDER_BULK_EMPTY = 'ORDER_BULK_EMPTY',
   ORDER_BULK_TOO_MANY = 'ORDER_BULK_TOO_MANY',
+  ORDER_COVER_COLOR_FORMAT = 'ORDER_COVER_COLOR_FORMAT',
+  ORDER_COVER_EMOJI_INVALID = 'ORDER_COVER_EMOJI_INVALID',
+
+  // 문집 제작 사양·북프린트 연동 (D-033)
+  PRINT_SPEC_NOT_FOUND = 'PRINT_SPEC_NOT_FOUND',
+  PRINT_PAGE_MIN = 'PRINT_PAGE_MIN',
+  PRINT_PAGE_MAX = 'PRINT_PAGE_MAX',
+  PRINT_PAGE_INCREMENT = 'PRINT_PAGE_INCREMENT',
+  PRINT_NO_ELIGIBLE_SPEC = 'PRINT_NO_ELIGIBLE_SPEC',
+  PRINT_ALREADY_ORDERED = 'PRINT_ALREADY_ORDERED',
+  PRINT_NOT_ORDERED = 'PRINT_NOT_ORDERED',
+  PRINT_VENDOR_REJECTED = 'PRINT_VENDOR_REJECTED',
+  PRINT_VENDOR_UNAVAILABLE = 'PRINT_VENDOR_UNAVAILABLE',
+  PRINT_VENDOR_RATE_LIMITED = 'PRINT_VENDOR_RATE_LIMITED',
+  PRINT_INSUFFICIENT_CREDIT = 'PRINT_INSUFFICIENT_CREDIT',
+  PRINT_WEBHOOK_EVENT_INVALID = 'PRINT_WEBHOOK_EVENT_INVALID',
 
   // 코멘트
   COMMENT_NOT_FOUND = 'COMMENT_NOT_FOUND',
@@ -130,6 +146,30 @@ export const ERROR_MESSAGE: Record<ErrorCode, string> = {
   [ErrorCode.ORDER_ADMIN_NOTE_MAX]: '운영자 메모는 300자 이하로 입력해 주세요.',
   [ErrorCode.ORDER_BULK_EMPTY]: '처리할 주문을 선택해 주세요.',
   [ErrorCode.ORDER_BULK_TOO_MANY]: '한 번에 최대 50건까지 처리할 수 있습니다.',
+  [ErrorCode.ORDER_COVER_COLOR_FORMAT]: '표지 색상 형식이 올바르지 않습니다.',
+  [ErrorCode.ORDER_COVER_EMOJI_INVALID]: '표지 이모지를 선택해 주세요.',
+
+  // 문집 제작 사양·북프린트 연동
+  [ErrorCode.PRINT_SPEC_NOT_FOUND]: '선택할 수 없는 판형입니다.',
+  [ErrorCode.PRINT_PAGE_MIN]:
+    '이 판형의 최소 쪽수에 못 미쳐요. 수록할 책을 더 담아 주세요.',
+  [ErrorCode.PRINT_PAGE_MAX]:
+    '이 판형의 최대 쪽수를 넘었어요. 수록할 책을 줄이거나 다른 판형을 골라 주세요.',
+  [ErrorCode.PRINT_PAGE_INCREMENT]:
+    '이 판형에서 만들 수 없는 쪽수입니다. 다시 시도해 주세요.',
+  [ErrorCode.PRINT_NO_ELIGIBLE_SPEC]:
+    '아직 문집으로 묶기에는 분량이 적어요. 책을 더 담거나 토론을 더 쌓아 주세요.',
+  [ErrorCode.PRINT_ALREADY_ORDERED]: '이미 제작을 발주한 주문입니다.',
+  [ErrorCode.PRINT_NOT_ORDERED]: '아직 제작을 발주하지 않은 주문입니다.',
+  [ErrorCode.PRINT_VENDOR_REJECTED]:
+    '제작처가 주문을 거절했습니다. 문집 구성을 확인해 주세요.',
+  [ErrorCode.PRINT_VENDOR_UNAVAILABLE]:
+    '제작처와 통신하지 못했습니다. 잠시 후 다시 시도해 주세요.',
+  [ErrorCode.PRINT_VENDOR_RATE_LIMITED]:
+    '제작처 요청이 몰리고 있습니다. 잠시 후 다시 시도해 주세요.',
+  [ErrorCode.PRINT_INSUFFICIENT_CREDIT]:
+    '제작처 충전금이 부족합니다. 충전 후 다시 발주해 주세요.',
+  [ErrorCode.PRINT_WEBHOOK_EVENT_INVALID]: '올바른 제작처 이벤트가 아닙니다.',
 
   // 코멘트
   [ErrorCode.COMMENT_NOT_FOUND]: '코멘트를 찾을 수 없습니다.',
