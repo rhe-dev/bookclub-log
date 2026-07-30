@@ -816,6 +816,40 @@ async function main() {
     });
   }
 
+  // 회원 가입일 = 첫 클럽 가입일 — 시드 실행 시각으로 다 같으면 가입기간 필터가 의미 없다
+  const firstJoins = await prisma.clubMember.groupBy({
+    by: ['memberId'],
+    _min: { joinedAt: true },
+  });
+  for (const row of firstJoins) {
+    await prisma.member.update({
+      where: { id: row.memberId },
+      data: { createdAt: row._min.joinedAt },
+    });
+  }
+
+  // 운영자 메모 — 조회 화면에서 응대 기록이 어떻게 남는지 보이도록 몇 건만 (D-030)
+  await prisma.member.update({
+    where: { id: members.yujin.id },
+    data: {
+      adminNote:
+        '7/5 환불 처리 건 — 인쇄 겹침 확인 후 전액 환불. 재제작 원치 않는다고 하셔서 환불로 종결.',
+    },
+  });
+  await prisma.member.update({
+    where: { id: members.jiwon.id },
+    data: {
+      adminNote:
+        '두 모임 모두 모임장. 문집 주문이 잦아 발주 전 사양 확인 요청이 자주 들어옴.',
+    },
+  });
+  await prisma.club.update({
+    where: { id: club2.id },
+    data: {
+      adminNote: '최은영 작가 연속 읽기 중. 분기마다 문집 제작 문의가 들어옴.',
+    },
+  });
+
   console.log(
     `[seed] 완료 — 모임 2, 멤버 ${Object.keys(members).length}, 책 ${BOOKS.length + BOOKS2.length}, 코멘트·답글 ${COMMENTS.length}, 공감 ${likeCount}, 주문 ${ORDERS.length}`,
   );

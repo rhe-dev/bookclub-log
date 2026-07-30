@@ -6,6 +6,9 @@ model Member {
   name        String
   avatarEmoji String /// 프로필 아바타 — 이미지 업로드 대신 이모지 (PLAN §7)
   color       String /// 프로필 배경색(HEX)
+  createdAt   DateTime @default(now()) /// 가입일 — 운영자 목록 표시·정렬용
+  /// 운영자 메모 — 회원은 조회만 하고 상태는 바꾸지 않는다. 응대 기록을 남기는 용도 (D-030)
+  adminNote   String?
 
   memberships    ClubMember[]
   participations BookParticipant[]

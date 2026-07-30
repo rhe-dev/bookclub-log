@@ -1,6 +1,59 @@
-/** 운영자 화면의 클럽 필터·회원 관리에 쓰는 클럽 요약 */
+import { ApiProperty } from '@nestjs/swagger';
+import { ClubRole, OrderStatus } from '@prisma/client';
+
+/** 운영자 클럽 목록 한 줄 */
 export class AdminClubResponse {
   publicId: string;
   name: string;
+  description: string;
+  createdAt: Date;
   memberCount: number;
+  /** 삭제되지 않은 책 수 */
+  bookCount: number;
+  orderCount: number;
+  hasAdminNote: boolean;
+}
+
+/** 클럽 상세의 멤버 — 회원 상세로 이동 */
+export class AdminClubMemberResponse {
+  publicId: string;
+  name: string;
+  avatarEmoji: string;
+  color: string;
+
+  @ApiProperty({ enum: ClubRole })
+  role: ClubRole;
+
+  joinedAt: Date;
+}
+
+/** 클럽 상세의 최근 주문 — 주문 상세로 이동 */
+export class AdminClubOrderResponse {
+  publicId: string;
+  title: string;
+
+  @ApiProperty({ enum: OrderStatus })
+  status: OrderStatus;
+
+  copies: number;
+  createdAt: Date;
+  memberName: string;
+}
+
+export class AdminClubDetailResponse {
+  publicId: string;
+  name: string;
+  description: string;
+  inviteCode: string;
+  createdAt: Date;
+
+  @ApiProperty({ nullable: true })
+  adminNote: string | null;
+
+  memberCount: number;
+  /** 삭제되지 않은 책 수 */
+  bookCount: number;
+  orderCount: number;
+  members: AdminClubMemberResponse[];
+  recentOrders: AdminClubOrderResponse[];
 }
