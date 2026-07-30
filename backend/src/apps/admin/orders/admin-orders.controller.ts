@@ -11,11 +11,19 @@ import {
   AdminTransitionOrderDto,
 } from './dto/admin-transition-order.dto';
 import { AdminOrdersService } from './admin-orders.service';
+import { AdminProductionService } from './admin-production.service';
+import {
+  AdminDispatchDto,
+  AdminVendorEventDto,
+} from './dto/admin-production.dto';
 
 /** 운영자용 — 데모 범위상 별도 인증 없이 /admin 경로로만 분리 (D-003) */
 @Controller('admin/orders')
 export class AdminOrdersController {
-  constructor(private readonly adminOrdersService: AdminOrdersService) {}
+  constructor(
+    private readonly adminOrdersService: AdminOrdersService,
+    private readonly production: AdminProductionService,
+  ) {}
 
   @Get()
   listAll(
@@ -80,5 +88,32 @@ export class AdminOrdersController {
       dto.toStatus,
       dto.adminNote,
     );
+  }
+
+  /** 발주 전 사양 재확인 — 주문 당시 쪽수와 지금 쪽수를 함께 본다 */
+  @Get(':orderId/production')
+  checkProduction(@Param('orderId') orderId: string) {
+    return this.production.check(orderId);
+  }
+
+  /** 북프린트 발주 — 여기서 제작이 시작되고 주문자 취소가 닫힌다 (D-034) */
+  @Post(':orderId/production')
+  dispatch(
+    @Param('orderId') orderId: string,
+    @Body() dto: AdminDispatchDto,
+  ): Promise<AdminOrderResponse> {
+    return this.production.dispatch(orderId, dto.adminNote);
+  }
+
+  /**
+   * 제작처 이벤트 수신 (데모용 시뮬레이터).
+   * 실제로는 북프린트가 웹훅으로 밀어 주는 것을 운영자 화면에서 대신 흘려보낸다.
+   */
+  @Post(':orderId/vendor-events')
+  receiveVendorEvent(
+    @Param('orderId') orderId: string,
+    @Body() dto: AdminVendorEventDto,
+  ): Promise<AdminOrderResponse> {
+    return this.production.receiveVendorEvent(orderId, dto.event);
   }
 }

@@ -1,9 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { HttpException } from '@nestjs/common';
 import { ActorType, OrderStatus } from '@prisma/client';
+import { findBookSpec } from '../../../shared/bookprint/book-specs';
 import { ErrorCode } from '../../../shared/constants/error-code';
-import { getAvailableTransitions } from '../../../shared/orders/order-transitions';
 import { orderInclude } from '../../../shared/orders/order.mapper';
+import { toAdminOrderDto } from './admin-order.mapper';
 import {
   ORDER_ISSUE_REASON_LABEL,
   ORDER_STATUS_LABEL,
@@ -27,8 +28,9 @@ export class AdminOrdersService {
       toWhere(query),
       { page: pageNo, limit },
       toOrderBy(query.sort),
+      toAdminOrderDto,
     );
-    return { ...page, items: page.items.map(withNextStatuses) };
+    return page;
   }
 
   /** 운영자 전이 — 단계 진행·환불 처리·재제작 승인 */
@@ -45,7 +47,7 @@ export class AdminOrdersService {
       false,
       { adminNote },
     );
-    return withNextStatuses(updated);
+    return toAdminOrderDto(updated);
   }
 
   /**
@@ -96,8 +98,14 @@ export class AdminOrdersService {
       '주문자',
       '문집 제목',
       '부수',
+      '판형',
+      '쪽수',
+      '금액',
       '수록 책',
       '상태',
+      '제작처 주문번호',
+      '제작처 상태',
+      '송장번호',
       '요청 사유',
       '사유 상세',
       '운영자 메모',
@@ -120,8 +128,14 @@ export class AdminOrdersService {
         order.member.name,
         order.title,
         String(order.copies),
+        findBookSpec(order.bookSpecUid)?.name ?? order.bookSpecUid,
+        `${order.pageCount}쪽`,
+        String(order.productAmount + order.shippingFee),
         order.books.map((ob) => ob.book.title).join(' / '),
         ORDER_STATUS_LABEL[order.status],
+        order.vendorOrderUid ?? '',
+        order.vendorStatus ?? '',
+        order.trackingNumber ?? '',
         lastIssue?.reason ? ORDER_ISSUE_REASON_LABEL[lastIssue.reason] : '',
         lastIssue?.reasonDetail ?? '',
         lastNote?.adminNote ?? '',
@@ -145,11 +159,6 @@ const formatDateTime = (date: Date) =>
   date.toLocaleString('sv-SE', { timeZone: 'Asia/Seoul' }).slice(0, 16);
 
 /** 주문에 '운영자가 진행할 수 있는 다음 단계'를 덧붙인다 (전이 맵 단일 소스 재사용) */
-const withNextStatuses = <T extends { status: OrderStatus }>(order: T) => ({
-  ...order,
-  nextStatuses: getAvailableTransitions(order.status, ActorType.ADMIN),
-});
-
 /** 운영자 처리가 필요한 상태 — 신규 접수와 주문자 요청 건 */
 const ACTION_REQUIRED_STATUSES = [
   OrderStatus.RECEIVED,

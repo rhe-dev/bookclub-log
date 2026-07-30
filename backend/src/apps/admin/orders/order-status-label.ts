@@ -7,7 +7,6 @@ export const ORDER_STATUS_LABEL: Record<OrderStatus, string> = {
   IN_PRODUCTION: '문집 제작 중',
   PRODUCED: '제작 완료',
   SHIPPED: '배송 시작',
-  IN_TRANSIT: '배송 중',
   DELIVERED: '배송 완료',
   PURCHASE_CONFIRMED: '구매 확정',
   CANCELED: '주문 취소',
