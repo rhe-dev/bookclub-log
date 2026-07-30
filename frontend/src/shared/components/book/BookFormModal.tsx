@@ -84,7 +84,11 @@ export const BookFormModal = ({
   const [periodTo, setPeriodTo] = useState('');
   const [meetingDate, setMeetingDate] = useState('');
   const [participantIds, setParticipantIds] = useState<string[]>([]);
-  const [errors, setErrors] = useState<{ title?: string; author?: string }>({});
+  const [errors, setErrors] = useState<{
+    title?: string;
+    author?: string;
+    participants?: string;
+  }>({});
 
   // 열 때마다 초기화 — 수정 모드는 기존 값, 추가 모드는 기본값(참여 회원 전체 선택).
   // 이펙트 대신 렌더 중 상태 조정 — members가 재검증돼도 입력 중인 폼이 리셋되지 않는다
@@ -110,6 +114,8 @@ export const BookFormModal = ({
   }
 
   const toggleParticipant = (publicId: string) => {
+    if (errors.participants)
+      setErrors((prev) => ({ ...prev, participants: undefined }));
     setParticipantIds((prev) =>
       prev.includes(publicId)
         ? prev.filter((id) => id !== publicId)
@@ -121,6 +127,9 @@ export const BookFormModal = ({
     const nextErrors: typeof errors = {};
     if (!title.trim()) nextErrors.title = '책 제목을 입력해 주세요.';
     if (!author.trim()) nextErrors.author = '저자를 입력해 주세요.';
+    // 참여 회원이 없으면 문집에 실을 사람도, 토론할 사람도 정해지지 않는다
+    if (participantIds.length === 0)
+      nextErrors.participants = '참여 회원을 한 명 이상 선택해 주세요.';
     setErrors(nextErrors);
     if (Object.keys(nextErrors).length > 0) return;
 
@@ -209,7 +218,12 @@ export const BookFormModal = ({
           />
         </Stack>
 
-        <Stack direction="row" spacing={2.5} sx={{ alignItems: 'flex-start' }}>
+        {/* 좁은 화면에서 미리보기 + 팔레트를 가로로 두면 이모지 그리드가 넘쳐 모달에 가로 스크롤이 생긴다 */}
+        <Stack
+          direction={{ xs: 'column', sm: 'row' }}
+          spacing={2.5}
+          sx={{ alignItems: 'flex-start' }}
+        >
           <BookCover
             color={coverColor}
             emoji={coverEmoji}
@@ -217,7 +231,7 @@ export const BookFormModal = ({
             fontSize={32}
             borderRadius={2}
           />
-          <Stack spacing={1.5} sx={{ flex: 1 }}>
+          <Stack spacing={1.5} sx={{ flex: 1, width: '100%', minWidth: 0 }}>
             <Box>
               <Typo token="text_m_12" color={colorChips.grayScale[600]}>
                 표지 색
@@ -251,7 +265,10 @@ export const BookFormModal = ({
               <Box
                 sx={{
                   display: 'grid',
-                  gridTemplateColumns: 'repeat(8, 1fr)',
+                  gridTemplateColumns: {
+                    xs: 'repeat(6, minmax(0, 1fr))',
+                    sm: 'repeat(8, minmax(0, 1fr))',
+                  },
                   gap: 0.5,
                 }}
               >
@@ -321,8 +338,16 @@ export const BookFormModal = ({
         </Stack>
 
         <Box>
-          <Typo token="text_m_12" color={colorChips.grayScale[600]}>
-            참여 회원
+          {/* 다른 필드의 인라인 에러와 같은 문법 — 라벨도 함께 붉어진다 */}
+          <Typo
+            token="text_m_12"
+            color={
+              errors.participants
+                ? colorChips.system.error
+                : colorChips.grayScale[600]
+            }
+          >
+            참여 회원 *
           </Typo>
           <VerticalGap size={6} />
           <Stack direction="row" sx={{ flexWrap: 'wrap', gap: 1 }}>
@@ -339,6 +364,14 @@ export const BookFormModal = ({
               );
             })}
           </Stack>
+          {errors.participants && (
+            <>
+              <VerticalGap size={6} />
+              <Typo token="text_r_12" color={colorChips.system.error}>
+                {errors.participants}
+              </Typo>
+            </>
+          )}
         </Box>
       </Stack>
     </CommonModal>
