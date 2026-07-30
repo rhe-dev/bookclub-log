@@ -154,6 +154,32 @@ const BOOKS2 = [
     meetingDate: '2026-05-31T14:00:00',
     participants: ['seojun', 'yujin', 'jiwon'],
   },
+  {
+    key: 'mnight',
+    title: '밝은 밤',
+    author: '최은영',
+    publisher: '문학동네',
+    coverColor: '#3F5E8C',
+    coverEmoji: '🌙',
+    status: 'DONE',
+    periodFrom: '2026-03-02T00:00:00',
+    periodTo: '2026-03-29T00:00:00',
+    meetingDate: '2026-03-29T14:00:00',
+    participants: ['seojun', 'yujin', 'minjun'],
+  },
+  {
+    key: 'mdeer',
+    title: '사슴벌레식 문답',
+    author: '구병모',
+    publisher: '창비',
+    coverColor: '#7A6A55',
+    coverEmoji: '🪵',
+    status: 'DONE',
+    periodFrom: '2026-01-05T00:00:00',
+    periodTo: '2026-02-01T00:00:00',
+    meetingDate: '2026-02-01T14:00:00',
+    participants: ['seojun', 'yujin'],
+  },
 ];
 
 // key: 답글이 참조할 식별자 / parent: 부모 코멘트 key / editedAt: 수정됨 표시용 / deletedAt: 소프트 딜리트
@@ -217,6 +243,49 @@ const COMMENTS = [
   { key: 'c44', book: 'almond', by: 'jiwon', content: '문집 준비하며 재독 중인데, 곤이의 대사가 처음 읽을 때와 완전히 다르게 읽히네요.', at: '2026-06-10T22:00:00' },
   { key: 'c45', book: 'library', by: 'jiwon', page: 302, content: '후회의 도서관이 결국 자기 용서의 공간이었다는 게 이 책의 답 같습니다.', at: '2026-05-12T21:30:00' },
   { key: 'c46', book: 'shoko', by: 'jiwon', quote: '쇼코는 오랫동안 나에게 어둡고 좁은 통로였다', content: '두 번째 모임을 준비하며 다시 훑는데, 편지 형식이 만드는 거리감이 이 소설의 핵심 같아요.', at: '2026-05-28T20:15:00' },
+
+  // 달러구트 꿈 백화점 (완료 — 2월 모임)
+  { key: 'c47', book: 'dallergut', by: 'seoyeon', page: 33, quote: '꿈을 사고파는 가게', content: '설정만으로 이미 절반은 성공한 소설 같아요. 1층부터 5층까지 층별 구성이 귀엽고 명확해서 술술 읽혔습니다.', at: '2026-02-14T21:10:00' },
+  { key: 'c48', book: 'dallergut', by: 'haneul', parent: 'c47', content: '저는 3층 낮잠 코너에서 오래 머물렀어요. 낮잠 꿈을 따로 판다는 발상이 좋았습니다.', at: '2026-02-15T09:20:00' },
+  { key: 'c49', book: 'dallergut', by: 'minjun', page: 148, content: '꿈값을 감정으로 치른다는 설정에서 잠깐 멈췄어요. 우리가 뭘 지불하며 사는지 생각하게 되더라고요.', at: '2026-02-17T22:35:00' },
+  { key: 'c50', book: 'dallergut', by: 'jiwon', parent: 'c49', content: '이 대목 모임에서 이야기 나눠요. 감정을 화폐로 쓰는 세계라니, 은근히 서늘합니다.', at: '2026-02-18T07:40:00' },
+  { key: 'c51', book: 'dallergut', by: 'seoyeon', content: '모임 마치고 남기는 감상. 가볍게 시작했다가 마지막엔 위로받고 끝나는 책이었어요. 겨울에 읽기 잘했습니다.', at: '2026-02-22T22:30:00' },
+
+  // 어서 오세요, 휴남동 서점입니다 (완료 — 3월 모임)
+  { key: 'c52', book: 'hyunam', by: 'eunchae', page: 61, content: '서점 주인 영주가 아무것도 하지 않기로 결심하는 초반부가 제일 좋았어요. 회복에도 시간이 필요하다는 걸 조용히 보여줘서.', at: '2026-03-10T20:15:00' },
+  { key: 'c53', book: 'hyunam', by: 'doyun', parent: 'c52', content: '저도요. 사건이 크게 없는데도 계속 읽게 되는 힘이 있더라고요.', at: '2026-03-11T08:05:00' },
+  { key: 'c54', book: 'hyunam', by: 'haneul', quote: '좋아하는 일을 오래 하려면 어떻게 해야 할까', content: '이 질문이 책 전체를 관통하는 것 같아요. 바리스타 민준 씨 이야기에서 특히요.', at: '2026-03-16T21:50:00' },
+  { key: 'c55', book: 'hyunam', by: 'jiwon', content: '독서모임 하는 사람들에게는 좀 특별한 책이죠. 서점이라는 공간이 사람을 어떻게 붙잡아 두는지 잘 그려서요.', at: '2026-03-22T22:10:00' },
+
+  // 작별인사 (완료 — 12월 모임)
+  { key: 'c56', book: 'farewell', by: 'doyun', page: 95, content: '철이가 자기 존재를 의심하기 시작하는 지점부터 완전히 다른 이야기가 되네요. 초반의 잔잔함이 복선이었어요.', at: '2025-12-18T22:40:00' },
+  { key: 'c57', book: 'farewell', by: 'minjun', parent: 'c56', content: '그 장면에서 책을 덮고 한참 있었습니다. SF의 외피를 쓴 성장소설 같기도 하고요.', at: '2025-12-19T07:30:00' },
+  { key: 'c58', book: 'farewell', by: 'eunchae', quote: '우리는 어디서 와서 어디로 가는가', content: '결말이 오래 남는 책이에요. 마지막 선택을 두고 모임에서 이야기 나누고 싶습니다.', at: '2025-12-24T21:05:00' },
+  { key: 'c59', book: 'farewell', by: 'jiwon', content: '한 해 마지막 책으로 고르길 잘했네요. 작별이라는 말이 이렇게 담담할 수 있다는 게 좋았습니다.', at: '2025-12-28T22:00:00' },
+
+  // 쇼코의 미소 — 밑줄과여백 (완료, 추가 토론)
+  { key: 'c60', book: 'shoko', by: 'seojun', page: 47, content: '표제작에서 쇼코와 소유가 편지를 주고받는 리듬이 좋았어요. 답장이 늦어지는 간격까지 이야기의 일부 같습니다.', at: '2026-05-16T21:20:00' },
+  { key: 'c61', book: 'shoko', by: 'yujin', parent: 'c60', content: '맞아요. 편지가 끊긴 동안 두 사람이 각자 어떻게 지냈을지 상상하게 되더라고요.', at: '2026-05-17T09:10:00' },
+  { key: 'c62', book: 'shoko', by: 'minjun', quote: '나는 그때 할아버지의 마음을 조금도 헤아리지 못했다', content: '「씬짜오, 씬짜오」의 이 문장에서 오래 멈췄습니다. 뒤늦게 오는 이해에 대한 소설이네요.', at: '2026-05-25T20:40:00' },
+  { key: 'c63', book: 'shoko', by: 'seojun', content: '모임 마무리 감상입니다. 최은영 작가의 문장은 조용한데 오래 남아요. 다음 책도 같은 작가로 가보면 좋겠습니다.', at: '2026-05-31T16:30:00' },
+
+  // 밝은 밤 — 밑줄과여백 (완료, 3월)
+  { key: 'c64', book: 'mnight', by: 'yujin', page: 24, content: '지연이 희령으로 내려가면서 이야기가 시작되는데, 첫 장부터 공기가 다르네요. 도망이 아니라 회복의 시작 같아서요.', at: '2026-03-08T20:30:00' },
+  { key: 'c65', book: 'mnight', by: 'seojun', parent: 'c64', content: '저도 그 대목요. 낯선 동네에서 증조할머니를 만나는 우연이 억지스럽지 않아서 좋았습니다.', at: '2026-03-09T08:15:00' },
+  { key: 'c66', book: 'mnight', by: 'minjun', page: 132, quote: '엄마의 엄마의 엄마', content: '4대에 걸친 여자들의 이야기가 겹쳐지는 구조가 이 소설의 핵심 같아요. 계보가 아니라 목소리의 이어짐으로 읽혔습니다.', at: '2026-03-14T22:05:00' },
+  { key: 'c67', book: 'mnight', by: 'yujin', parent: 'c66', content: '증조할머니 삼천이 이야기가 나올 때마다 숨을 참게 되더라고요. 백정의 딸이라는 이유로 겪는 일들이요.', at: '2026-03-15T10:40:00' },
+  { key: 'c68', book: 'mnight', by: 'seojun', page: 210, content: '새비 아주머니와의 우정이 이 소설에서 가장 밝은 부분인 것 같아요. 제목의 밤이 어둡지만은 않은 이유.', at: '2026-03-19T21:50:00' },
+  { key: 'c69', book: 'mnight', by: 'yujin', content: '천문대에서 별을 보는 장면들이 계속 돌아오는 게 좋았어요. 오래전 빛이 지금 도착한다는 것도 이 소설의 구조와 닮았고요.', at: '2026-03-24T22:20:00' },
+  { key: 'c70', book: 'mnight', by: 'minjun', parent: 'c69', content: '그 비유 좋네요. 지나간 일이 뒤늦게 지금에 도착한다는 점에서요.', at: '2026-03-25T07:55:00' },
+  { key: 'c71', book: 'mnight', by: 'seojun', content: '모임 후기 남깁니다. 「쇼코의 미소」에서 넘어와 읽으니 작가의 관심이 어디에 있는지 더 선명해졌어요.', at: '2026-03-29T16:10:00' },
+
+  // 사슴벌레식 문답 — 밑줄과여백 (완료, 1월)
+  { key: 'c72', book: 'mdeer', by: 'seojun', page: 18, quote: '그건 사슴벌레가 알 바 아니고', content: '제목의 문답이 뭔지 초반에 바로 알려주는데, 그 무심함이 이 소설의 태도 같습니다.', at: '2026-01-12T20:40:00' },
+  { key: 'c73', book: 'mdeer', by: 'yujin', parent: 'c72', content: '그 말투가 처음엔 차갑게 느껴졌는데, 읽다 보니 살아남은 사람의 방어처럼 읽혔어요.', at: '2026-01-13T09:25:00' },
+  { key: 'c74', book: 'mdeer', by: 'yujin', page: 87, content: '네 사람의 관계가 조금씩 어긋나 있는 게 계속 신경 쓰이네요. 같은 사건을 다르게 기억하는 방식이요.', at: '2026-01-19T21:15:00' },
+  { key: 'c75', book: 'mdeer', by: 'seojun', parent: 'c74', content: '기억이 각자에게 유리하게 재배치된다는 게 무섭기도 했습니다.', at: '2026-01-20T08:00:00' },
+  { key: 'c76', book: 'mdeer', by: 'seojun', content: '중반 이후로는 미스터리처럼 읽혀요. 다음 모임 전까지 다 읽고 오시면 이야기할 게 많을 것 같습니다.', at: '2026-01-25T22:30:00' },
+  { key: 'c77', book: 'mdeer', by: 'yujin', content: '모임 마치고 남기는 감상. 첫 책치고 묵직했지만 이야기가 잘 굴러가서 좋았어요. 다음은 조금 밝은 걸로 가요 😅', at: '2026-02-01T16:20:00' },
 ];
 
 async function main() {
@@ -333,43 +402,92 @@ async function main() {
     }
   }
 
+  // 판형·분량·금액 — 값과 공식은 src/shared/bookprint/의 카탈로그·산출기와 동일하다.
+  // 시드는 TS 빌드 산출물에 의존하지 않으려고 표를 복사해 둔다 (바뀌면 양쪽을 함께 고친다).
+  const SPECS = {
+    PHOTOBOOK_A5_SC: { pageMin: 50, priceBase: 12800, perInc: 300 },
+    PHOTOBOOK_A4_SC: { pageMin: 24, priceBase: 16800, perInc: 400 },
+    SQUAREBOOK_HC: { pageMin: 24, priceBase: 19800, perInc: 500 },
+  };
+  const SHIPPING_FEE = 3000;
+  const commentCountByBookId = new Map();
+  for (const c of COMMENTS) {
+    if (c.deletedAt) continue;
+    const id = books[c.book].id;
+    commentCountByBookId.set(id, (commentCountByBookId.get(id) ?? 0) + 1);
+  }
+  // 속표지·모임 소개·목차 3 + 책마다 2 + 코멘트 1쪽 + 참여자·맺음말 2 → 짝수 보정
+  const estimatePages = (bookKeys) => {
+    const raw =
+      3 +
+      bookKeys.length * 2 +
+      bookKeys.reduce(
+        (sum, key) => sum + (commentCountByBookId.get(books[key].id) ?? 0),
+        0,
+      ) +
+      2;
+    return raw % 2 === 0 ? raw : raw + 1;
+  };
+  const quote = (specUid, pageCount, copies) => {
+    const spec = SPECS[specUid];
+    const unitPrice =
+      spec.priceBase +
+      Math.max(0, Math.ceil((pageCount - spec.pageMin) / 2)) * spec.perInc;
+    return { unitPrice, productAmount: unitPrice * copies };
+  };
+  // 발주 이후 단계는 제작처가 통보한다 — 우리 상태별 벤더 상태 (D-034)
+  const VENDOR_STATUS = {
+    IN_PRODUCTION: 'IN_PRODUCTION',
+    PRODUCED: 'PRODUCTION_COMPLETE',
+    SHIPPED: 'SHIPPED',
+    DELIVERED: 'DELIVERED',
+    PURCHASE_CONFIRMED: 'DELIVERED',
+    REFUND_REQUESTED: 'DELIVERED',
+    REFUNDED: 'DELIVERED',
+    REMAKE_REQUESTED: 'DELIVERED',
+  };
+
   // 문집 주문 — 완결·진행 중·접수 직후·4권 수록·타 클럽 주문을 시연
   const ORDERS = [
     {
       by: 'jiwon',
       title: '페이지 너머 문집 Vol.1 — 상반기의 기록',
       copies: 6,
+      spec: 'SQUAREBOOK_HC',
+      cover: ['#4A6FA5', '📚'],
       books: ['almond', 'library', 'pachinko'],
       history: [
         ['RECEIVED', '2026-06-16T10:00:00', 'USER'],
         ['CONFIRMED', '2026-06-16T15:30:00', 'ADMIN'],
         ['IN_PRODUCTION', '2026-06-18T09:00:00', 'ADMIN'],
-        ['PRODUCED', '2026-06-24T17:00:00', 'ADMIN'],
-        ['SHIPPED', '2026-06-25T11:00:00', 'ADMIN'],
-        ['IN_TRANSIT', '2026-06-26T08:30:00', 'ADMIN'],
-        ['DELIVERED', '2026-06-27T14:20:00', 'ADMIN'],
+        ['PRODUCED', '2026-06-24T17:00:00', 'VENDOR'],
+        ['SHIPPED', '2026-06-25T11:00:00', 'VENDOR'],
+        ['DELIVERED', '2026-06-27T14:20:00', 'VENDOR'],
         ['PURCHASE_CONFIRMED', '2026-06-28T20:10:00', 'USER'],
       ],
     },
     {
       by: 'minjun',
-      title: '여름 소책자 — 불편한 편의점 편',
+      title: '여름 소책자 — 완독 두 권',
       copies: 3,
-      books: ['store'],
+      spec: 'PHOTOBOOK_A4_SC',
+      cover: ['#E07A5F', '☀️'],
+      books: ['store', 'almond'],
       history: [
         ['RECEIVED', '2026-07-14T21:00:00', 'USER'],
         ['CONFIRMED', '2026-07-15T10:00:00', 'ADMIN'],
         ['IN_PRODUCTION', '2026-07-16T09:30:00', 'ADMIN'],
-        ['PRODUCED', '2026-07-22T18:00:00', 'ADMIN'],
-        ['SHIPPED', '2026-07-23T10:00:00', 'ADMIN'],
-        ['IN_TRANSIT', '2026-07-24T07:40:00', 'ADMIN'],
+        ['PRODUCED', '2026-07-22T18:00:00', 'VENDOR'],
+        ['SHIPPED', '2026-07-23T10:00:00', 'VENDOR'],
       ],
     },
     {
       by: 'jiwon',
       title: '가을 문집 준비호 — 완독 기록 모음',
       copies: 6,
-      books: ['library', 'pachinko'],
+      spec: 'PHOTOBOOK_A4_SC',
+      cover: ['#8E7CC3', '🍂'],
+      books: ['library', 'pachinko', 'dallergut'],
       history: [['RECEIVED', '2026-07-26T22:40:00', 'USER']],
     },
     // 4권 수록 — 표지 나열 뷰 확인용
@@ -377,7 +495,9 @@ async function main() {
       by: 'jiwon',
       title: '페이지 너머 문집 Vol.2 — 완독 전집',
       copies: 8,
-      books: ['store', 'almond', 'library', 'pachinko'],
+      spec: 'PHOTOBOOK_A5_SC',
+      cover: ['#2F4858', '🏛️'],
+      books: ['store', 'almond', 'library', 'pachinko', 'dallergut', 'hyunam', 'farewell'],
       history: [
         ['RECEIVED', '2026-07-20T21:00:00', 'USER'],
         ['CONFIRMED', '2026-07-21T10:00:00', 'ADMIN'],
@@ -389,36 +509,41 @@ async function main() {
       by: 'minjun',
       title: '봄 문집 — 첫 계절의 기록',
       copies: 4,
-      books: ['pachinko', 'library'],
+      spec: 'PHOTOBOOK_A4_SC',
+      cover: ['#7FB069', '🌸'],
+      books: ['pachinko', 'library', 'hyunam'],
       history: [
         ['RECEIVED', '2026-04-22T20:10:00', 'USER'],
         ['CONFIRMED', '2026-04-23T09:40:00', 'ADMIN'],
         ['IN_PRODUCTION', '2026-04-24T10:00:00', 'ADMIN'],
-        ['PRODUCED', '2026-04-29T16:00:00', 'ADMIN'],
-        ['SHIPPED', '2026-04-30T09:30:00', 'ADMIN'],
-        ['IN_TRANSIT', '2026-04-30T18:00:00', 'ADMIN'],
-        ['DELIVERED', '2026-05-01T13:20:00', 'ADMIN'],
+        ['PRODUCED', '2026-04-29T16:00:00', 'VENDOR'],
+        ['SHIPPED', '2026-04-30T09:30:00', 'VENDOR'],
+        ['DELIVERED', '2026-05-01T13:20:00', 'VENDOR'],
         ['PURCHASE_CONFIRMED', '2026-05-02T21:00:00', 'USER'],
       ],
     },
     {
       by: 'seoyeon',
-      title: '아몬드 독후감 모음',
+      title: '아몬드 · 편의점 독후감 모음',
       copies: 5,
-      books: ['almond'],
+      spec: 'SQUAREBOOK_HC',
+      cover: ['#D96C6C', '🌰'],
+      books: ['almond', 'store'],
       history: [
         ['RECEIVED', '2026-06-20T19:00:00', 'USER'],
         ['CONFIRMED', '2026-06-21T10:00:00', 'ADMIN'],
         ['IN_PRODUCTION', '2026-06-22T09:00:00', 'ADMIN'],
-        ['PRODUCED', '2026-06-26T17:00:00', 'ADMIN'],
-        ['SHIPPED', '2026-06-27T10:00:00', 'ADMIN'],
+        ['PRODUCED', '2026-06-26T17:00:00', 'VENDOR'],
+        ['SHIPPED', '2026-06-27T10:00:00', 'VENDOR'],
       ],
     },
     {
       by: 'haneul',
-      title: '불편한 편의점 — 하늘의 소장본',
+      title: '하늘의 소장본 — 완독 두 권',
       copies: 1,
-      books: ['store'],
+      spec: 'PHOTOBOOK_A4_SC',
+      cover: ['#5B8C85', '🏪'],
+      books: ['store', 'library'],
       history: [
         ['RECEIVED', '2026-07-02T21:15:00', 'USER'],
         ['CONFIRMED', '2026-07-03T09:20:00', 'ADMIN'],
@@ -428,25 +553,31 @@ async function main() {
       by: 'doyun',
       title: '완독 3권 합본 — 도윤의 서재',
       copies: 2,
+      spec: 'SQUAREBOOK_HC',
+      cover: ['#6B705C', '📖'],
       books: ['store', 'library', 'pachinko'],
       history: [
         ['RECEIVED', '2026-07-09T22:30:00', 'USER'],
         ['CONFIRMED', '2026-07-10T10:10:00', 'ADMIN'],
         ['IN_PRODUCTION', '2026-07-11T09:00:00', 'ADMIN'],
-        ['PRODUCED', '2026-07-16T18:00:00', 'ADMIN'],
+        ['PRODUCED', '2026-07-16T18:00:00', 'VENDOR'],
       ],
     },
     {
       by: 'eunchae',
-      title: '미드나잇 라이브러리 — 은채의 밑줄',
+      title: '은채의 밑줄 — 라이브러리와 아몬드',
       copies: 1,
-      books: ['library'],
+      spec: 'PHOTOBOOK_A4_SC',
+      cover: ['#9C6644', '🌙'],
+      books: ['library', 'almond'],
       history: [['RECEIVED', '2026-07-27T20:05:00', 'USER']],
     },
     {
       by: 'seoyeon',
       title: '여름 완독 기념 문집',
       copies: 3,
+      spec: 'PHOTOBOOK_A4_SC',
+      cover: ['#C08552', '🌻'],
       books: ['store', 'almond'],
       history: [
         ['RECEIVED', '2026-07-28T09:40:00', 'USER'],
@@ -458,7 +589,9 @@ async function main() {
       by: 'haneul',
       title: '취소된 문집 — 부수 변경 예정',
       copies: 2,
-      books: ['almond'],
+      spec: 'SQUAREBOOK_HC',
+      cover: ['#6D6875', '✂️'],
+      books: ['almond', 'store'],
       history: [
         ['RECEIVED', '2026-05-11T20:00:00', 'USER'],
         ['CANCELED', '2026-05-11T20:30:00', 'USER'],
@@ -469,15 +602,16 @@ async function main() {
       by: 'yujin',
       title: '밑줄과 여백 — 봄 단편 모음',
       copies: 3,
-      books: ['shoko'],
+      spec: 'SQUAREBOOK_HC',
+      cover: ['#6B8CAE', '💌'],
+      books: ['shoko', 'mnight'],
       history: [
         ['RECEIVED', '2026-06-25T21:00:00', 'USER'],
         ['CONFIRMED', '2026-06-26T10:00:00', 'ADMIN'],
         ['IN_PRODUCTION', '2026-06-27T09:00:00', 'ADMIN'],
-        ['PRODUCED', '2026-07-01T17:00:00', 'ADMIN'],
-        ['SHIPPED', '2026-07-02T10:00:00', 'ADMIN'],
-        ['IN_TRANSIT', '2026-07-02T18:00:00', 'ADMIN'],
-        ['DELIVERED', '2026-07-03T14:00:00', 'ADMIN'],
+        ['PRODUCED', '2026-07-01T17:00:00', 'VENDOR'],
+        ['SHIPPED', '2026-07-02T10:00:00', 'VENDOR'],
+        ['DELIVERED', '2026-07-03T14:00:00', 'VENDOR'],
         ['REFUND_REQUESTED', '2026-07-04T09:10:00', 'USER', 'PRINT_DEFECT', '20~24쪽 인쇄가 겹쳐 나왔어요.'],
         ['REFUNDED', '2026-07-05T11:00:00', 'ADMIN'],
       ],
@@ -485,9 +619,11 @@ async function main() {
     {
       club: 'margin',
       by: 'seojun',
-      title: '쇼코의 미소 — 모임 기록본',
+      title: '밑줄과 여백 — 상반기 모임 기록본',
       copies: 2,
-      books: ['shoko'],
+      spec: 'PHOTOBOOK_A4_SC',
+      cover: ['#3F5E8C', '🌙'],
+      books: ['shoko', 'mnight', 'mdeer'],
       history: [['RECEIVED', '2026-07-29T21:40:00', 'USER']],
     },
     {
@@ -495,7 +631,9 @@ async function main() {
       by: 'minjun',
       title: '밑줄과 여백 — 민준의 첫 문집',
       copies: 1,
-      books: ['shoko'],
+      spec: 'PHOTOBOOK_A4_SC',
+      cover: ['#7A6A55', '🪵'],
+      books: ['shoko', 'mnight'],
       history: [
         ['RECEIVED', '2026-07-25T20:20:00', 'USER'],
         ['CONFIRMED', '2026-07-26T10:00:00', 'ADMIN'],
@@ -505,54 +643,63 @@ async function main() {
     {
       club: 'margin',
       by: 'jiwon',
-      title: '쇼코의 미소 — 밑줄 모음집',
+      title: '밑줄과 여백 — 밑줄 모음집',
       copies: 3,
-      books: ['shoko'],
+      spec: 'SQUAREBOOK_HC',
+      cover: ['#4C6A92', '📮'],
+      books: ['shoko', 'mnight', 'mdeer'],
       history: [
         ['RECEIVED', '2026-06-02T20:00:00', 'USER'],
         ['CONFIRMED', '2026-06-03T10:00:00', 'ADMIN'],
         ['IN_PRODUCTION', '2026-06-04T09:00:00', 'ADMIN'],
-        ['PRODUCED', '2026-06-08T17:00:00', 'ADMIN'],
-        ['SHIPPED', '2026-06-09T10:00:00', 'ADMIN'],
-        ['IN_TRANSIT', '2026-06-09T18:00:00', 'ADMIN'],
-        ['DELIVERED', '2026-06-10T14:00:00', 'ADMIN'],
+        ['PRODUCED', '2026-06-08T17:00:00', 'VENDOR'],
+        ['SHIPPED', '2026-06-09T10:00:00', 'VENDOR'],
+        ['DELIVERED', '2026-06-10T14:00:00', 'VENDOR'],
       ],
     },
     // 배송완료 상태 2건 — 구매 확정·환불/재제작 요청 버튼 시연용 (밑줄과 여백 멤버들)
     {
       club: 'margin',
       by: 'seojun',
-      title: '쇼코의 미소 — 서준의 밑줄 소장본',
+      title: '서준의 밑줄 소장본',
       copies: 1,
-      books: ['shoko'],
+      spec: 'PHOTOBOOK_A4_SC',
+      cover: ['#8A9A5B', '🖋️'],
+      books: ['shoko', 'mnight'],
       history: [
         ['RECEIVED', '2026-06-15T20:00:00', 'USER'],
         ['CONFIRMED', '2026-06-16T10:00:00', 'ADMIN'],
         ['IN_PRODUCTION', '2026-06-17T09:00:00', 'ADMIN'],
-        ['PRODUCED', '2026-06-20T17:00:00', 'ADMIN'],
-        ['SHIPPED', '2026-06-21T10:00:00', 'ADMIN'],
-        ['IN_TRANSIT', '2026-06-21T18:00:00', 'ADMIN'],
-        ['DELIVERED', '2026-06-22T14:00:00', 'ADMIN'],
+        ['PRODUCED', '2026-06-20T17:00:00', 'VENDOR'],
+        ['SHIPPED', '2026-06-21T10:00:00', 'VENDOR'],
+        ['DELIVERED', '2026-06-22T14:00:00', 'VENDOR'],
       ],
     },
     {
       club: 'margin',
       by: 'yujin',
-      title: '쇼코의 미소 — 문장 수집 노트',
+      title: '문장 수집 노트 — 상반기 완독본',
       copies: 2,
-      books: ['shoko'],
+      spec: 'SQUAREBOOK_HC',
+      cover: ['#A4778B', '📝'],
+      books: ['shoko', 'mnight', 'mdeer'],
       history: [
         ['RECEIVED', '2026-07-18T21:30:00', 'USER'],
         ['CONFIRMED', '2026-07-19T10:00:00', 'ADMIN'],
         ['IN_PRODUCTION', '2026-07-20T09:00:00', 'ADMIN'],
-        ['PRODUCED', '2026-07-23T17:00:00', 'ADMIN'],
-        ['SHIPPED', '2026-07-24T10:00:00', 'ADMIN'],
-        ['IN_TRANSIT', '2026-07-24T19:00:00', 'ADMIN'],
-        ['DELIVERED', '2026-07-25T15:00:00', 'ADMIN'],
+        ['PRODUCED', '2026-07-23T17:00:00', 'VENDOR'],
+        ['SHIPPED', '2026-07-24T10:00:00', 'VENDOR'],
+        ['DELIVERED', '2026-07-25T15:00:00', 'VENDOR'],
       ],
     },
   ];
+  // 벤더 식별자는 형식만 재현한다 — 시드 결과가 매번 같도록 순번 기반으로 만든다
+  let orderIndex = 0;
+  const vendorSuffix = () => String(1000 + orderIndex * 37).padStart(4, '0');
+  const trackingSuffix = () => String(20260000 + orderIndex * 131);
+
   for (const orderDef of ORDERS) {
+    orderIndex += 1;
     const historyRows = orderDef.history.map(
       ([toStatus, at, actor, reason, reasonDetail], i) => ({
         fromStatus: i === 0 ? null : orderDef.history[i - 1][0],
@@ -564,15 +711,39 @@ async function main() {
       }),
     );
     const last = orderDef.history[orderDef.history.length - 1];
+    const pageCount = estimatePages(orderDef.books);
+    const { unitPrice, productAmount } = quote(
+      orderDef.spec,
+      pageCount,
+      orderDef.copies,
+    );
+    // 발주(IN_PRODUCTION) 이후 주문만 벤더 주문번호를 갖는다
+    const vendorStatus = VENDOR_STATUS[last[0]] ?? null;
+    const vendorEvent = orderDef.history.find(
+      (row) => row[0] === 'IN_PRODUCTION',
+    );
+    const shippedAt = orderDef.history.find((row) => row[0] === 'SHIPPED');
     await prisma.order.create({
       data: {
         clubId: orderDef.club === 'margin' ? club2.id : club.id,
         memberId: members[orderDef.by].id,
         title: orderDef.title,
         copies: orderDef.copies,
+        bookSpecUid: orderDef.spec,
+        coverColor: orderDef.cover[0],
+        coverEmoji: orderDef.cover[1],
+        pageCount,
+        unitPrice,
+        productAmount,
+        shippingFee: SHIPPING_FEE,
         status: last[0],
         createdAt: kst(orderDef.history[0][1]),
         statusChangedAt: kst(last[1]),
+        vendorOrderUid: vendorEvent ? `or_${orderIndex}${vendorSuffix()}` : null,
+        vendorStatus: vendorEvent ? vendorStatus : null,
+        vendorStatusAt: vendorEvent ? kst(last[1]) : null,
+        trackingCarrier: shippedAt ? '한진택배' : null,
+        trackingNumber: shippedAt ? `41${orderIndex}${trackingSuffix()}` : null,
         books: {
           create: orderDef.books.map((bookKey, index) => ({
             bookId: books[bookKey].id,
