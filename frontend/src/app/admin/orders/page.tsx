@@ -90,7 +90,8 @@ export default function AdminOrdersPage() {
           </Typo>
         </Stack>
         {/* 무엇을 받는지 건수로 구분 — 이 페이지만 / 필터에 걸린 전체 */}
-        <Stack direction="row" spacing={1}>
+        {/* 좁은 화면에선 두 버튼이 한 줄에 안 들어가 가로 스크롤이 생긴다 */}
+        <Stack direction="row" sx={{ flexWrap: 'wrap', gap: 1 }}>
           <Tooltip
             title="지금 보이는 페이지의 주문만 내려받아요."
             placement="top"

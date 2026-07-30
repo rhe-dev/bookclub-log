@@ -32,6 +32,9 @@ import { describeDelivery } from '@/shared/utils/orderDelivery';
 import { ACTIONS_BY_STATUS, type OrderAction } from './orderActions';
 import { OrderActionModal } from './OrderActionModal';
 
+/** 카드가 넘치지 않는 선 — 나머지는 '+N'으로 접는다 */
+const MAX_COVERS = 6;
+
 /** 마이페이지 주문 카드 — 사용자 언어 상태·진행 스텝·단계별 날짜·주문자 액션 */
 export const OrderCard = ({ order }: { order: Order }) => {
   const [historyOpen, setHistoryOpen] = useState(false);
@@ -94,9 +97,14 @@ export const OrderCard = ({ order }: { order: Order }) => {
         </Typo>
       </Stack>
       <VerticalGap size={12} />
-      <Stack direction="row" spacing={1} sx={{ alignItems: 'center' }}>
-        <Stack direction="row" spacing={0.5}>
-          {order.books.map((book) => (
+      <Stack
+        direction="row"
+        spacing={1}
+        sx={{ alignItems: 'center', flexWrap: 'wrap', gap: 1 }}
+      >
+        {/* 수록 책이 많으면 표지가 카드를 넘친다 — 앞 6권만 보여주고 나머지는 수로 */}
+        <Stack direction="row" spacing={0.5} sx={{ flexShrink: 0 }}>
+          {order.books.slice(0, MAX_COVERS).map((book) => (
             <BookCover
               key={book.publicId}
               color={book.coverColor}
@@ -106,6 +114,24 @@ export const OrderCard = ({ order }: { order: Order }) => {
               borderRadius={1}
             />
           ))}
+          {order.books.length > MAX_COVERS && (
+            <Box
+              sx={{
+                width: 30,
+                height: 40,
+                borderRadius: 1,
+                backgroundColor: colorChips.grayScale[200],
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                flexShrink: 0,
+              }}
+            >
+              <Typo token="text_sb_12" color={colorChips.grayScale[600]}>
+                +{order.books.length - MAX_COVERS}
+              </Typo>
+            </Box>
+          )}
         </Stack>
         <Typo token="text_r_12" color={colorChips.grayScale[500]}>
           『{order.books[0]?.title}』

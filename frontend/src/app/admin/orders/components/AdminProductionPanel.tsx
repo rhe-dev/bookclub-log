@@ -185,21 +185,26 @@ export const AdminProductionPanel = ({
               ml: 0.25,
             }}
           >
+            {/* 좁은 화면에선 라벨 폭 고정이 오히려 정렬을 무너뜨린다 — 세로로 쌓는다 */}
             {data.events.map((entry, index) => (
               <Stack
                 key={`${entry.event}-${index}`}
-                direction="row"
-                spacing={1}
-                sx={{ alignItems: 'baseline', flexWrap: 'wrap' }}
+                direction={{ xs: 'column', sm: 'row' }}
+                spacing={{ xs: 0, sm: 1 }}
+                sx={{ alignItems: { xs: 'flex-start', sm: 'baseline' } }}
               >
                 <Typo
                   token="text_m_12"
                   color={colorChips.grayScale[700]}
-                  sx={{ width: 96, flexShrink: 0 }}
+                  sx={{ width: { xs: 'auto', sm: 96 }, flexShrink: 0 }}
                 >
                   {entry.vendorStatusDisplay}
                 </Typo>
-                <Typo token="text_r_12" color={colorChips.grayScale[500]}>
+                <Typo
+                  token="text_r_12"
+                  color={colorChips.grayScale[500]}
+                  sx={{ wordBreak: 'break-all' }}
+                >
                   {formatDateTime(entry.receivedAt)} · {entry.event}
                   {entry.detail ? ` · ${entry.detail}` : ''}
                 </Typo>

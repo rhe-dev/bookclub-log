@@ -43,17 +43,21 @@ const Row = ({
 }) => (
   <Stack
     direction="row"
+    spacing={1.5}
     sx={{ justifyContent: 'space-between', alignItems: 'baseline' }}
   >
     <Typo
       token={strong ? 'text_sb_14' : 'text_r_14'}
       color={strong ? colorChips.grayScale[800] : colorChips.grayScale[600]}
+      sx={{ minWidth: 0, wordBreak: 'keep-all' }}
     >
       {label}
     </Typo>
+    {/* 금액은 줄바꿈되지 않게 — 라벨이 길어지면 라벨 쪽이 접힌다 */}
     <Typo
       token={strong ? 'text_sb_16' : 'text_r_14'}
       color={strong ? colorChips.grayScale[900] : colorChips.grayScale[800]}
+      sx={{ whiteSpace: 'nowrap', flexShrink: 0 }}
     >
       {value}
     </Typo>
@@ -210,7 +214,7 @@ export const ConfirmStep = ({
         }}
       >
         <Row
-          label={`${spec.name} ${pageCount}쪽 × ${spec.unitPrice.toLocaleString()}원 × ${copiesNumber}부`}
+          label={`${spec.name} ${pageCount}쪽 · ${spec.unitPrice.toLocaleString()}원 × ${copiesNumber}부`}
           value={`${productAmount.toLocaleString()}원`}
         />
         <Row label="배송비" value={`${shippingFee.toLocaleString()}원`} />
