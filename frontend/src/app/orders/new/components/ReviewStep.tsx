@@ -47,13 +47,17 @@ export const ReviewStep = ({
           direction="row"
           spacing={1}
           sx={{
-            alignItems: 'baseline',
+            alignItems: 'center',
             p: 1.75,
             borderRadius: 1.5,
             backgroundColor: colorChips.primary[100],
           }}
         >
-          <Typo token="text_sb_16" color={colorChips.primary[700]}>
+          <Typo
+            token="text_sb_16"
+            color={colorChips.primary[700]}
+            sx={{ whiteSpace: 'nowrap', flexShrink: 0 }}
+          >
             예상 분량 {pageCount}쪽
           </Typo>
           <Typo
@@ -62,6 +66,7 @@ export const ReviewStep = ({
             sx={{ wordBreak: 'keep-all' }}
           >
             표지·속표지와 책마다 붙는 표제지를 포함한 쪽수예요
+            {/* 여백면이 실제로 들어갈 때만 안내한다 — 짝수면 굳이 설명할 게 없다 */}
             {blankPages > 0 && ' (짝수로 맞추느라 마지막 1쪽은 여백이에요)'}
           </Typo>
         </Stack>

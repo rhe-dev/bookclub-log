@@ -56,7 +56,8 @@ export const CompleteStep = ({ order }: CompleteStepProps) => {
         />
         <CommonButton
           label="마이페이지에서 확인"
-          onClick={() => router.push(ROUTES.myPage)}
+          // 방금 주문한 건을 보러 가는 길 — 주문 탭으로 바로 연다
+          onClick={() => router.push(`${ROUTES.myPage}?tab=orders`)}
         />
       </Stack>
     </Stack>
