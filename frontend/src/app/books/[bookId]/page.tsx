@@ -16,6 +16,7 @@ import { CommonButton } from '@/shared/components/ui/CommonButton';
 import { CommonConfirmModal } from '@/shared/components/ui/CommonConfirmModal';
 import { ErrorView } from '@/shared/components/ui/ErrorView';
 import { Typo } from '@/shared/components/ui/Typo';
+import { COMMENT_PLACEHOLDER } from '@/shared/constants/bookStatus';
 import { ROUTES } from '@/shared/constants/routes';
 import { useRequireMember } from '@/shared/hooks/useRequireMember';
 import { toast } from '@/shared/stores/toastStore';
@@ -131,6 +132,7 @@ export default function BookDetailPage() {
                 }}
               >
                 <CommentComposer
+                  placeholder={COMMENT_PLACEHOLDER[book.status]}
                   submitting={createMutation.isPending}
                   onSubmit={async (values) => {
                     await createMutation.mutateAsync(values);
