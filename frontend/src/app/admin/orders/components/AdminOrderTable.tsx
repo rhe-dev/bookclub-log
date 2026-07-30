@@ -160,24 +160,20 @@ export const AdminOrderTable = ({
                   {formatDateTime(order.statusChangedAt)}
                 </Typo>
               </TableCell>
-              {/* 주문번호는 대조용이라 전체를 보여준다 — 폭이 모자랄 때만 말줄임 */}
+              {/* 주문번호는 대조용이라 전체를 보여준다 — 다 보이므로 툴팁은 두지 않는다 */}
               <TableCell sx={{ minWidth: 210, maxWidth: 210 }}>
-                <Tooltip title={order.publicId} placement="top">
-                  <span>
-                    <Typo
-                      token="text_r_12"
-                      color={colorChips.grayScale[500]}
-                      sx={{
-                        display: 'block',
-                        whiteSpace: 'nowrap',
-                        overflow: 'hidden',
-                        textOverflow: 'ellipsis',
-                      }}
-                    >
-                      {order.publicId}
-                    </Typo>
-                  </span>
-                </Tooltip>
+                <Typo
+                  token="text_r_12"
+                  color={colorChips.grayScale[500]}
+                  sx={{
+                    display: 'block',
+                    whiteSpace: 'nowrap',
+                    overflow: 'hidden',
+                    textOverflow: 'ellipsis',
+                  }}
+                >
+                  {order.publicId}
+                </Typo>
               </TableCell>
               <TableCell>
                 <StatusChip status={order.status} />

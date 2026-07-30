@@ -13,7 +13,11 @@ import { Typo } from '@/shared/components/ui/Typo';
 import { VerticalGap } from '@/shared/components/ui/VerticalGap';
 import { toast } from '@/shared/stores/toastStore';
 import { colorChips } from '@/shared/styles/colors';
-import type { AdminOrder, VendorEvent } from '@/shared/types/order';
+import type {
+  AdminOrder,
+  OrderStatus,
+  VendorEvent,
+} from '@/shared/types/order';
 import { formatDateTime } from '@/shared/utils/date';
 
 /**
@@ -27,6 +31,13 @@ const NEXT_EVENT: Record<string, { event: VendorEvent; label: string }> = {
   PRODUCTION_COMPLETE: { event: 'shipping.departed', label: '발송' },
   SHIPPED: { event: 'shipping.delivered', label: '배송 완료' },
 };
+
+/** 더 진행하지 않는 주문 — 발주 안내가 의미 없는 상태 */
+const CLOSED_STATUSES: OrderStatus[] = [
+  'CANCELED',
+  'REFUNDED',
+  'PURCHASE_CONFIRMED',
+];
 
 const Row = ({ label, value }: { label: string; value: string }) => (
   <Stack direction="row" spacing={1} sx={{ alignItems: 'baseline' }}>
@@ -65,6 +76,9 @@ export const AdminProductionPanel = ({
 
   const pageChanged = data.currentPageCount !== data.orderedPageCount;
   const nextEvent = data.vendorStatus ? NEXT_EVENT[data.vendorStatus] : null;
+  // 발주 없이 끝난 주문 — 사양 검증 결과나 '발주할 수 있어요'는 지난 이야기다
+  const closedWithoutDispatch =
+    !data.vendorOrderUid && CLOSED_STATUSES.includes(order.status);
 
   return (
     <Box
@@ -103,34 +117,38 @@ export const AdminProductionPanel = ({
         )}
       </Stack>
 
-      <VerticalGap size={8} />
-      <Stack direction="row" spacing={0.5} sx={{ alignItems: 'center' }}>
-        {data.eligible ? (
-          <CheckCircleRoundedIcon
-            sx={{ fontSize: 16, color: colorChips.system.success }}
-          />
-        ) : (
-          <ErrorOutlineRoundedIcon
-            sx={{ fontSize: 16, color: colorChips.system.warning }}
-          />
-        )}
-        <Typo
-          token="text_m_12"
-          color={
-            data.eligible
-              ? colorChips.system.success
-              : colorChips.system.warning
-          }
-          sx={{ wordBreak: 'keep-all' }}
-        >
-          {data.eligible
-            ? // 발주 뒤에는 '할 수 있어요'가 지난 안내라 결과만 남긴다
-              data.vendorOrderUid
-              ? '사양 검증 통과'
-              : '사양 검증 통과 — 발주할 수 있어요'
-            : `사양 미충족 (${data.ineligibleReason} / 기준 ${data.requiredValue}) — 발주 시 제작처가 거부해요`}
-        </Typo>
-      </Stack>
+      {!closedWithoutDispatch && (
+        <>
+          <VerticalGap size={8} />
+          <Stack direction="row" spacing={0.5} sx={{ alignItems: 'center' }}>
+            {data.eligible ? (
+              <CheckCircleRoundedIcon
+                sx={{ fontSize: 16, color: colorChips.system.success }}
+              />
+            ) : (
+              <ErrorOutlineRoundedIcon
+                sx={{ fontSize: 16, color: colorChips.system.warning }}
+              />
+            )}
+            <Typo
+              token="text_m_12"
+              color={
+                data.eligible
+                  ? colorChips.system.success
+                  : colorChips.system.warning
+              }
+              sx={{ wordBreak: 'keep-all' }}
+            >
+              {data.eligible
+                ? // 발주 뒤에는 '할 수 있어요'가 지난 안내라 결과만 남긴다
+                  data.vendorOrderUid
+                  ? '사양 검증 통과'
+                  : '사양 검증 통과 — 발주할 수 있어요'
+                : `사양 미충족 (${data.ineligibleReason} / 기준 ${data.requiredValue}) — 발주 시 제작처가 거부해요`}
+            </Typo>
+          </Stack>
+        </>
+      )}
 
       {data.vendorOrderUid ? (
         <>
@@ -236,7 +254,9 @@ export const AdminProductionPanel = ({
         <>
           <VerticalGap size={8} />
           <Typo token="text_r_12" color={colorChips.grayScale[500]}>
-            주문 확인 단계에서 발주할 수 있어요.
+            {closedWithoutDispatch
+              ? '발주하지 않고 종결된 주문이에요.'
+              : '주문 확인 단계에서 발주할 수 있어요.'}
           </Typo>
         </>
       )}

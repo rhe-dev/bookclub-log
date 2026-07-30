@@ -71,5 +71,20 @@ export const theme = createTheme({
         root: { backgroundImage: 'none' },
       },
     },
+    MuiTooltip: {
+      // 화살표를 달고 대상에 붙인다 — 기본값은 툴팁 자체 margin까지 더해져 멀리 떠 보인다
+      defaultProps: {
+        arrow: true,
+        slotProps: {
+          popper: {
+            modifiers: [{ name: 'offset', options: { offset: [0, 8] } }],
+          },
+        },
+      },
+      styleOverrides: {
+        // popper offset으로만 간격을 정하도록 툴팁 자체 여백은 제거
+        tooltip: { margin: '0 !important' },
+      },
+    },
   },
 });
