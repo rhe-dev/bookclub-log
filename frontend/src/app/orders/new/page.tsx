@@ -63,13 +63,8 @@ export default function OrderNewPage() {
   const scrollByStep = useRef<Record<number, number>>({});
   const [completedOrder, setCompletedOrder] = useState<Order | null>(null);
 
-  // 분량·판형별 가능 여부·금액·수령일은 서버가 계산한다 — 화면은 결과만 쓴다 (D-035)
-  const copiesNumber = Number(copies) || 1;
-  const estimateQuery = useOrderEstimateQuery(
-    club?.publicId,
-    selectedIds,
-    copiesNumber,
-  );
+  // 분량·판형별 가능 여부·1부 단가·수령일은 서버가 계산한다 — 화면은 결과만 쓴다 (D-035)
+  const estimateQuery = useOrderEstimateQuery(club?.publicId, selectedIds);
   const estimate = estimateQuery.data;
 
   if (!session || !club) return null;
@@ -154,13 +149,18 @@ export default function OrderNewPage() {
     requestAnimationFrame(() => window.scrollTo({ top: target }));
   };
 
-  const goNext = () => {
-    // 분량이 모자라면 여기서 멈추고, 방금 누른 버튼 옆에서 이유를 알린다
-    if (step === 0 && estimate && !estimate.printable) {
-      setShortNotice(
-        `지금 고른 책으로는 ${estimate.pageCount}쪽이라 문집을 만들 수 없어요. 가장 작은 판형도 24쪽부터라, 책을 더 담거나 토론을 더 쌓은 뒤에 만들어 주세요.`,
-      );
-      return;
+  const goNext = async () => {
+    // 수록 책이 확정되는 이 시점에 견적을 한 번만 부른다 (책을 고를 때마다 부르지 않는다)
+    if (step === 0) {
+      const { data } = await estimateQuery.refetch();
+      if (!data) return;
+      // 분량이 모자라면 여기서 멈추고, 방금 누른 버튼 옆에서 이유를 알린다
+      if (!data.printable) {
+        setShortNotice(
+          `지금 고른 책으로는 ${data.pageCount}쪽이라 문집을 만들 수 없어요. 가장 작은 판형도 24쪽부터라, 책을 더 담거나 토론을 더 쌓은 뒤에 만들어 주세요.`,
+        );
+        return;
+      }
     }
     if (step === 1) {
       // 판형 단계 진입 — 제목 기본값과 가장 저렴한 제작 가능 판형을 미리 골라 둔다
@@ -211,9 +211,7 @@ export default function OrderNewPage() {
 
   // 다음으로 갈 수 없는 단계 — 이유는 각 단계 화면이 이미 설명하고 있다
   const nextDisabled =
-    (step === 0 && selectedIds.length === 0) ||
-    (step === 0 && estimateQuery.isPending) ||
-    (step === 2 && !selectedSpec);
+    (step === 0 && selectedIds.length === 0) || (step === 2 && !selectedSpec);
 
   return (
     <CommonContainer maxWidth={760} sx={{ py: { xs: 2.5, md: 4 }, gap: 2.5 }}>
@@ -271,7 +269,15 @@ export default function OrderNewPage() {
               onClearAll={clearSelection}
             />
           )}
-          {step === 1 && (
+          {/* 2~4단계는 견적에 의존한다 — 실패하면 빈 화면 대신 재시도를 보여준다 */}
+          {step > 0 && estimateQuery.isError ? (
+            <ErrorView
+              message="문집 분량을 계산하지 못했어요."
+              onRetry={() => void estimateQuery.refetch()}
+            />
+          ) : null}
+
+          {step === 1 && !estimateQuery.isError && (
             <ReviewStep
               books={selectedBooks}
               onMove={moveSelected}
@@ -280,7 +286,7 @@ export default function OrderNewPage() {
               onExcludeEmpty={excludeEmptyBooks}
             />
           )}
-          {step === 2 && estimate && (
+          {step === 2 && estimate && !estimateQuery.isError && (
             <SpecCoverStep
               specs={estimate.specs}
               pageCount={estimate.pageCount}
@@ -297,7 +303,7 @@ export default function OrderNewPage() {
               titleError={errors.title}
             />
           )}
-          {step === 3 && estimate && selectedSpec && (
+          {step === 3 && estimate && selectedSpec && !estimateQuery.isError && (
             <ConfirmStep
               spec={selectedSpec}
               pageCount={estimate.pageCount}

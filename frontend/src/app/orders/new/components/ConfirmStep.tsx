@@ -78,6 +78,13 @@ export const ConfirmStep = ({
   copiesError,
 }: ConfirmStepProps) => {
   const [booksOpen, setBooksOpen] = useState(false);
+  // 금액은 1부 단가에 부수를 곱하면 된다 — 부수마다 서버를 다시 부르지 않는다
+  const copiesNumber = Math.min(
+    MAX_COPIES,
+    Math.max(MIN_COPIES, Number(copies) || MIN_COPIES),
+  );
+  const productAmount = spec.unitPrice * copiesNumber;
+  const totalAmount = productAmount + shippingFee;
 
   return (
     <Stack>
@@ -203,14 +210,14 @@ export const ConfirmStep = ({
         }}
       >
         <Row
-          label={`${spec.name} ${pageCount}쪽 × ${spec.unitPrice.toLocaleString()}원`}
-          value={`${spec.productAmount.toLocaleString()}원`}
+          label={`${spec.name} ${pageCount}쪽 × ${spec.unitPrice.toLocaleString()}원 × ${copiesNumber}부`}
+          value={`${productAmount.toLocaleString()}원`}
         />
         <Row label="배송비" value={`${shippingFee.toLocaleString()}원`} />
         <Divider />
         <Row
           label="예상 제작비"
-          value={`${spec.totalAmount.toLocaleString()}원`}
+          value={`${totalAmount.toLocaleString()}원`}
           strong
         />
       </Stack>

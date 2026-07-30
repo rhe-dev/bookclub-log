@@ -2325,8 +2325,7 @@
           }
         },
         "required": [
-          "bookIds",
-          "copies"
+          "bookIds"
         ]
       },
       "PageBreakdownResponse": {

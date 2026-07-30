@@ -29,7 +29,7 @@ export class OrdersService {
     const club = await this.clubsService.getClubOrThrow(clubPublicId);
     await this.clubsService.getMembershipOrThrow(club.id, memberPublicId);
     const books = await this.manuscript.resolveBooks(club.id, dto.bookIds);
-    return this.manuscript.quote(books, dto.copies);
+    return this.manuscript.quote(books, dto.copies ?? 1);
   }
 
   /** 문집 주문 생성 — 주문자는 X-Member-Id의 멤버 (PLAN F3) */

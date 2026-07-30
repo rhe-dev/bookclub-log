@@ -619,7 +619,7 @@ export interface components {
         };
         EstimateOrderDto: {
             bookIds: string[];
-            copies: number;
+            copies?: number;
         };
         PageBreakdownResponse: {
             frontMatter: number;

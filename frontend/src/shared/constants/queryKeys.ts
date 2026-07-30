@@ -16,8 +16,8 @@ export const queryKeys = {
     ['orders', 'mine', memberPublicId] as const,
   ordersMineRoot: ['orders', 'mine'] as const,
   /** 문집 견적 — 수록 책·부수가 바뀔 때마다 다시 계산한다 */
-  orderEstimate: (clubPublicId: string, bookIds: string[], copies: number) =>
-    ['orders', 'estimate', clubPublicId, bookIds.join(','), copies] as const,
+  orderEstimate: (clubPublicId: string, bookIds: string[]) =>
+    ['orders', 'estimate', clubPublicId, bookIds.join(',')] as const,
   adminOrders: (page: number, limit: number, filters: object) =>
     ['admin', 'orders', page, limit, filters] as const,
   adminOrdersRoot: ['admin', 'orders'] as const,

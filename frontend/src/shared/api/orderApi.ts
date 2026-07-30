@@ -28,11 +28,11 @@ export const orderApi = {
   estimate: async (
     clubPublicId: string,
     bookIds: string[],
-    copies: number,
   ): Promise<OrderEstimate> => {
     const { data } = await axiosClient.post<OrderEstimate>(
       `/clubs/${clubPublicId}/orders/estimate`,
-      { bookIds, copies },
+      // 부수는 보내지 않는다 — 금액은 1부 단가에 프론트가 곱한다
+      { bookIds },
       // 분량 미달 등은 화면에서 안내로 보여준다 — 토스트로 반복 노출하지 않는다
       { skipErrorToast: true },
     );
@@ -69,20 +69,25 @@ export const useMyOrdersQuery = (memberPublicId?: string, page = 1) =>
   });
 
 /**
- * 문집 견적 — 수록 책·부수가 바뀌면 다시 계산한다 (D-035).
- * 쪽수 산출과 판형 규칙은 서버에만 두고, 화면은 결과만 받아 보여준다.
+ * 문집 견적 — 분량·판형별 제작 가능 여부·1부 단가·예상 수령일 (D-035).
+ *
+ * 쪽수 산출과 판형 규칙은 서버에만 두고, 화면은 결과만 받아 쓴다.
+ *
+ * **자동으로 부르지 않는다**(`enabled: false`). 책을 고를 때마다 요청이 나가면 선택 한 번에
+ * 한 번씩 서버를 부르게 된다. 수록 책이 확정되는 시점('다음' 클릭)에 `refetch()`로 한 번만
+ * 부르고, 이후 단계는 그 결과를 그대로 쓴다. 부수는 금액에만 비례하므로 요청에 넣지 않고
+ * 화면에서 곱한다 — 입력 도중의 값(예: 1555)으로 요청이 나가는 일도 없어진다.
  */
 export const useOrderEstimateQuery = (
   clubPublicId: string | undefined,
   bookIds: string[],
-  copies: number,
 ) =>
   useQuery({
-    queryKey: queryKeys.orderEstimate(clubPublicId ?? '', bookIds, copies),
-    queryFn: () => orderApi.estimate(clubPublicId as string, bookIds, copies),
-    // 부수만 바뀔 때 판형 카드가 빈 채로 깜빡이지 않게
-    placeholderData: keepPreviousData,
-    enabled: Boolean(clubPublicId) && bookIds.length > 0,
+    queryKey: queryKeys.orderEstimate(clubPublicId ?? '', bookIds),
+    queryFn: () => orderApi.estimate(clubPublicId as string, bookIds),
+    enabled: false,
+    // 수록 책이 그대로면 단계를 오갈 때 다시 부르지 않는다
+    staleTime: Infinity,
   });
 
 const useInvalidateOrders = () => {

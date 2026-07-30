@@ -2,6 +2,7 @@ import {
   ArrayNotEmpty,
   IsArray,
   IsInt,
+  IsOptional,
   IsString,
   Max,
   Min,
@@ -21,9 +22,14 @@ export class EstimateOrderDto {
   })
   bookIds: string[];
 
-  /** 부수 — 판형별 금액을 부수까지 반영해 보여주기 위해 함께 받는다 */
+  /**
+   * 부수 (선택, 기본 1).
+   * 분량·판형 가능 여부는 부수와 무관하고 금액만 비례하므로, 화면은 1부 기준 단가를 받아
+   * 부수를 곱해 보여준다 — 부수를 바꿀 때마다 서버를 다시 부르지 않으려고.
+   */
+  @IsOptional()
   @IsInt({ message: `${ErrorCode.COMMON_INVALID_INPUT}|$property` })
   @Min(1, { message: ErrorCode.ORDER_COPIES_MIN })
   @Max(100, { message: ErrorCode.ORDER_COPIES_MAX })
-  copies: number;
+  copies?: number;
 }
