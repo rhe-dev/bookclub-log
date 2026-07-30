@@ -53,7 +53,10 @@ export class AdminProductionService {
   async check(orderPublicId: string) {
     const order = await this.prisma.order.findUnique({
       where: { publicId: orderPublicId },
-      include: orderInclude,
+      include: {
+        ...orderInclude,
+        vendorEvents: { orderBy: { receivedAt: 'asc' } },
+      },
     });
     if (!order) throw new BadRequestException(ErrorCode.ORDER_NOT_FOUND);
 
@@ -90,6 +93,17 @@ export class AdminProductionService {
       vendorStatusAt: order.vendorStatusAt,
       trackingCarrier: order.trackingCarrier,
       trackingNumber: order.trackingNumber,
+      /** 제작처 이벤트 수신 이력 — 우리 상태가 그대로인 이벤트도 여기에는 남는다 */
+      events: order.vendorEvents.map((entry) => ({
+        event: entry.event,
+        vendorStatus: entry.vendorStatus,
+        vendorStatusDisplay:
+          VENDOR_STATUS_DISPLAY[
+            entry.vendorStatus as keyof typeof VENDOR_STATUS_DISPLAY
+          ] ?? entry.vendorStatus,
+        receivedAt: entry.receivedAt,
+        detail: entry.detail,
+      })),
     };
   }
 
@@ -141,6 +155,14 @@ export class AdminProductionService {
         vendorOrderUid: response.data.orderUid,
         vendorStatus: response.data.orderStatus,
         vendorStatusAt: new Date(),
+        // 발주 응답도 수신 로그의 시작점으로 남긴다 — PDF_UPLOAD라 즉시 PDF_READY로 승격된다
+        vendorEvents: {
+          create: {
+            event: 'order.created',
+            vendorStatus: response.data.orderStatus,
+            detail: `발주 완료 · ${response.data.orderUid}`,
+          },
+        },
       },
     );
     return toAdminOrderDto(updated);
@@ -164,13 +186,26 @@ export class AdminProductionService {
       order.status,
     );
     const shipped = event === 'shipping.departed';
+    const trackingNumber = shipped
+      ? buildTrackingNumber(order.vendorOrderUid)
+      : null;
     const vendorData = {
       vendorStatus,
       vendorStatusAt: new Date(),
       ...(shipped && {
         trackingCarrier: TRACKING_CARRIER,
-        trackingNumber: buildTrackingNumber(order.vendorOrderUid),
+        trackingNumber,
       }),
+      // 우리 상태가 바뀌지 않는 이벤트도 로그에는 남는다 — 그래야 운영자가 진행을 본다
+      vendorEvents: {
+        create: {
+          event,
+          vendorStatus,
+          detail: trackingNumber
+            ? `${TRACKING_CARRIER} ${trackingNumber}`
+            : null,
+        },
+      },
     };
 
     // 우리 상태가 바뀌지 않는 이벤트는 이력을 남기지 않고 벤더 정보만 갱신한다

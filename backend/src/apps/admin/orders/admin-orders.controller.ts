@@ -16,6 +16,7 @@ import {
   AdminDispatchDto,
   AdminVendorEventDto,
 } from './dto/admin-production.dto';
+import { AdminProductionCheckResponse } from './dto/admin-production.response';
 
 /** 운영자용 — 데모 범위상 별도 인증 없이 /admin 경로로만 분리 (D-003) */
 @Controller('admin/orders')
@@ -92,7 +93,9 @@ export class AdminOrdersController {
 
   /** 발주 전 사양 재확인 — 주문 당시 쪽수와 지금 쪽수를 함께 본다 */
   @Get(':orderId/production')
-  checkProduction(@Param('orderId') orderId: string) {
+  checkProduction(
+    @Param('orderId') orderId: string,
+  ): Promise<AdminProductionCheckResponse> {
     return this.production.check(orderId);
   }
 

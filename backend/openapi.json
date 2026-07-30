@@ -1204,7 +1204,14 @@
         ],
         "responses": {
           "200": {
-            "description": ""
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AdminProductionCheckResponse"
+                }
+              }
+            }
           }
         },
         "tags": [
@@ -2829,6 +2836,129 @@
         "required": [
           "toStatus",
           "orderIds"
+        ]
+      },
+      "VendorEventLogResponse": {
+        "type": "object",
+        "properties": {
+          "detail": {
+            "type": "string",
+            "nullable": true
+          },
+          "event": {
+            "type": "string"
+          },
+          "vendorStatus": {
+            "type": "string"
+          },
+          "vendorStatusDisplay": {
+            "type": "string"
+          },
+          "receivedAt": {
+            "format": "date-time",
+            "type": "string"
+          }
+        },
+        "required": [
+          "detail",
+          "event",
+          "vendorStatus",
+          "vendorStatusDisplay",
+          "receivedAt"
+        ]
+      },
+      "AdminProductionCheckResponse": {
+        "type": "object",
+        "properties": {
+          "pageMin": {
+            "type": "number",
+            "nullable": true
+          },
+          "pageMax": {
+            "type": "number",
+            "nullable": true
+          },
+          "ineligibleReason": {
+            "nullable": true,
+            "enum": [
+              "PAGE_MIN",
+              "PAGE_MAX",
+              "PAGE_INCREMENT"
+            ],
+            "type": "string"
+          },
+          "requiredValue": {
+            "type": "number",
+            "nullable": true
+          },
+          "vendorOrderUid": {
+            "type": "string",
+            "nullable": true
+          },
+          "vendorStatus": {
+            "type": "string",
+            "nullable": true
+          },
+          "vendorStatusDisplay": {
+            "type": "string",
+            "nullable": true
+          },
+          "vendorStatusAt": {
+            "format": "date-time",
+            "type": "string",
+            "nullable": true
+          },
+          "trackingCarrier": {
+            "type": "string",
+            "nullable": true
+          },
+          "trackingNumber": {
+            "type": "string",
+            "nullable": true
+          },
+          "bookSpecUid": {
+            "type": "string"
+          },
+          "specName": {
+            "type": "string"
+          },
+          "orderedPageCount": {
+            "type": "number"
+          },
+          "currentPageCount": {
+            "type": "number"
+          },
+          "eligible": {
+            "type": "boolean"
+          },
+          "canDispatch": {
+            "type": "boolean"
+          },
+          "events": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/VendorEventLogResponse"
+            }
+          }
+        },
+        "required": [
+          "pageMin",
+          "pageMax",
+          "ineligibleReason",
+          "requiredValue",
+          "vendorOrderUid",
+          "vendorStatus",
+          "vendorStatusDisplay",
+          "vendorStatusAt",
+          "trackingCarrier",
+          "trackingNumber",
+          "bookSpecUid",
+          "specName",
+          "orderedPageCount",
+          "currentPageCount",
+          "eligible",
+          "canDispatch",
+          "events"
         ]
       },
       "AdminDispatchDto": {

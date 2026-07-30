@@ -693,6 +693,63 @@ async function main() {
       ],
     },
   ];
+  /**
+   * 우리 상태 이력 → 제작처가 보냈을 이벤트로 되짚는다.
+   * 발주(order.created) 직후 PDF_READY로 승격되고, 제작 확정·시작은 우리 상태를 바꾸지
+   * 않으므로 이력에는 없지만 제작처는 보냈다 — 그 구간을 로그로 채운다.
+   */
+  const buildVendorEvents = (orderDef, index) => {
+    const at = (status) => orderDef.history.find((row) => row[0] === status);
+    const events = [];
+    const dispatched = at('IN_PRODUCTION');
+    if (!dispatched) return events;
+
+    events.push({
+      event: 'order.created',
+      vendorStatus: 'PDF_READY',
+      detail: `발주 완료 · or_${index}${vendorSuffix()}`,
+      receivedAt: kst(dispatched[1]),
+    });
+    // 제작 확정·시작은 발주 다음 날 오전에 순서대로 들어온 것으로
+    const dispatchedAt = new Date(kst(dispatched[1]));
+    const plusHours = (hours) =>
+      new Date(dispatchedAt.getTime() + hours * 3600 * 1000);
+    events.push({
+      event: 'production.confirmed',
+      vendorStatus: 'CONFIRMED',
+      receivedAt: plusHours(2),
+    });
+    events.push({
+      event: 'production.started',
+      vendorStatus: 'IN_PRODUCTION',
+      receivedAt: plusHours(20),
+    });
+
+    const produced = at('PRODUCED');
+    if (produced)
+      events.push({
+        event: 'production.completed',
+        vendorStatus: 'PRODUCTION_COMPLETE',
+        receivedAt: kst(produced[1]),
+      });
+    const shipped = at('SHIPPED');
+    if (shipped)
+      events.push({
+        event: 'shipping.departed',
+        vendorStatus: 'SHIPPED',
+        detail: `한진택배 41${index}${trackingSuffix()}`,
+        receivedAt: kst(shipped[1]),
+      });
+    const delivered = at('DELIVERED');
+    if (delivered)
+      events.push({
+        event: 'shipping.delivered',
+        vendorStatus: 'DELIVERED',
+        receivedAt: kst(delivered[1]),
+      });
+    return events;
+  };
+
   // 벤더 식별자는 형식만 재현한다 — 시드 결과가 매번 같도록 순번 기반으로 만든다
   let orderIndex = 0;
   const vendorSuffix = () => String(1000 + orderIndex * 37).padStart(4, '0');
@@ -744,6 +801,10 @@ async function main() {
         vendorStatusAt: vendorEvent ? kst(last[1]) : null,
         trackingCarrier: shippedAt ? '한진택배' : null,
         trackingNumber: shippedAt ? `41${orderIndex}${trackingSuffix()}` : null,
+        // 발주 이후 단계는 제작처 웹훅으로 들어온 것 — 수신 로그도 함께 남긴다 (D-034)
+        vendorEvents: vendorEvent
+          ? { create: buildVendorEvents(orderDef, orderIndex) }
+          : undefined,
         books: {
           create: orderDef.books.map((bookKey, index) => ({
             bookId: books[bookKey].id,

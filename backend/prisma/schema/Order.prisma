@@ -67,8 +67,9 @@ model Order {
 
   club    Club                 @relation(fields: [clubId], references: [id])
   member  Member               @relation(fields: [memberId], references: [id])
-  books   OrderBook[]
-  history OrderStatusHistory[]
+  books        OrderBook[]
+  history      OrderStatusHistory[]
+  vendorEvents OrderVendorEvent[]
 
   @@index([memberId]) /// 마이페이지 '내 주문' 조회
   @@index([statusChangedAt]) /// 운영자 목록 변경일 정렬
@@ -99,4 +100,24 @@ model OrderStatusHistory {
   adminNote    String? /// 운영자 메모 — 단계 진행 시 남기는 처리 기록 (D-031)
 
   order Order @relation(fields: [orderId], references: [id])
+}
+
+/// 제작처(북프린트) 이벤트 수신 로그 — 실제로는 웹훅 수신 이력에 해당한다 (D-034).
+/// 우리 주문 상태가 바뀌지 않는 이벤트(제작 확정·제작 시작)도 여기에는 남는다 —
+/// 여러 벤더 상태가 우리 한 단계로 접히기 때문에, 이 로그가 없으면 운영자에게는
+/// 아무 일도 일어나지 않은 것처럼 보인다.
+model OrderVendorEvent {
+  id           Int      @id @default(autoincrement())
+  orderId      Int
+  /// 벤더 웹훅 이벤트명 (production.confirmed·shipping.departed 등)
+  event        String
+  /// 이벤트가 알려준 벤더 orderStatus
+  vendorStatus String
+  receivedAt   DateTime @default(now())
+  /// 이벤트에 실려 온 부가 정보 (송장번호 등)
+  detail       String?
+
+  order Order @relation(fields: [orderId], references: [id])
+
+  @@index([orderId, receivedAt])
 }
