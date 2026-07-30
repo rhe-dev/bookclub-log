@@ -695,6 +695,35 @@ export interface components {
             adminNote?: string;
             orderIds: string[];
         };
+        VendorEventLogResponse: {
+            detail: string | null;
+            event: string;
+            vendorStatus: string;
+            vendorStatusDisplay: string;
+            /** Format: date-time */
+            receivedAt: string;
+        };
+        AdminProductionCheckResponse: {
+            pageMin: number | null;
+            pageMax: number | null;
+            /** @enum {string|null} */
+            ineligibleReason: "PAGE_MIN" | "PAGE_MAX" | "PAGE_INCREMENT" | null;
+            requiredValue: number | null;
+            vendorOrderUid: string | null;
+            vendorStatus: string | null;
+            vendorStatusDisplay: string | null;
+            /** Format: date-time */
+            vendorStatusAt: string | null;
+            trackingCarrier: string | null;
+            trackingNumber: string | null;
+            bookSpecUid: string;
+            specName: string;
+            orderedPageCount: number;
+            currentPageCount: number;
+            eligible: boolean;
+            canDispatch: boolean;
+            events: components["schemas"]["VendorEventLogResponse"][];
+        };
         AdminDispatchDto: {
             adminNote?: string;
         };
@@ -1330,7 +1359,9 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["AdminProductionCheckResponse"];
+                };
             };
         };
     };
