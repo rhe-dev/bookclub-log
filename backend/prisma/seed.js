@@ -308,7 +308,7 @@ async function main() {
       name: '밑줄과 여백',
       description: '격주에 한 번, 에세이와 단편을 짧고 깊게 읽는 소모임',
       inviteCode: 'LINE-2026',
-      createdAt: kst('2026-04-12T10:00:00'),
+      createdAt: kst('2025-12-20T10:00:00'),
     },
   });
 
@@ -324,7 +324,9 @@ async function main() {
       },
     });
   }
-  // 두 번째 클럽 — 기존 멤버(jiwon)는 사람을 재사용하고 멤버십만 추가
+  // 두 번째 클럽 — 기존 멤버(jiwon·minjun)는 사람을 재사용하고 멤버십만 추가.
+  // 창립 멤버는 개설일에, 다른 클럽에서 건너온 두 명은 나중에 합류한 것으로 둔다
+  const CLUB2_FOUNDERS = ['seojun', 'yujin'];
   for (const { key, role, ...data } of MEMBERS2) {
     if (!members[key]) members[key] = await prisma.member.create({ data });
     await prisma.clubMember.create({
@@ -332,7 +334,9 @@ async function main() {
         clubId: club2.id,
         memberId: members[key].id,
         role,
-        joinedAt: kst('2026-04-12T11:00:00'),
+        joinedAt: CLUB2_FOUNDERS.includes(key)
+          ? kst('2025-12-20T11:00:00')
+          : kst('2026-04-12T11:00:00'),
       },
     });
   }
