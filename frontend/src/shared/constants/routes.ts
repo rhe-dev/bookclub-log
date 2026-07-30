@@ -12,6 +12,14 @@ export const ROUTES = {
   myPage: '/my',
   /** 운영자 — 주문 관리 */
   adminOrders: '/admin/orders',
+  /** 운영자 — 주문 상세 (모달이 아닌 페이지 — 회원·클럽 상세와 오갈 수 있어야 한다) */
+  adminOrderDetail: (orderPublicId: string) => `/admin/orders/${orderPublicId}`,
   /** 운영자 — 회원 관리 */
   adminMembers: '/admin/members',
+  adminMemberDetail: (memberPublicId: string) =>
+    `/admin/members/${memberPublicId}`,
+  /** 운영자 — 클럽 관리 */
+  adminClubs: '/admin/clubs',
+  /** 운영자 — 클럽 상세 */
+  adminClubDetail: (clubPublicId: string) => `/admin/clubs/${clubPublicId}`,
 } as const;

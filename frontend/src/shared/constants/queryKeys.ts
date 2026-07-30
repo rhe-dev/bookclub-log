@@ -24,7 +24,16 @@ export const queryKeys = {
   /** 발주 전 사양 재확인 */
   adminProduction: (orderPublicId: string) =>
     ['admin', 'orders', orderPublicId, 'production'] as const,
-  adminClubs: ['admin', 'clubs'] as const,
+  adminClubs: (filters: object = {}) => ['admin', 'clubs', filters] as const,
+  adminOrder: (orderPublicId: string) =>
+    ['admin', 'orders', 'detail', orderPublicId] as const,
+  adminMembers: (page: number, limit: number, filters: object) =>
+    ['admin', 'members', page, limit, filters] as const,
+  adminMembersRoot: ['admin', 'members'] as const,
+  adminMember: (memberPublicId: string) =>
+    ['admin', 'members', 'detail', memberPublicId] as const,
+  adminClub: (clubPublicId: string) =>
+    ['admin', 'clubs', 'detail', clubPublicId] as const,
   adminPendingCount: ['admin', 'orders', 'pending-count'] as const,
   comments: (bookPublicId: string) =>
     ['books', bookPublicId, 'comments'] as const,

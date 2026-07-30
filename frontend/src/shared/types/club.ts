@@ -10,3 +10,6 @@ export type AdminClub = components['schemas']['AdminClubResponse'];
 export type ClubMember = components['schemas']['ClubMemberResponse'];
 
 export type ClubRole = ClubMember['role'];
+
+/** 운영자 클럽 상세 */
+export type AdminClubDetail = components['schemas']['AdminClubDetailResponse'];

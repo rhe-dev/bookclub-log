@@ -292,6 +292,22 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/admin/orders/{orderId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["AdminOrdersController_findOne"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/admin/orders/{orderId}/production": {
         parameters: {
             query?: never;
@@ -338,6 +354,86 @@ export interface paths {
         options?: never;
         head?: never;
         patch?: never;
+        trace?: never;
+    };
+    "/api/admin/clubs/{clubId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["AdminClubsController_detail"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/clubs/{clubId}/note": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch: operations["AdminClubsController_updateNote"];
+        trace?: never;
+    };
+    "/api/admin/members": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["AdminMembersController_list"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/members/{memberId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["AdminMembersController_detail"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/members/{memberId}/note": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch: operations["AdminMembersController_updateNote"];
         trace?: never;
     };
 }
@@ -734,11 +830,105 @@ export interface components {
         AdminClubResponse: {
             publicId: string;
             name: string;
+            description: string;
+            /** Format: date-time */
+            createdAt: string;
             memberCount: number;
+            bookCount: number;
+            orderCount: number;
+            hasAdminNote: boolean;
+        };
+        AdminClubMemberResponse: {
+            /** @enum {string} */
+            role: "LEADER" | "MEMBER";
+            publicId: string;
+            name: string;
+            avatarEmoji: string;
+            color: string;
+            /** Format: date-time */
+            joinedAt: string;
+        };
+        AdminClubOrderResponse: {
+            /** @enum {string} */
+            status: "RECEIVED" | "CONFIRMED" | "IN_PRODUCTION" | "PRODUCED" | "SHIPPED" | "DELIVERED" | "PURCHASE_CONFIRMED" | "CANCELED" | "REFUND_REQUESTED" | "REFUNDED" | "REMAKE_REQUESTED";
+            publicId: string;
+            title: string;
+            copies: number;
+            /** Format: date-time */
+            createdAt: string;
+            memberName: string;
+        };
+        AdminClubDetailResponse: {
+            adminNote: string | null;
+            publicId: string;
+            name: string;
+            description: string;
+            inviteCode: string;
+            /** Format: date-time */
+            createdAt: string;
+            memberCount: number;
+            bookCount: number;
+            orderCount: number;
+            members: components["schemas"]["AdminClubMemberResponse"][];
+            recentOrders: components["schemas"]["AdminClubOrderResponse"][];
+        };
+        AdminNoteDto: {
+            note?: string;
+        };
+        AdminNoteResponse: {
+            adminNote: string | null;
+        };
+        AdminMemberClubResponse: {
+            /** @enum {string} */
+            role: "LEADER" | "MEMBER";
+            publicId: string;
+            name: string;
+            /** Format: date-time */
+            joinedAt: string;
+        };
+        AdminMemberResponse: {
+            publicId: string;
+            name: string;
+            avatarEmoji: string;
+            color: string;
+            /** Format: date-time */
+            createdAt: string;
+            clubs: components["schemas"]["AdminMemberClubResponse"][];
+            commentCount: number;
+            orderCount: number;
+            hasAdminNote: boolean;
+        };
+        PaginatedAdminMembersResponse: {
+            items: components["schemas"]["AdminMemberResponse"][];
+            meta: components["schemas"]["PageMetaResponse"];
+        };
+        AdminMemberOrderResponse: {
+            /** @enum {string} */
+            status: "RECEIVED" | "CONFIRMED" | "IN_PRODUCTION" | "PRODUCED" | "SHIPPED" | "DELIVERED" | "PURCHASE_CONFIRMED" | "CANCELED" | "REFUND_REQUESTED" | "REFUNDED" | "REMAKE_REQUESTED";
+            publicId: string;
+            title: string;
+            copies: number;
+            /** Format: date-time */
+            createdAt: string;
+            clubName: string;
+        };
+        AdminMemberDetailResponse: {
+            adminNote: string | null;
+            publicId: string;
+            name: string;
+            avatarEmoji: string;
+            color: string;
+            /** Format: date-time */
+            createdAt: string;
+            clubs: components["schemas"]["AdminMemberClubResponse"][];
+            commentCount: number;
+            likeCount: number;
+            orderCount: number;
+            recentOrders: components["schemas"]["AdminMemberOrderResponse"][];
         };
         ApiErrorItemResponse: {
             /** @enum {string} */
-            code: "INTERNAL_ERROR" | "MEMBER_HEADER_REQUIRED" | "MEMBER_NOT_FOUND" | "COMMON_INVALID_INPUT" | "UNKNOWN_FIELD" | "PAGE_INVALID" | "LIMIT_INVALID" | "CLUB_NOT_FOUND" | "CLUB_MEMBER_ONLY" | "LEADER_ONLY" | "BOOK_NOT_FOUND" | "BOOK_TITLE_REQUIRED" | "BOOK_AUTHOR_REQUIRED" | "BOOK_COVER_COLOR_FORMAT" | "BOOK_TITLE_MAX" | "BOOK_AUTHOR_MAX" | "BOOK_PUBLISHER_MAX" | "BOOK_COVER_EMOJI_INVALID" | "BOOK_STATUS_INVALID" | "BOOK_DATE_INVALID" | "BOOK_PERIOD_INVALID" | "BOOK_PARTICIPANT_NOT_IN_CLUB" | "ORDER_NOT_FOUND" | "ORDER_TITLE_REQUIRED" | "ORDER_COPIES_MIN" | "ORDER_COPIES_MAX" | "ORDER_TITLE_MAX" | "ORDER_BOOKS_REQUIRED" | "ORDER_BOOK_INVALID" | "ORDER_BOOK_NOT_DONE" | "ORDER_INVALID_TRANSITION" | "ORDER_ADMIN_ONLY_TRANSITION" | "ORDER_ORDERER_ONLY" | "ORDER_REASON_REQUIRED" | "ORDER_REASON_INVALID" | "ORDER_REASON_DETAIL_REQUIRED" | "ORDER_REASON_DETAIL_MIN" | "ORDER_REASON_DETAIL_MAX" | "ORDER_STATUS_INVALID" | "ORDER_ADMIN_NOTE_MAX" | "ORDER_BULK_EMPTY" | "ORDER_BULK_TOO_MANY" | "ORDER_COVER_COLOR_FORMAT" | "ORDER_COVER_EMOJI_INVALID" | "PRINT_SPEC_NOT_FOUND" | "PRINT_PAGE_MIN" | "PRINT_PAGE_MAX" | "PRINT_PAGE_INCREMENT" | "PRINT_NO_ELIGIBLE_SPEC" | "PRINT_ALREADY_ORDERED" | "PRINT_NOT_ORDERED" | "PRINT_VENDOR_REJECTED" | "PRINT_VENDOR_UNAVAILABLE" | "PRINT_VENDOR_RATE_LIMITED" | "PRINT_INSUFFICIENT_CREDIT" | "PRINT_WEBHOOK_EVENT_INVALID" | "COMMENT_NOT_FOUND" | "COMMENT_AUTHOR_ONLY" | "COMMENT_CONTENT_REQUIRED" | "COMMENT_CONTENT_TOO_LONG" | "COMMENT_PAGE_MIN" | "COMMENT_QUOTE_TOO_LONG" | "REPLY_TARGET_NOT_FOUND" | "REPLY_TO_OTHER_BOOK" | "REPLY_DEPTH_EXCEEDED" | "REPLY_TO_DELETED" | "NOT_FOUND" | "UNKNOWN";
+            code: "INTERNAL_ERROR" | "MEMBER_HEADER_REQUIRED" | "MEMBER_NOT_FOUND" | "ADMIN_NOTE_MAX" | "COMMON_INVALID_INPUT" | "UNKNOWN_FIELD" | "PAGE_INVALID" | "LIMIT_INVALID" | "CLUB_NOT_FOUND" | "CLUB_MEMBER_ONLY" | "LEADER_ONLY" | "BOOK_NOT_FOUND" | "BOOK_TITLE_REQUIRED" | "BOOK_AUTHOR_REQUIRED" | "BOOK_COVER_COLOR_FORMAT" | "BOOK_TITLE_MAX" | "BOOK_AUTHOR_MAX" | "BOOK_PUBLISHER_MAX" | "BOOK_COVER_EMOJI_INVALID" | "BOOK_STATUS_INVALID" | "BOOK_DATE_INVALID" | "BOOK_PERIOD_INVALID" | "BOOK_PARTICIPANT_NOT_IN_CLUB" | "ORDER_NOT_FOUND" | "ORDER_TITLE_REQUIRED" | "ORDER_COPIES_MIN" | "ORDER_COPIES_MAX" | "ORDER_TITLE_MAX" | "ORDER_BOOKS_REQUIRED" | "ORDER_BOOK_INVALID" | "ORDER_BOOK_NOT_DONE" | "ORDER_INVALID_TRANSITION" | "ORDER_ADMIN_ONLY_TRANSITION" | "ORDER_ORDERER_ONLY" | "ORDER_REASON_REQUIRED" | "ORDER_REASON_INVALID" | "ORDER_REASON_DETAIL_REQUIRED" | "ORDER_REASON_DETAIL_MIN" | "ORDER_REASON_DETAIL_MAX" | "ORDER_STATUS_INVALID" | "ORDER_ADMIN_NOTE_MAX" | "ORDER_BULK_EMPTY" | "ORDER_BULK_TOO_MANY" | "ORDER_COVER_COLOR_FORMAT" | "ORDER_COVER_EMOJI_INVALID" | "PRINT_SPEC_NOT_FOUND" | "PRINT_PAGE_MIN" | "PRINT_PAGE_MAX" | "PRINT_PAGE_INCREMENT" | "PRINT_NO_ELIGIBLE_SPEC" | "PRINT_ALREADY_ORDERED" | "PRINT_NOT_ORDERED" | "PRINT_VENDOR_REJECTED" | "PRINT_VENDOR_UNAVAILABLE" | "PRINT_VENDOR_RATE_LIMITED" | "PRINT_INSUFFICIENT_CREDIT" | "PRINT_WEBHOOK_EVENT_INVALID" | "COMMENT_NOT_FOUND" | "COMMENT_AUTHOR_ONLY" | "COMMENT_CONTENT_REQUIRED" | "COMMENT_CONTENT_TOO_LONG" | "COMMENT_PAGE_MIN" | "COMMENT_QUOTE_TOO_LONG" | "REPLY_TARGET_NOT_FOUND" | "REPLY_TO_OTHER_BOOK" | "REPLY_DEPTH_EXCEEDED" | "REPLY_TO_DELETED" | "NOT_FOUND" | "UNKNOWN";
             message: string;
         };
         ApiErrorResponse: {
@@ -1344,6 +1534,27 @@ export interface operations {
             };
         };
     };
+    AdminOrdersController_findOne: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                orderId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AdminOrderResponse"];
+                };
+            };
+        };
+    };
     AdminOrdersController_checkProduction: {
         parameters: {
             query?: never;
@@ -1417,7 +1628,11 @@ export interface operations {
     };
     AdminClubsController_findAll: {
         parameters: {
-            query?: never;
+            query?: {
+                q?: string;
+                from?: string;
+                to?: string;
+            };
             header?: never;
             path?: never;
             cookie?: never;
@@ -1430,6 +1645,124 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["AdminClubResponse"][];
+                };
+            };
+        };
+    };
+    AdminClubsController_detail: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                clubId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AdminClubDetailResponse"];
+                };
+            };
+        };
+    };
+    AdminClubsController_updateNote: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                clubId: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AdminNoteDto"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AdminNoteResponse"];
+                };
+            };
+        };
+    };
+    AdminMembersController_list: {
+        parameters: {
+            query?: {
+                page?: number;
+                limit?: number;
+                clubId?: string;
+                q?: string;
+                from?: string;
+                to?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PaginatedAdminMembersResponse"];
+                };
+            };
+        };
+    };
+    AdminMembersController_detail: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                memberId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AdminMemberDetailResponse"];
+                };
+            };
+        };
+    };
+    AdminMembersController_updateNote: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                memberId: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AdminNoteDto"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AdminNoteResponse"];
                 };
             };
         };
