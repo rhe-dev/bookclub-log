@@ -1,12 +1,16 @@
 'use client';
 
-// 문집 내보내기 — 책 선택 → 수록 확인 → 제목·부수 → 주문 (PLAN F3, 화면 4)
+// 문집 만들기 — 책 선택 → 수록 확인(분량) → 판형·표지 → 부수·확인 (PLAN F3, 화면 4)
+import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
 import { Stack, Step, StepButton, StepLabel, Stepper } from '@mui/material';
 import { useRouter } from 'next/navigation';
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { useBooksQuery } from '@/shared/api/bookApi';
 import { useMyClubsQuery } from '@/shared/api/clubApi';
-import { useCreateOrderMutation } from '@/shared/api/orderApi';
+import {
+  useCreateOrderMutation,
+  useOrderEstimateQuery,
+} from '@/shared/api/orderApi';
 import { CommonContainer } from '@/shared/components/layout/CommonContainer';
 import { CommonButton } from '@/shared/components/ui/CommonButton';
 import { ErrorView } from '@/shared/components/ui/ErrorView';
@@ -16,13 +20,18 @@ import { useRequireMember } from '@/shared/hooks/useRequireMember';
 import { toast } from '@/shared/stores/toastStore';
 import { colorChips } from '@/shared/styles/colors';
 import type { Order } from '@/shared/types/order';
+import { formatPeriodShort } from '@/shared/utils/date';
 import { BookSelectStep } from './components/BookSelectStep';
-import { OrderNewSkeleton } from './components/OrderNewSkeleton';
 import { CompleteStep } from './components/CompleteStep';
-import { OrderFormStep } from './components/OrderFormStep';
+import { ConfirmStep } from './components/ConfirmStep';
+import { OrderNewSkeleton } from './components/OrderNewSkeleton';
+import { COVER_COLORS, COVER_EMOJIS } from './components/orderSpec';
 import { ReviewStep } from './components/ReviewStep';
+import { SelectedBooksPanel } from './components/SelectedBooksPanel';
+import { SpecCoverStep } from './components/SpecCoverStep';
 
-const STEP_LABELS = ['책 선택', '수록 확인', '제목·부수'];
+const STEP_LABELS = ['책 선택', '수록 확인', '판형·표지', '부수·확인'];
+const LAST_STEP = STEP_LABELS.length - 1;
 
 export default function OrderNewPage() {
   const router = useRouter();
@@ -40,8 +49,28 @@ export default function OrderNewPage() {
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [title, setTitle] = useState('');
   const [copies, setCopies] = useState('');
+  const [bookSpecUid, setBookSpecUid] = useState('');
+  const [coverColor, setCoverColor] = useState(COVER_COLORS[0]);
+  const [coverEmoji, setCoverEmoji] = useState(COVER_EMOJIS[0]);
   const [errors, setErrors] = useState<{ title?: string; copies?: string }>({});
+  /** 분량 미달 안내 — '다음'을 눌렀을 때만 띄우고, 선택이 바뀌면 지운다 */
+  const [shortNotice, setShortNotice] = useState<string | null>(null);
+  /**
+   * 단계별 스크롤 위치.
+   * 앞으로 갈 때는 새 내용을 처음부터 보여주고, 뒤로 갈 때는 보던 자리로 돌려놓는다 —
+   * '이전'은 새 화면이 아니라 "방금 하던 것을 고치러 가는" 동작이라 위치가 유지되는 쪽이 자연스럽다.
+   */
+  const scrollByStep = useRef<Record<number, number>>({});
   const [completedOrder, setCompletedOrder] = useState<Order | null>(null);
+
+  // 분량·판형별 가능 여부·금액·수령일은 서버가 계산한다 — 화면은 결과만 쓴다 (D-035)
+  const copiesNumber = Number(copies) || 1;
+  const estimateQuery = useOrderEstimateQuery(
+    club?.publicId,
+    selectedIds,
+    copiesNumber,
+  );
+  const estimate = estimateQuery.data;
 
   if (!session || !club) return null;
 
@@ -55,15 +84,26 @@ export default function OrderNewPage() {
   const selectedBooks = selectedIds
     .map((id) => books.find((b) => b.publicId === id))
     .filter((b): b is NonNullable<typeof b> => Boolean(b));
-  const isLoading = booksQuery.isLoading;
-  const isError = booksQuery.isError;
+
+  const selectedSpec = estimate?.specs.find(
+    (spec) => spec.bookSpecUid === bookSpecUid,
+  );
+  // 수록 기간 — 표지에 들어갈 문구
+  const coverPeriod = formatPeriodShort(
+    selectedBooks[0]?.periodFrom ?? selectedBooks[0]?.meetingDate,
+    selectedBooks[selectedBooks.length - 1]?.periodTo ??
+      selectedBooks[selectedBooks.length - 1]?.meetingDate,
+  );
 
   const toggleBook = (bookPublicId: string) => {
+    setShortNotice(null);
     setSelectedIds((prev) =>
       prev.includes(bookPublicId)
         ? prev.filter((id) => id !== bookPublicId)
         : [...prev, bookPublicId],
     );
+    // 수록 책이 바뀌면 분량이 바뀌어 고른 판형이 불가해질 수 있다 — 다시 고르게 한다
+    setBookSpecUid('');
   };
 
   const handleTitleChange = (value: string) => {
@@ -86,26 +126,80 @@ export default function OrderNewPage() {
     });
   };
 
+  const selectAllBooks = () => {
+    setShortNotice(null);
+    setSelectedIds(
+      books.filter((book) => book.status === 'DONE').map((b) => b.publicId),
+    );
+  };
+  const clearSelection = () => {
+    setShortNotice(null);
+    setSelectedIds([]);
+    setBookSpecUid('');
+  };
+  /** 코멘트가 없는 책은 서지 정보만 실린다 — 원하면 한 번에 뺄 수 있게 */
+  const excludeEmptyBooks = () =>
+    setSelectedIds((prev) =>
+      prev.filter((id) => {
+        const book = books.find((b) => b.publicId === id);
+        return (book?.commentCount ?? 0) > 0;
+      }),
+    );
+
+  /** 단계 이동 — 렌더가 끝난 뒤 스크롤을 옮긴다 (복원은 새 내용의 높이가 잡혀야 가능) */
+  const moveToStep = (next: number) => {
+    scrollByStep.current[step] = window.scrollY;
+    setStep(next);
+    const target = next > step ? 0 : (scrollByStep.current[next] ?? 0);
+    requestAnimationFrame(() => window.scrollTo({ top: target }));
+  };
+
   const goNext = () => {
-    // 3단계 진입 시 기본값 채움 — 제목은 모임 이름, 부수는 멤버 수
-    if (step === 1) {
-      if (!title.trim()) setTitle(`${club.name} 문집`);
-      if (!copies && memberCount > 0) setCopies(String(memberCount));
+    // 분량이 모자라면 여기서 멈추고, 방금 누른 버튼 옆에서 이유를 알린다
+    if (step === 0 && estimate && !estimate.printable) {
+      setShortNotice(
+        `지금 고른 책으로는 ${estimate.pageCount}쪽이라 문집을 만들 수 없어요. 가장 작은 판형도 24쪽부터라, 책을 더 담거나 토론을 더 쌓은 뒤에 만들어 주세요.`,
+      );
+      return;
     }
-    setStep((prev) => prev + 1);
+    if (step === 1) {
+      // 판형 단계 진입 — 제목 기본값과 가장 저렴한 제작 가능 판형을 미리 골라 둔다
+      if (!title.trim()) setTitle(`${club.name} 문집`);
+      if (!bookSpecUid) {
+        const cheapest = estimate?.specs
+          .filter((spec) => spec.eligible)
+          .sort((a, b) => a.unitPrice - b.unitPrice)[0];
+        if (cheapest) setBookSpecUid(cheapest.bookSpecUid);
+      }
+    }
+    if (step === 2 && !copies && memberCount > 0) {
+      setCopies(String(memberCount));
+    }
+    moveToStep(step + 1);
   };
 
   const handleSubmit = () => {
     const nextErrors: typeof errors = {};
     if (!title.trim()) nextErrors.title = '문집 제목을 입력해 주세요.';
-    const copiesNumber = Number(copies);
-    if (!copies || !Number.isInteger(copiesNumber) || copiesNumber < 1)
+    if (!copies || !Number.isInteger(Number(copies)) || Number(copies) < 1)
       nextErrors.copies = '부수는 1부 이상의 숫자로 입력해 주세요.';
     setErrors(nextErrors);
-    if (Object.keys(nextErrors).length > 0) return;
+    if (nextErrors.title) {
+      // 제목은 판형·표지 단계에서 받는다 — 그 단계로 되돌려 보여준다
+      moveToStep(2);
+      return;
+    }
+    if (nextErrors.copies) return;
 
     createMutation.mutate(
-      { title: title.trim(), copies: copiesNumber, bookIds: selectedIds },
+      {
+        title: title.trim(),
+        copies: Number(copies),
+        bookIds: selectedIds,
+        bookSpecUid,
+        coverColor,
+        coverEmoji,
+      },
       {
         onSuccess: (order) => {
           toast.success('문집 주문이 접수됐어요.');
@@ -115,16 +209,22 @@ export default function OrderNewPage() {
     );
   };
 
+  // 다음으로 갈 수 없는 단계 — 이유는 각 단계 화면이 이미 설명하고 있다
+  const nextDisabled =
+    (step === 0 && selectedIds.length === 0) ||
+    (step === 0 && estimateQuery.isPending) ||
+    (step === 2 && !selectedSpec);
+
   return (
     <CommonContainer maxWidth={760} sx={{ py: { xs: 2.5, md: 4 }, gap: 2.5 }}>
       {completedOrder ? (
         <CompleteStep order={completedOrder} />
-      ) : isError ? (
+      ) : booksQuery.isError ? (
         <ErrorView
           message="책 목록을 불러오지 못했어요."
           onRetry={() => void booksQuery.refetch()}
         />
-      ) : isLoading ? (
+      ) : booksQuery.isLoading ? (
         <OrderNewSkeleton />
       ) : doneBooks.length === 0 ? (
         <Stack spacing={2} sx={{ alignItems: 'center', py: 8 }}>
@@ -151,7 +251,7 @@ export default function OrderNewPage() {
               <Step key={label} completed={index < step}>
                 {index < step ? (
                   // 완료한 단계는 클릭해서 되돌아갈 수 있다
-                  <StepButton onClick={() => setStep(index)}>
+                  <StepButton onClick={() => moveToStep(index)}>
                     {label}
                   </StepButton>
                 ) : (
@@ -167,27 +267,52 @@ export default function OrderNewPage() {
               books={books}
               selectedIds={selectedIds}
               onToggle={toggleBook}
+              onSelectAll={selectAllBooks}
+              onClearAll={clearSelection}
             />
           )}
           {step === 1 && (
-            <ReviewStep books={selectedBooks} onMove={moveSelected} />
+            <ReviewStep
+              books={selectedBooks}
+              onMove={moveSelected}
+              pageCount={estimate?.pageCount}
+              blankPages={estimate?.blankPages}
+              onExcludeEmpty={excludeEmptyBooks}
+            />
           )}
-          {step === 2 && (
-            <OrderFormStep
+          {step === 2 && estimate && (
+            <SpecCoverStep
+              specs={estimate.specs}
+              pageCount={estimate.pageCount}
+              selectedSpecUid={bookSpecUid}
+              onSelectSpec={setBookSpecUid}
               title={title}
               onTitleChange={handleTitleChange}
+              coverColor={coverColor}
+              onCoverColorChange={setCoverColor}
+              coverEmoji={coverEmoji}
+              onCoverEmojiChange={setCoverEmoji}
+              clubName={club.name}
+              period={coverPeriod}
+              titleError={errors.title}
+            />
+          )}
+          {step === 3 && estimate && selectedSpec && (
+            <ConfirmStep
+              spec={selectedSpec}
+              pageCount={estimate.pageCount}
+              books={selectedBooks}
               copies={copies}
               onCopiesChange={handleCopiesChange}
               memberCount={memberCount}
-              bookCount={selectedBooks.length}
-              errors={errors}
+              shippingFee={estimate.shippingFee}
+              delivery={estimate.delivery}
+              copiesError={errors.copies}
             />
           )}
 
           <Stack
-            direction="row"
             sx={{
-              justifyContent: 'space-between',
               position: 'sticky',
               bottom: 0,
               zIndex: 2,
@@ -196,29 +321,66 @@ export default function OrderNewPage() {
               borderTop: `1px solid ${colorChips.grayScale[200]}`,
             }}
           >
-            <CommonButton
-              label="이전"
-              buttonColor="tertiary"
-              onClick={() => setStep((prev) => prev - 1)}
-              sx={{ visibility: step === 0 ? 'hidden' : 'visible' }}
-            />
-            {step < 2 ? (
-              <CommonButton
-                label={
-                  step === 0 && selectedIds.length > 0
-                    ? `${selectedIds.length}권 선택 — 다음`
-                    : '다음'
-                }
-                onClick={goNext}
-                disabled={selectedIds.length === 0}
-              />
-            ) : (
-              <CommonButton
-                label="주문하기"
-                onClick={handleSubmit}
-                isLoading={createMutation.isPending}
-              />
+            {step === 0 && (
+              <SelectedBooksPanel books={selectedBooks} onRemove={toggleBook} />
             )}
+            {/*
+             * 안내는 '다음' 바로 위에 — 목록 상단에 두면 아래로 스크롤한 상태에서
+             * 버튼을 눌렀을 때 화면 밖에 있어 보이지 않는다
+             */}
+            {shortNotice && (
+              <Stack
+                direction="row"
+                spacing={1}
+                sx={{
+                  alignItems: 'flex-start',
+                  p: 1.5,
+                  mb: 1.5,
+                  borderRadius: 1,
+                  backgroundColor: colorChips.secondary[100],
+                }}
+              >
+                <InfoOutlinedIcon
+                  sx={{
+                    fontSize: 18,
+                    color: colorChips.secondary[700],
+                    mt: '1px',
+                  }}
+                />
+                <Typo
+                  token="text_r_14"
+                  color={colorChips.secondary[700]}
+                  sx={{ wordBreak: 'keep-all' }}
+                >
+                  {shortNotice}
+                </Typo>
+              </Stack>
+            )}
+            <Stack direction="row" sx={{ justifyContent: 'space-between' }}>
+              <CommonButton
+                label="이전"
+                buttonColor="tertiary"
+                onClick={() => moveToStep(step - 1)}
+                sx={{ visibility: step === 0 ? 'hidden' : 'visible' }}
+              />
+              {step < LAST_STEP ? (
+                <CommonButton
+                  label={
+                    step === 0 && selectedIds.length > 0
+                      ? `${selectedIds.length}권 선택 — 다음`
+                      : '다음'
+                  }
+                  onClick={goNext}
+                  disabled={nextDisabled}
+                />
+              ) : (
+                <CommonButton
+                  label="주문하기"
+                  onClick={handleSubmit}
+                  isLoading={createMutation.isPending}
+                />
+              )}
+            </Stack>
           </Stack>
         </>
       )}
