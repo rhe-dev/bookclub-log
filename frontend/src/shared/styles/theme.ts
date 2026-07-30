@@ -83,7 +83,20 @@ export const theme = createTheme({
       },
       styleOverrides: {
         // popper offset으로만 간격을 정하도록 툴팁 자체 여백은 제거
-        tooltip: { margin: '0 !important' },
+        tooltip: {
+          margin: '0 !important',
+          // 좁은 화면에서 툴팁이 화면을 크게 덮지 않도록 본문보다 작게
+          fontSize: 11,
+          lineHeight: 1.5,
+          maxWidth: 260,
+          '@media (max-width: 600px)': { fontSize: 10, maxWidth: 200 },
+        },
+      },
+    },
+    MuiMenu: {
+      // 항목이 많은 드롭다운(주문 상태 12종)이 화면을 넘지 않게
+      defaultProps: {
+        slotProps: { paper: { sx: { maxHeight: 320 } } },
       },
     },
   },
