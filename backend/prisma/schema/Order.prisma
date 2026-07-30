@@ -1,4 +1,4 @@
-/// 순방향 8단계 + 분기(취소·환불·재제작). 허용 전이는 서버(Service) 전이 맵에서 검증:
+/// 순방향 7단계 + 분기(취소·환불·재제작). 허용 전이는 서버(Service) 전이 맵에서 검증:
 ///   접수·확인 → 취소(주문자·관리자) / 배송완료 → 구매확정·환불요청·재제작요청(주문자)
 ///   환불요청 → 환불완료(관리자) / 재제작요청 → 문집제작 재진입(관리자 승인)
 ///   종결 상태: 구매확정·취소·환불완료
@@ -9,7 +9,6 @@ enum OrderStatus {
   IN_PRODUCTION
   PRODUCED
   SHIPPED
-  IN_TRANSIT
   DELIVERED
   PURCHASE_CONFIRMED
   CANCELED /// 제작 시작 전 취소
@@ -18,10 +17,11 @@ enum OrderStatus {
   REMAKE_REQUESTED /// 배송 후 하자 재제작 요청 → 승인 시 제작 재진입
 }
 
-/// 상태 전이의 주체 — 주문자(USER) / 운영자(ADMIN)
+/// 상태 전이의 주체 — 주문자(USER) / 운영자(ADMIN) / 제작처 웹훅(VENDOR, D-034)
 enum ActorType {
   USER
   ADMIN
+  VENDOR
 }
 
 /// 환불·재제작 요청 사유 — 주문제작 상품이라 하자 유형 위주, OTHER는 직접 입력(reasonDetail 필수)
@@ -35,15 +35,35 @@ enum OrderIssueReason {
 
 /// 문집(실물 책) 주문 — 모임의 책·토론을 묶어 제작. 상태 변경은 반드시 서버 전이 검증을 거친다
 model Order {
-  id        Int         @id @default(autoincrement())
-  publicId  String      @unique @default(cuid()) /// API 경로·응답용 식별자 (D-014)
-  clubId    Int
-  memberId  Int /// 주문자 — 구매 확정·취소·환불/재제작 요청 권한자
-  title     String /// 문집 제목
-  copies    Int /// 인쇄 부수
-  status    OrderStatus @default(RECEIVED)
-  createdAt DateTime    @default(now()) /// 주문일
-  statusChangedAt DateTime @default(now()) /// 마지막 상태 변경 시각 — 운영자 목록 정렬·표시용
+  id              Int         @id @default(autoincrement())
+  publicId        String      @unique @default(cuid()) /// API 경로·응답용 식별자 (D-014)
+  clubId          Int
+  memberId        Int /// 주문자 — 구매 확정·취소·환불/재제작 요청 권한자
+  title           String /// 문집 제목
+  copies          Int /// 인쇄 부수
+  status          OrderStatus @default(RECEIVED)
+  createdAt       DateTime    @default(now()) /// 주문일
+  statusChangedAt DateTime    @default(now()) /// 마지막 상태 변경 시각 — 운영자 목록 정렬·표시용
+
+  /// --- 제작 사양 (북프린트 판형 카탈로그, D-033) ---
+  /// 판형 식별자 — 벤더가 판형을 추가할 수 있어 enum이 아닌 문자열로 둔다 (검증은 카탈로그로)
+  bookSpecUid String
+  coverColor  String /// 문집 표지 색 (#RRGGBB) — 책 표지 컨벤션을 그대로 잇는다
+  coverEmoji  String /// 문집 표지 이모지
+  /// 주문 시점에 산출한 내지 쪽수 — 벤더에 사전 고지하는 값 (D-035)
+  pageCount   Int
+
+  /// --- 견적 스냅샷 (원) — 이후 단가가 바뀌어도 주문 당시 금액을 보존한다 ---
+  unitPrice     Int /// 1부 가격
+  productAmount Int /// 단가 × 부수
+  shippingFee   Int /// 배송비 (주문당 1회)
+
+  /// --- 북프린트 연동 (D-034) — 어드민에서만 노출 ---
+  vendorOrderUid  String?   @unique /// 발주 후 받은 벤더 주문번호
+  vendorStatus    String? /// 벤더 orderStatus 원본 (PAID·PDF_READY·…)
+  vendorStatusAt  DateTime? /// 벤더 상태 최종 갱신 시각
+  trackingCarrier String? /// 택배사 — 발송 웹훅으로 수신
+  trackingNumber  String? /// 송장번호
 
   club    Club                 @relation(fields: [clubId], references: [id])
   member  Member               @relation(fields: [memberId], references: [id])
