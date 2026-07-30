@@ -56,3 +56,9 @@
 - 결과: 실패 — 브라우저에서 `Cannot access 'ADMIN_ORDERS_PAGE_SIZE' before initialization`. `axiosClient → resetSession → adminFilterStore → adminApi → axiosClient` 순환이 생겨 TDZ에 걸렸다. 상수를 `shared/constants/adminOrders.ts`로 옮겨 해결
 - 배운 것: 그 스토어는 원래 같은 모듈에서 **타입만** 가져오고 있었다(`import type`은 컴파일 시 사라져 순환이 안 생긴다). 값 하나를 추가하는 순간 성격이 바뀌는데 **타입 체크도 lint도 이걸 잡지 못한다** — 통과했다고 안심하고 브라우저를 다시 열어보지 않은 것이 문제였다. 상수는 API 모듈이 아니라 의존성이 없는 상수 모듈에 두는 것이 순환을 구조적으로 막는 방법
 
+### [2026-07-31] Claude Code — 타입체크·lint를 통과했는데 프로덕션 빌드에서 터짐
+
+- 시도: 운영자 목록 필터를 URL 쿼리로 옮기며 세 페이지에 `useSearchParams()` 도입 (D-038). 매 작업마다 `tsc --noEmit`과 `eslint`로 검증
+- 결과: 실패 — 제출 전 프로덕션 빌드를 돌렸더니 `useSearchParams() should be wrapped in a suspense boundary`로 **빌드 자체가 중단**됐다. 도커 실행이 이 빌드를 쓰므로, 그대로 제출했다면 심사자 환경에서 앱이 뜨지 않았을 것. `/my`에는 이미 Suspense 래퍼를 두고 있었는데 어드민 페이지에는 같은 패턴을 적용하지 않은 누락
+- 배운 것: 이번 프로젝트에서 **타입체크·lint가 못 잡은 두 번째 사례**다(첫 번째는 값 임포트로 생긴 런타임 순환 참조). 둘 다 "정적 검사 통과 = 동작함"이 아니라는 걸 보여준다 — 프레임워크 규칙(App Router의 Suspense 요구)이나 모듈 초기화 순서는 타입 시스템 밖에 있다. 개발 중 빠른 피드백은 타입체크로 가되, **기능 단위가 끝날 때마다 프로덕션 빌드를 한 번 돌리는 체크포인트**가 필요했다. 특히 제출물이 프로덕션 빌드로 실행되는 과제라면 더더욱
+

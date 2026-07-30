@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
-import 'pretendard/dist/web/variable/pretendardvariable.css';
+// 단일 파일(2MB) 대신 유니코드 범위별 서브셋 — 화면에 실제로 쓰인 글자 범위만 내려받는다
+import 'pretendard/dist/web/variable/pretendardvariable-dynamic-subset.css';
 import { AppShell } from '@/shared/components/layout/AppShell';
 import { Providers } from './providers';
 

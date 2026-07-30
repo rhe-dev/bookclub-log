@@ -72,7 +72,9 @@ model Order {
   vendorEvents OrderVendorEvent[]
 
   @@index([memberId]) /// 마이페이지 '내 주문' 조회
+  @@index([createdAt]) /// 운영자 목록 기본 정렬(주문일)
   @@index([statusChangedAt]) /// 운영자 목록 변경일 정렬
+  @@index([clubId, status]) /// 운영자 목록 클럽·상태 필터
 }
 
 /// 문집에 수록된 책 (다대다) — position은 수록 순서
