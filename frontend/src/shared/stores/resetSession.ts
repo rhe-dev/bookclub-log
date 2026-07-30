@@ -13,7 +13,10 @@ const STORAGE_PREFIX = 'bookclub-';
  */
 export const resetSession = () => {
   useMemberStore.getState().logout();
-  useAdminFilterStore.getState().resetOrderFilters();
+  // 필터 자체는 URL에 있으니 여기서는 '최근 위치' 기억만 지운다
+  useAdminFilterStore.setState({
+    lastQuery: { orders: '', members: '', clubs: '' },
+  });
   useLoginModalStore.getState().close();
 
   // 스토어를 비운 뒤에 지운다 — 순서가 바뀌면 logout()의 저장이 키를 되살린다

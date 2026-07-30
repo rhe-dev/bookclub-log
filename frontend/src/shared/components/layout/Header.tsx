@@ -12,6 +12,7 @@ import { useMyClubsQuery } from '@/shared/api/clubApi';
 import { ClubRoleTag } from '@/shared/components/club/ClubRoleTag';
 import { CommonButton } from '@/shared/components/ui/CommonButton';
 import { ROUTES } from '@/shared/constants/routes';
+import { useAdminFilterStore } from '@/shared/stores/adminFilterStore';
 import { useSessionActions } from '@/shared/hooks/useSessionActions';
 import { useLoginModalStore } from '@/shared/stores/loginModalStore';
 import { useMemberStore } from '@/shared/stores/memberStore';
@@ -33,6 +34,22 @@ const MEMBER_NAV = [
   { label: '문집 만들기', href: ROUTES.orderNew, prefixes: [ROUTES.orderNew] },
 ];
 
+/** 목록 메뉴는 마지막으로 보던 필터를 쿼리로 달고 간다 */
+const useWithLastQuery = () => {
+  const lastQuery = useAdminFilterStore((s) => s.lastQuery);
+  return (href: string) => {
+    const query =
+      href === ROUTES.adminOrders
+        ? lastQuery.orders
+        : href === ROUTES.adminMembers
+          ? lastQuery.members
+          : href === ROUTES.adminClubs
+            ? lastQuery.clubs
+            : '';
+    return query ? `${href}?${query}` : href;
+  };
+};
+
 /** 운영자 GNB — 서비스 메뉴와 배타적으로 노출 (D-029) */
 const ADMIN_NAV = [
   {
@@ -44,6 +61,11 @@ const ADMIN_NAV = [
     label: '회원 관리',
     href: ROUTES.adminMembers,
     prefixes: [ROUTES.adminMembers],
+  },
+  {
+    label: '클럽 관리',
+    href: ROUTES.adminClubs,
+    prefixes: [ROUTES.adminClubs],
   },
 ];
 
@@ -59,6 +81,7 @@ export const Header = () => {
   const { goClub, logout } = useSessionActions();
   // 운영자가 처리해야 할 건수 — 메뉴에 배지로 노출
   const pendingCountQuery = useAdminPendingCountQuery(isAdmin);
+  const withLastQuery = useWithLastQuery();
   const openLoginModal = useLoginModalStore((s) => s.open);
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
   const router = useRouter();
@@ -158,7 +181,8 @@ export const Header = () => {
                   <Box
                     key={item.href}
                     component={Link}
-                    href={item.href}
+                    // 다른 메뉴에 갔다 돌아와도 보던 조건이 살아나게 — 필터는 URL에 있다
+                    href={withLastQuery(item.href)}
                     sx={{
                       px: { xs: 1, md: 1.25 },
                       py: 0.75,

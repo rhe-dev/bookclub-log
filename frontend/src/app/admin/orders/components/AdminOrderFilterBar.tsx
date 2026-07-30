@@ -19,7 +19,6 @@ import { CommonButton } from '@/shared/components/ui/CommonButton';
 import { Typo } from '@/shared/components/ui/Typo';
 import { ORDER_STATUS_LOG_LABEL } from '@/shared/constants/orderStatus';
 import { colorChips } from '@/shared/styles/colors';
-import type { AdminClub } from '@/shared/types/club';
 import type { OrderStatus } from '@/shared/types/order';
 
 // 드롭다운 배경이 인풋 라운드 밖으로 비치지 않게 입력 영역에만 흰 배경
@@ -30,7 +29,6 @@ const FIELD_SX = {
 
 interface AdminOrderFilterBarProps {
   filters: AdminOrderFilters;
-  clubs?: AdminClub[];
   onChange: (next: AdminOrderFilters) => void;
   onReset: () => void;
   /** 한 페이지에 볼 건수 */
@@ -38,10 +36,14 @@ interface AdminOrderFilterBarProps {
   onPageSizeChange: (limit: number) => void;
 }
 
-/** 주문 관리 필터 — 상태·클럽·기간·검색·정렬 + 처리 대기 토글 */
+/**
+ * 주문 관리 필터.
+ *
+ * 윗줄은 '어느 범위를 볼지'(기간·정렬·표시 건수), 아랫줄은 '무엇을 찾을지'(검색·상태·처리 대기)로
+ * 나눈다. 클럽은 드롭다운 대신 검색으로 — 클럽이 늘어날수록 드롭다운은 감당이 안 된다.
+ */
 export const AdminOrderFilterBar = ({
   filters,
-  clubs,
   onChange,
   onReset,
   pageSize,
@@ -60,6 +62,7 @@ export const AdminOrderFilterBar = ({
 
   return (
     <Stack spacing={1.5}>
+      {/* 어느 범위를 볼지 — 기간·정렬·표시 건수 */}
       <Stack
         direction="row"
         sx={{
@@ -69,6 +72,90 @@ export const AdminOrderFilterBar = ({
           justifyContent: 'flex-start',
         }}
       >
+        <TextField
+          size="small"
+          type="date"
+          label="주문일 시작"
+          value={filters.from ?? ''}
+          onChange={(e) => update({ from: e.target.value || undefined })}
+          slotProps={{ inputLabel: { shrink: true } }}
+          sx={FIELD_SX}
+        />
+        <TextField
+          size="small"
+          type="date"
+          label="주문일 종료"
+          value={filters.to ?? ''}
+          onChange={(e) => update({ to: e.target.value || undefined })}
+          slotProps={{ inputLabel: { shrink: true } }}
+          sx={FIELD_SX}
+        />
+        <TextField
+          select
+          size="small"
+          label="정렬"
+          value={filters.sort ?? 'latest'}
+          onChange={(e) =>
+            update({ sort: e.target.value as AdminOrderFilters['sort'] })
+          }
+          sx={{ ...FIELD_SX, minWidth: 150 }}
+        >
+          <MenuItem value="latest">주문일 최신순</MenuItem>
+          <MenuItem value="oldest">주문일 오래된순</MenuItem>
+          <MenuItem value="changed_latest">변경일 최신순</MenuItem>
+          <MenuItem value="changed_oldest">변경일 오래된순</MenuItem>
+        </TextField>
+        <TextField
+          select
+          size="small"
+          label="표시 건수"
+          value={pageSize}
+          onChange={(e) => onPageSizeChange(Number(e.target.value))}
+          sx={{ ...FIELD_SX, minWidth: 120 }}
+        >
+          {ADMIN_PAGE_SIZE_OPTIONS.map((size) => (
+            <MenuItem key={size} value={size}>
+              {size}건씩
+            </MenuItem>
+          ))}
+        </TextField>
+      </Stack>
+
+      {/* 무엇을 찾을지 — 검색·상태·처리 대기 */}
+      <Stack
+        direction="row"
+        sx={{
+          flexWrap: 'wrap',
+          gap: 1,
+          alignItems: 'center',
+          justifyContent: 'flex-start',
+        }}
+      >
+        <TextField
+          size="small"
+          placeholder="문집 제목·주문자·주문번호·클럽명"
+          value={keyword}
+          onChange={(e) => setKeyword(e.target.value)}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter') update({ q: keyword });
+          }}
+          onBlur={() => {
+            if (keyword !== (filters.q ?? '')) update({ q: keyword });
+          }}
+          slotProps={{
+            input: {
+              startAdornment: (
+                <InputAdornment position="start">
+                  <SearchRoundedIcon
+                    sx={{ fontSize: 18, color: colorChips.grayScale[400] }}
+                  />
+                </InputAdornment>
+              ),
+            },
+          }}
+          // 플레이스홀더가 다 보일 만큼만 — 남는 폭을 다 먹으면 줄바꿈이 요동친다
+          sx={{ ...FIELD_SX, width: 320 }}
+        />
         <TextField
           select
           size="small"
@@ -94,109 +181,6 @@ export const AdminOrderFilterBar = ({
           ))}
         </TextField>
 
-        <TextField
-          select
-          size="small"
-          label="클럽"
-          value={filters.clubId ?? 'ALL'}
-          onChange={(e) =>
-            update({
-              clubId: e.target.value === 'ALL' ? undefined : e.target.value,
-            })
-          }
-          sx={FIELD_SX}
-        >
-          <MenuItem value="ALL">전체 클럽</MenuItem>
-          {clubs?.map((club) => (
-            <MenuItem key={club.publicId} value={club.publicId}>
-              {club.name}
-            </MenuItem>
-          ))}
-        </TextField>
-
-        <TextField
-          select
-          size="small"
-          label="정렬"
-          value={filters.sort ?? 'latest'}
-          onChange={(e) =>
-            update({ sort: e.target.value as AdminOrderFilters['sort'] })
-          }
-          sx={{ ...FIELD_SX, minWidth: 150 }}
-        >
-          <MenuItem value="latest">주문일 최신순</MenuItem>
-          <MenuItem value="oldest">주문일 오래된순</MenuItem>
-          <MenuItem value="changed_latest">변경일 최신순</MenuItem>
-          <MenuItem value="changed_oldest">변경일 오래된순</MenuItem>
-        </TextField>
-
-        <TextField
-          size="small"
-          placeholder="문집 제목·주문자·주문번호"
-          value={keyword}
-          onChange={(e) => setKeyword(e.target.value)}
-          onKeyDown={(e) => {
-            if (e.key === 'Enter') update({ q: keyword });
-          }}
-          onBlur={() => {
-            if (keyword !== (filters.q ?? '')) update({ q: keyword });
-          }}
-          slotProps={{
-            input: {
-              startAdornment: (
-                <InputAdornment position="start">
-                  <SearchRoundedIcon
-                    sx={{ fontSize: 18, color: colorChips.grayScale[400] }}
-                  />
-                </InputAdornment>
-              ),
-            },
-          }}
-          sx={{ ...FIELD_SX, minWidth: 240 }}
-        />
-      </Stack>
-
-      <Stack
-        direction="row"
-        sx={{
-          flexWrap: 'wrap',
-          gap: 1,
-          alignItems: 'center',
-          justifyContent: 'flex-start',
-        }}
-      >
-        <TextField
-          select
-          size="small"
-          label="표시 건수"
-          value={pageSize}
-          onChange={(e) => onPageSizeChange(Number(e.target.value))}
-          sx={{ ...FIELD_SX, minWidth: 120 }}
-        >
-          {ADMIN_PAGE_SIZE_OPTIONS.map((size) => (
-            <MenuItem key={size} value={size}>
-              {size}건씩
-            </MenuItem>
-          ))}
-        </TextField>
-        <TextField
-          size="small"
-          type="date"
-          label="주문일 시작"
-          value={filters.from ?? ''}
-          onChange={(e) => update({ from: e.target.value || undefined })}
-          slotProps={{ inputLabel: { shrink: true } }}
-          sx={FIELD_SX}
-        />
-        <TextField
-          size="small"
-          type="date"
-          label="주문일 종료"
-          value={filters.to ?? ''}
-          onChange={(e) => update({ to: e.target.value || undefined })}
-          slotProps={{ inputLabel: { shrink: true } }}
-          sx={FIELD_SX}
-        />
         {/* 운영자의 '오늘 할 일' — 신규 접수·환불/재제작 요청만 */}
         <Stack direction="row" spacing={0.25} sx={{ alignItems: 'center' }}>
           <FormControlLabel
@@ -226,6 +210,7 @@ export const AdminOrderFilterBar = ({
             </IconButton>
           </Tooltip>
         </Stack>
+
         <CommonButton
           label="필터 초기화"
           size="small"
