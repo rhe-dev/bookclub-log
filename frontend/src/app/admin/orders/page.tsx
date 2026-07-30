@@ -2,7 +2,7 @@
 
 // 운영자 주문 관리 — 목록·필터(상태/클럽/검색/정렬)·상세(이력·사유)·단계 진행·CSV (PLAN 화면 6, D-029)
 import DownloadRoundedIcon from '@mui/icons-material/DownloadRounded';
-import { Skeleton, Stack, Tooltip } from '@mui/material';
+import { Chip, Skeleton, Stack, Tooltip } from '@mui/material';
 import {
   buildAdminOrdersCsvUrl,
   useAdminClubsQuery,
@@ -15,27 +15,29 @@ import { CommonPagination } from '@/shared/components/ui/CommonPagination';
 import { ErrorView } from '@/shared/components/ui/ErrorView';
 import { Typo } from '@/shared/components/ui/Typo';
 import { VerticalGap } from '@/shared/components/ui/VerticalGap';
+import { ROUTES } from '@/shared/constants/routes';
 import { useRequireAdmin } from '@/shared/hooks/useRequireAdmin';
-import { useAdminFilterStore } from '@/shared/stores/adminFilterStore';
 import { colorChips } from '@/shared/styles/colors';
+import { useRouter } from 'next/navigation';
 import { useState } from 'react';
+import { useAdminOrderParams } from '../adminListParams';
 import { AdminBulkActionBar } from './components/AdminBulkActionBar';
-import { AdminOrderDetailModal } from './components/AdminOrderDetailModal';
 import { AdminOrderFilterBar } from './components/AdminOrderFilterBar';
 import { AdminOrderTable } from './components/AdminOrderTable';
 
 export default function AdminOrdersPage() {
   const isAdmin = useRequireAdmin();
-  // 필터·페이지는 화면 밖(스토어)에 둬서 다른 메뉴에 갔다 와도 유지된다
-  const filters = useAdminFilterStore((s) => s.orderFilters);
-  const page = useAdminFilterStore((s) => s.orderPage);
-  const setFilters = useAdminFilterStore((s) => s.setOrderFilters);
-  const setPage = useAdminFilterStore((s) => s.setOrderPage);
-  const pageSize = useAdminFilterStore((s) => s.orderPageSize);
-  const setPageSize = useAdminFilterStore((s) => s.setOrderPageSize);
-  const resetFilters = useAdminFilterStore((s) => s.resetOrderFilters);
-  // 상세는 id로만 들고 있는다 — 목록이 갱신되면 모달 내용도 함께 최신이 되도록
-  const [selectedId, setSelectedId] = useState<string | null>(null);
+  const router = useRouter();
+  // 필터는 URL 쿼리가 단일 소스 — 조합을 링크로 공유할 수 있어야 한다
+  const {
+    filters,
+    page,
+    limit: pageSize,
+    setFilters,
+    setPage,
+    setLimit: setPageSize,
+    reset: resetFilters,
+  } = useAdminOrderParams();
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
 
   const ordersQuery = useAdminOrdersQuery(page, pageSize, filters);
@@ -45,8 +47,9 @@ export default function AdminOrdersPage() {
 
   const orders = ordersQuery.data?.items ?? [];
   const totalCount = ordersQuery.data?.meta.totalCount ?? 0;
-  const selected =
-    orders.find((order) => order.publicId === selectedId) ?? null;
+  const activeClub = clubsQuery.data?.find(
+    (club) => club.publicId === filters.clubId,
+  );
   const selectedOrders = orders.filter((order) =>
     selectedIds.includes(order.publicId),
   );
@@ -127,12 +130,24 @@ export default function AdminOrdersPage() {
 
       <AdminOrderFilterBar
         filters={filters}
-        clubs={clubsQuery.data}
         onChange={setFilters}
         onReset={resetFilters}
         pageSize={pageSize}
         onPageSizeChange={setPageSize}
       />
+
+      {/* 클럽 상세에서 넘어온 좁히기 — 지우면 전체 주문으로 돌아간다 */}
+      {filters.clubId && (
+        <>
+          <VerticalGap size={12} />
+          <Chip
+            label={`클럽 · ${activeClub?.name ?? filters.clubId}`}
+            onDelete={() => setFilters({ ...filters, clubId: undefined })}
+            size="small"
+            sx={{ alignSelf: 'flex-start' }}
+          />
+        </>
+      )}
 
       <VerticalGap size={16} />
 
@@ -164,7 +179,9 @@ export default function AdminOrdersPage() {
             selectedIds={selectedIds}
             onToggleSelect={toggleSelect}
             onToggleSelectAll={toggleSelectAll}
-            onSelect={(order) => setSelectedId(order.publicId)}
+            onSelect={(order) =>
+              router.push(ROUTES.adminOrderDetail(order.publicId))
+            }
           />
         </>
       )}
@@ -174,11 +191,6 @@ export default function AdminOrdersPage() {
         totalCount={totalCount}
         pageSize={pageSize}
         onChange={setPage}
-      />
-
-      <AdminOrderDetailModal
-        order={selected}
-        onClose={() => setSelectedId(null)}
       />
     </CommonContainer>
   );
