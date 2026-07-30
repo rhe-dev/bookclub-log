@@ -2,7 +2,14 @@
 
 // 문집 만들기 — 책 선택 → 수록 확인(분량) → 판형·표지 → 부수·확인 (PLAN F3, 화면 4)
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
-import { Stack, Step, StepButton, StepLabel, Stepper } from '@mui/material';
+import {
+  Skeleton,
+  Stack,
+  Step,
+  StepButton,
+  StepLabel,
+  Stepper,
+} from '@mui/material';
 import { useRouter } from 'next/navigation';
 import { useRef, useState } from 'react';
 import { useBooksQuery } from '@/shared/api/bookApi';
@@ -64,7 +71,11 @@ export default function OrderNewPage() {
   const [completedOrder, setCompletedOrder] = useState<Order | null>(null);
 
   // 분량·판형별 가능 여부·1부 단가·수령일은 서버가 계산한다 — 화면은 결과만 쓴다 (D-035)
-  const estimateQuery = useOrderEstimateQuery(club?.publicId, selectedIds);
+  const estimateQuery = useOrderEstimateQuery(
+    club?.publicId,
+    selectedIds,
+    step > 0,
+  );
   const estimate = estimateQuery.data;
 
   if (!session || !club) return null;
@@ -204,6 +215,8 @@ export default function OrderNewPage() {
         onSuccess: (order) => {
           toast.success('문집 주문이 접수됐어요.');
           setCompletedOrder(order);
+          // 완료 화면은 처음부터 보여준다 — 4단계 하단에서 눌렀으므로 스크롤이 내려가 있다
+          requestAnimationFrame(() => window.scrollTo({ top: 0 }));
         },
       },
     );
@@ -277,7 +290,14 @@ export default function OrderNewPage() {
             />
           ) : null}
 
-          {step === 1 && !estimateQuery.isError && (
+          {step > 0 && !estimate && !estimateQuery.isError && (
+            <Stack spacing={1.5}>
+              <Skeleton variant="rounded" height={64} />
+              <Skeleton variant="rounded" height={220} />
+            </Stack>
+          )}
+
+          {step === 1 && estimate && !estimateQuery.isError && (
             <ReviewStep
               books={selectedBooks}
               onMove={moveSelected}

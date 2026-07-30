@@ -73,20 +73,24 @@ export const useMyOrdersQuery = (memberPublicId?: string, page = 1) =>
  *
  * 쪽수 산출과 판형 규칙은 서버에만 두고, 화면은 결과만 받아 쓴다.
  *
- * **자동으로 부르지 않는다**(`enabled: false`). 책을 고를 때마다 요청이 나가면 선택 한 번에
- * 한 번씩 서버를 부르게 된다. 수록 책이 확정되는 시점('다음' 클릭)에 `refetch()`로 한 번만
- * 부르고, 이후 단계는 그 결과를 그대로 쓴다. 부수는 금액에만 비례하므로 요청에 넣지 않고
+ * 책 선택 단계에서는 자동 호출을 끈다. 고를 때마다 요청이 나가면 선택 한 번에 한 번씩
+ * 서버를 부르게 된다. 수록 책이 확정되는 시점('다음' 클릭)에 `refetch()`로 한 번 부르고,
+ * 이후 단계에서는 캐시를 쓰되 비어 있으면 자동으로 다시 받아온다. 부수는 금액에만 비례하므로 요청에 넣지 않고
  * 화면에서 곱한다 — 입력 도중의 값(예: 1555)으로 요청이 나가는 일도 없어진다.
  */
 export const useOrderEstimateQuery = (
   clubPublicId: string | undefined,
   bookIds: string[],
+  /** 책 선택 단계에서는 꺼 둔다 — 고를 때마다 요청이 나가지 않게 */
+  enabled: boolean,
 ) =>
   useQuery({
     queryKey: queryKeys.orderEstimate(clubPublicId ?? '', bookIds),
     queryFn: () => orderApi.estimate(clubPublicId as string, bookIds),
-    enabled: false,
-    // 수록 책이 그대로면 단계를 오갈 때 다시 부르지 않는다
+    enabled: enabled && Boolean(clubPublicId) && bookIds.length > 0,
+    // 수록 책이 그대로면 단계를 오갈 때 다시 부르지 않는다.
+    // 다만 캐시가 비워지면(앱을 한참 벗어났다 돌아오는 등) 자동으로 다시 받아온다 —
+    // 그렇지 않으면 판형·표지 단계가 빈 화면이 된다.
     staleTime: Infinity,
   });
 
