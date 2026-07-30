@@ -28,6 +28,7 @@ import { colorChips } from '@/shared/styles/colors';
 import { cardSurface } from '@/shared/styles/mixins';
 import type { Order } from '@/shared/types/order';
 import { formatDate } from '@/shared/utils/date';
+import { describeDelivery } from '@/shared/utils/orderDelivery';
 import { ACTIONS_BY_STATUS, type OrderAction } from './orderActions';
 import { OrderActionModal } from './OrderActionModal';
 
@@ -40,6 +41,7 @@ export const OrderCard = ({ order }: { order: Order }) => {
   const stepIndex = getOrderStepIndex(order.status);
   const chip = ORDER_STATUS_CHIP[order.status];
   const actions = ACTIONS_BY_STATUS[order.status] ?? [];
+  const deliveryNote = describeDelivery(order);
 
   return (
     <Box sx={{ ...cardSurface, minWidth: 300 }}>
@@ -52,9 +54,13 @@ export const OrderCard = ({ order }: { order: Order }) => {
           gap: 1,
         }}
       >
-        {/* 클럽명은 강조 없이 메타로만 — 카드마다 색 태그가 늘어나 산만해지는 것 방지 */}
+        {/*
+         * 주문번호가 먼저 — 고객센터 문의·조회의 기준이라 카드에서 가장 먼저 찾는 값이다.
+         * 클럽명은 강조 없이 메타로만 (카드마다 색 태그가 늘어나 산만해지는 것 방지)
+         */}
         <Typo token="text_r_12" color={colorChips.grayScale[500]}>
-          {formatDate(order.createdAt)} 주문 · {order.club.name}
+          {order.publicId} · {formatDate(order.createdAt)} 주문 ·{' '}
+          {order.club.name}
         </Typo>
         <Box
           sx={{
@@ -62,6 +68,7 @@ export const OrderCard = ({ order }: { order: Order }) => {
             py: 0.25,
             borderRadius: 1,
             backgroundColor: chip.bg,
+            border: chip.border ? `1px solid ${chip.border}` : 'none',
           }}
         >
           <Typo
@@ -86,11 +93,6 @@ export const OrderCard = ({ order }: { order: Order }) => {
           {order.copies}부
         </Typo>
       </Stack>
-      <VerticalGap size={2} />
-      {/* 주문번호 — 고객센터 문의 시 참조 */}
-      <Typo token="text_r_12" color={colorChips.grayScale[400]}>
-        주문번호 {order.publicId}
-      </Typo>
       <VerticalGap size={12} />
       <Stack direction="row" spacing={1} sx={{ alignItems: 'center' }}>
         <Stack direction="row" spacing={0.5}>
@@ -110,6 +112,31 @@ export const OrderCard = ({ order }: { order: Order }) => {
           {order.books.length > 1 ? ` 외 ${order.books.length - 1}권` : ''} 수록
         </Typo>
       </Stack>
+
+      <VerticalGap size={8} />
+      {/* 제작 사양과 금액 — 어떤 책으로 만들어지는지 (D-033) */}
+      <Typo token="text_r_12" color={colorChips.grayScale[600]}>
+        {order.bookSpec.name} · {order.pageCount}쪽 ·{' '}
+        {order.totalAmount.toLocaleString()}원
+      </Typo>
+
+      {order.trackingNumber && (
+        <>
+          <VerticalGap size={4} />
+          <Typo token="text_r_12" color={colorChips.grayScale[600]}>
+            {order.trackingCarrier} {order.trackingNumber}
+          </Typo>
+        </>
+      )}
+
+      {deliveryNote && (
+        <>
+          <VerticalGap size={4} />
+          <Typo token="text_m_12" color={colorChips.primary[700]}>
+            {deliveryNote}
+          </Typo>
+        </>
+      )}
 
       {stepIndex !== null && (
         <>

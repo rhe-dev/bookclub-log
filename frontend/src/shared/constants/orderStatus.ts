@@ -63,36 +63,52 @@ export const getOrderStepIndex = (status: OrderStatus): number | null =>
 const PROGRESS_CHIP = {
   bg: colorChips.primary[100],
   text: colorChips.primary[700],
+  border: colorChips.primary[700],
+} as const;
+
+/**
+ * 배송 완료는 진행 중과 성격이 다르다 — 물건은 도착했고 이제 주문자가
+ * 구매 확정·환불·재제작 중 하나를 고르는 분기점이라 별도 색으로 구분한다.
+ */
+const DELIVERED_CHIP = {
+  bg: colorChips.primary[300],
+  text: colorChips.basic.white,
+  border: colorChips.primary[700],
 } as const;
 
 export const ORDER_STATUS_CHIP: Record<
   OrderStatus,
-  { bg: string; text: string }
+  { bg: string; text: string; border?: string }
 > = {
   RECEIVED: PROGRESS_CHIP,
   CONFIRMED: PROGRESS_CHIP,
   IN_PRODUCTION: PROGRESS_CHIP,
   PRODUCED: PROGRESS_CHIP,
   SHIPPED: PROGRESS_CHIP,
-  DELIVERED: PROGRESS_CHIP,
+  DELIVERED: DELIVERED_CHIP,
   PURCHASE_CONFIRMED: {
     bg: colorChips.system.successBg,
     text: colorChips.system.success,
+    border: colorChips.system.success,
   },
   CANCELED: {
-    bg: colorChips.grayScale[200],
-    text: colorChips.grayScale[600],
+    bg: colorChips.grayScale[500],
+    text: colorChips.grayScale[100],
+    border: colorChips.grayScale[700],
   },
   REFUND_REQUESTED: {
     bg: colorChips.secondary[100],
     text: colorChips.secondary[700],
+    border: colorChips.secondary[700],
   },
   REFUNDED: {
     bg: colorChips.secondary[100],
     text: colorChips.secondary[700],
+    border: colorChips.secondary[700],
   },
   REMAKE_REQUESTED: {
     bg: colorChips.secondary[100],
     text: colorChips.secondary[700],
+    border: colorChips.secondary[700],
   },
 };
