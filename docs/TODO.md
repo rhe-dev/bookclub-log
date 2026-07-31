@@ -95,9 +95,11 @@
 
 ## 제출물
 
-- [ ] README.md (안내문 §README 가이드 7개 섹션 전부)
+- [ ] README.md (안내문 §README 가이드 7개 섹션 전부) — **`BACKEND_PORT` 변경 시 `--build` 필요** 반드시 포함
 - [ ] 주요 화면 스크린샷
-- [ ] 클린 클론 → docker-compose up 테스트 (다른 폴더에 새로 clone해서)
+- [x] 클린 클론 → docker compose up --build 테스트 (다른 폴더에 새로 clone해서) — 통과, 발견 사항은 HISTORY 참고
+- [x] QA.md 갱신 + §F 회귀 스크립트(`scripts/regression-api.sh`) 37항목 통과
+- [ ] QA.md A~E 화면 항목 실측 (브라우저·모바일)
 - [ ] 구글폼 4문항 + 레포 URL 제출
 
 ## 아이디어 (보류 — 구현하지 않음)
