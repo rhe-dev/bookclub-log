@@ -73,7 +73,15 @@ export class GlobalExceptionFilter implements ExceptionFilter {
           ? message
           : [message ?? exception.message];
       }
-      errors = rawMessages.map((raw) => toErrorItem(raw, statusCode));
+      /*
+       * 한 필드에 검증기가 여러 개 걸리면 같은 코드가 중복으로 온다
+       * (page=abc → @IsInt·@Min 둘 다 PAGE_INVALID). 원문 기준으로 접어
+       * 같은 안내가 두 번 나가지 않게 한다 — UNKNOWN_FIELD|page 와
+       * UNKNOWN_FIELD|limit 처럼 상세가 다른 건은 원문이 달라 그대로 남는다.
+       */
+      errors = [...new Set(rawMessages)].map((raw) =>
+        toErrorItem(raw, statusCode),
+      );
     }
 
     // 서버 오류는 원인 추적을 위해 항상 로깅 (HttpException 여부가 아니라 상태 코드 기준)
