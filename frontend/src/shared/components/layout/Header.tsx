@@ -1,8 +1,8 @@
 'use client';
 
-import CheckRoundedIcon from '@mui/icons-material/CheckRounded';
 import KeyboardArrowDownRoundedIcon from '@mui/icons-material/KeyboardArrowDownRounded';
-import { Box, ButtonBase, Divider, Menu, MenuItem, Stack } from '@mui/material';
+import { Box, ButtonBase, Stack } from '@mui/material';
+import dynamic from 'next/dynamic';
 import Image from 'next/image';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
@@ -23,7 +23,22 @@ import type { MyClub } from '@/shared/types/club';
 import { MemberAvatar } from '../ui/MemberAvatar';
 import { Typo } from '../ui/Typo';
 import { CommonContainer } from './CommonContainer';
-import { LoginModal } from './LoginModal';
+
+/**
+ * 로그인 모달은 비로그인일 때만 열 수 있다 — 헤더 로그인 버튼과 랜딩 CTA 둘 다 그 조건에서만 뜬다.
+ * 정적으로 두면 모달이 끌고 오는 Dialog·Tabs·Skeleton과 계정 목록 쿼리가
+ * 전 라우트 공용 청크에 실려, 이미 로그인한 사람도 매 페이지에서 받게 된다.
+ */
+const LoginModal = dynamic(
+  () => import('./LoginModal').then((m) => m.LoginModal),
+  { ssr: false },
+);
+
+/** 아바타를 눌러야 열리는 팝업 — 같은 이유로 지연 로딩 (Popover·Modal·List를 끌고 온다) */
+const HeaderMemberMenu = dynamic(
+  () => import('./HeaderMemberMenu').then((m) => m.HeaderMemberMenu),
+  { ssr: false },
+);
 
 /** 로그인 후 사용 가능한 서비스가 GNB 메뉴 — 현재 위치는 활성 스타일로 표시 */
 const MEMBER_NAV = [
@@ -92,6 +107,8 @@ export const Header = () => {
   const canMakeAnthology = (doneBooksQuery.data?.items.length ?? 0) > 0;
   const openLoginModal = useLoginModalStore((s) => s.open);
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
+  // 한 번 연 뒤에는 계속 마운트해 둔다 — 언마운트하면 닫힘 애니메이션이 잘린다
+  const [isMenuMounted, setIsMenuMounted] = useState(false);
   const router = useRouter();
   const pathname = usePathname();
   const myClubsQuery = useMyClubsQuery(member?.publicId);
@@ -110,6 +127,14 @@ export const Header = () => {
     setAnchorEl(null);
     goClub(target);
   };
+
+  const handleOpenMenu = (event: React.MouseEvent<HTMLElement>) => {
+    setIsMenuMounted(true);
+    setAnchorEl(event.currentTarget);
+  };
+
+  /** 커서를 올리거나 포커스가 닿는 순간 청크를 미리 받아, 클릭할 때는 바로 열리게 한다 */
+  const prefetchMenu = () => void import('./HeaderMemberMenu');
 
   return (
     <Box
@@ -269,7 +294,9 @@ export const Header = () => {
         ) : member ? (
           <>
             <ButtonBase
-              onClick={(e) => setAnchorEl(e.currentTarget)}
+              onClick={handleOpenMenu}
+              onMouseEnter={prefetchMenu}
+              onFocus={prefetchMenu}
               aria-label="멤버 메뉴 열기"
               sx={{
                 display: 'flex',
@@ -303,56 +330,18 @@ export const Header = () => {
                 sx={{ fontSize: 18, color: colorChips.grayScale[500] }}
               />
             </ButtonBase>
-            <Menu
-              anchorEl={anchorEl}
-              open={Boolean(anchorEl)}
-              onClose={() => setAnchorEl(null)}
-              anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
-              transformOrigin={{ vertical: 'top', horizontal: 'right' }}
-            >
-              {/* 이름은 GNB에 없는 모바일에서만 — 역할은 클럽별로 다르므로 내 클럽 목록에서 확인 */}
-              <Box sx={{ px: 2, py: 1, display: { xs: 'block', sm: 'none' } }}>
-                <Typo token="text_sb_14" color={colorChips.grayScale[800]}>
-                  {member.name}
-                </Typo>
-              </Box>
-              <Divider sx={{ display: { xs: 'block', sm: 'none' } }} />
-              <Box sx={{ px: 2, pt: 1, pb: 0.5 }}>
-                <Typo token="text_m_12" color={colorChips.grayScale[500]}>
-                  내 클럽
-                </Typo>
-              </Box>
-              {myClubsQuery.data?.map((c) => {
-                const isCurrent = c.publicId === club?.publicId;
-                return (
-                  <MenuItem
-                    key={c.publicId}
-                    onClick={() => handleSelectClub(c)}
-                    sx={{ gap: 1, justifyContent: 'space-between' }}
-                  >
-                    <Box
-                      sx={{ display: 'flex', alignItems: 'center', gap: 0.75 }}
-                    >
-                      <Typo
-                        token={isCurrent ? 'text_sb_14' : 'text_r_14'}
-                        color={colorChips.grayScale[800]}
-                      >
-                        {c.name}
-                      </Typo>
-                      <ClubRoleTag role={c.myRole} />
-                    </Box>
-                    {isCurrent && (
-                      <CheckRoundedIcon
-                        sx={{ fontSize: 16, color: colorChips.primary[500] }}
-                      />
-                    )}
-                  </MenuItem>
-                );
-              })}
-              <Divider />
-              <MenuItem onClick={handleGoMyPage}>마이페이지</MenuItem>
-              <MenuItem onClick={handleLogout}>로그아웃</MenuItem>
-            </Menu>
+            {isMenuMounted && (
+              <HeaderMemberMenu
+                anchorEl={anchorEl}
+                onClose={() => setAnchorEl(null)}
+                memberName={member.name}
+                myClubs={myClubsQuery.data}
+                currentClubId={club?.publicId}
+                onSelectClub={handleSelectClub}
+                onGoMyPage={handleGoMyPage}
+                onLogout={handleLogout}
+              />
+            )}
           </>
         ) : (
           <CommonButton
@@ -363,7 +352,7 @@ export const Header = () => {
           />
         )}
       </CommonContainer>
-      <LoginModal />
+      {!member && !isAdmin && <LoginModal />}
     </Box>
   );
 };
