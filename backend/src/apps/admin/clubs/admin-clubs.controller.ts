@@ -13,7 +13,10 @@ import { AdminNoteResponse } from '../members/dto/admin-member.response';
 export class AdminClubsController {
   constructor(private readonly adminClubsService: AdminClubsService) {}
 
-  /** 페이지네이션 예외 — 필터 드롭다운에 전부 보여야 하는 유한 목록 (D-026) */
+  /**
+   * 페이지네이션 예외 (D-026) — 클럽은 서비스 전체를 통틀어 몇 개 수준의 유한 목록이라
+   * 한 화면에 전부 보여주는 편이 운영자가 파악하기 쉽다. 늘어나면 페이지네이션으로 바꾼다.
+   */
   @Get()
   findAll(@Query() query: AdminClubsQuery): Promise<AdminClubResponse[]> {
     return this.adminClubsService.findAll(query);
