@@ -69,7 +69,22 @@ export const theme = createTheme({
            */
           scrollbarGutter: 'stable',
         },
-        body: { overscrollBehavior: 'none' },
+        body: {
+          overscrollBehavior: 'none',
+          /*
+           * MUI Modal(메뉴·팝오버·다이얼로그)은 열릴 때 body에 overflow:hidden과 함께
+           * 스크롤바 너비만큼 padding-right를 인라인으로 넣는다 — 스크롤바가 사라지며
+           * 콘텐츠가 넓어지는 것을 막으려는 보정이다.
+           * 하지만 위에서 scrollbar-gutter로 그 자리를 이미 붙박이로 비워 뒀으므로
+           * 폭이 변하지 않는다. 보정이 이중으로 들어가 화면이 왼쪽으로 밀리고
+           * 오른쪽에 빈 띠가 생겼다.
+           * gutter를 지원하지 않는 환경(구형 사파리)에서는 MUI의 보정이 여전히 필요하므로
+           * @supports로 막아 둔다. 인라인 스타일을 이기려면 !important가 필요하다.
+           */
+          '@supports (scrollbar-gutter: stable)': {
+            paddingRight: '0 !important',
+          },
+        },
       },
     },
     MuiButton: {

@@ -4,6 +4,7 @@
 
 ## 2026-07-29
 
+- 모달·드롭다운 열 때 화면이 왼쪽으로 밀리던 것 수정: `scrollbar-gutter: stable`로 스크롤바 자리를 붙박이로 잡아 뒀는데 MUI Modal이 열리며 같은 폭만큼 body padding을 또 넣어 이중 보정이 됐다. gutter를 지원하는 환경에서만 그 패딩을 무력화(`@supports` + `!important`) — 구형 사파리에서는 MUI 보정이 그대로 필요하다.
 - 클린 클론 도커 테스트 통과: 새 클론에서 `docker compose up --build` 한 번으로 3컨테이너 기동, 마이그레이션 11개·시드 정상, 재시작 시 시드 멱등. gzip·immutable 캐시 확인. **발견 — `BACKEND_PORT` 변경은 `--build`가 필요**(`NEXT_PUBLIC_API_URL`이 프론트 이미지에 빌드 타임에 박힘): README 필수 기재.
 - QA.md 갱신 + 회귀 스크립트 신설: 북프린트 연동·회원/클럽 관리·URL 필터·지연 로딩 등 최근 작업이 빠져 있고 '만들기 3단계'·'모바일 카드 전환' 같은 낡은 항목이 남아 있어 전면 개정. §F(도커 후 API 시나리오)를 `scripts/regression-api.sh`로 실행 가능하게 만들고 37항목 전부 통과 확인.
 - 에러 계약 다듬기: 한 필드에 검증기가 여러 개 걸릴 때 같은 코드가 중복 응답되던 것(page=abc → PAGE_INVALID 2회)을 원문 기준으로 접음. 상세가 다른 UNKNOWN_FIELD는 그대로 유지.
