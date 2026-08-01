@@ -64,11 +64,20 @@ const commentApi = {
   },
 };
 
+/**
+ * 토론 스레드 조회.
+ *
+ * 여기만 창 포커스 복귀 시 재조회를 켠다(전역 기본값은 off). 코멘트는 실시간 대화가
+ * 아니라 각자 속도로 남기는 기록이라 실시간 연결까지는 필요 없지만(D-045),
+ * 탭을 옮겼다 돌아왔을 때 남의 새 코멘트가 안 보이는 것은 어색하다.
+ * 목록·통계처럼 자주 안 바뀌는 화면까지 같이 켤 이유는 없어 쿼리 단위로 둔다.
+ */
 export const useCommentsQuery = (bookPublicId?: string) =>
   useQuery({
     queryKey: queryKeys.comments(bookPublicId ?? ''),
     queryFn: () => commentApi.getComments(bookPublicId as string),
     enabled: Boolean(bookPublicId),
+    refetchOnWindowFocus: true,
   });
 
 /** 코멘트 변경 후 스레드·책 상세(코멘트 수)·책방 목록을 함께 갱신 */
