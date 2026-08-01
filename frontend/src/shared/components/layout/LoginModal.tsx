@@ -21,7 +21,7 @@ import type { MemberAccount } from '@/shared/types/member';
 
 /**
  * 로그인 모달 — 회원 계정을 고르면 그대로 로그인 처리 (인증 없는 데모, D-017·D-024).
- * 로그인하면 첫 번째 가입 클럽의 책방으로 이동한다.
+ * 로그인하면 첫 번째 가입 모임의 책방으로 이동한다.
  */
 type LoginTab = 'member' | 'admin';
 
@@ -45,7 +45,7 @@ export const LoginModal = () => {
   const handleSelect = (account: MemberAccount) => {
     const firstClub = account.clubs[0];
     if (!firstClub) {
-      toast.error('가입한 클럽이 없는 계정이에요.');
+      toast.error('가입한 모임이 없는 계정이에요.');
       return;
     }
     login(

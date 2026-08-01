@@ -36,7 +36,7 @@ export const BookSelectStep = ({
 
   return (
     <Stack spacing={1.5}>
-      {/* 멀티 클럽이므로 어느 클럽의 문집인지 명시 */}
+      {/* 멀티 모임이므로 어느 모임의 문집인지 명시 */}
       <Typo token="text_r_14" color={colorChips.grayScale[600]}>
         <Typo
           component="span"

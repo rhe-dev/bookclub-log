@@ -9,7 +9,7 @@ export const queryKeys = {
   books: (clubPublicId: string, status?: string) =>
     ['books', 'list', clubPublicId, status ?? 'ALL'] as const,
   booksRoot: (clubPublicId: string) => ['books', 'list', clubPublicId] as const,
-  /** 클럽 id가 없는 컨텍스트(책 수정·코멘트 변경)에서 책 목록 광역 무효화용 */
+  /** 모임 id가 없는 컨텍스트(책 수정·코멘트 변경)에서 책 목록 광역 무효화용 */
   booksAll: ['books', 'list'] as const,
   book: (bookPublicId: string) => ['books', bookPublicId] as const,
   ordersMine: (memberPublicId: string) =>

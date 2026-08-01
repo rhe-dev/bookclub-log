@@ -10,7 +10,7 @@ interface CommonListRowProps {
   sx?: SxProps<Theme>;
 }
 
-/** 보더+호버 리스트 행 버튼 — 클럽 목록·계정 선택 등 클릭 가능한 행의 공통 골격 */
+/** 보더+호버 리스트 행 버튼 — 모임 목록·계정 선택 등 클릭 가능한 행의 공통 골격 */
 export const CommonListRow = ({
   onClick,
   ariaLabel,

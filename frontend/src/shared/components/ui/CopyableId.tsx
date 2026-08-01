@@ -13,7 +13,7 @@ interface CopyableIdProps {
   value: string;
   /** 여러 줄을 나란히 쓸 때 라벨 폭을 고정해 값의 시작점을 맞춘다 */
   labelWidth?: number;
-  /** 해당 대상의 상세로 가는 버튼 — 운영자가 주문↔회원↔클럽을 오갈 수 있게 */
+  /** 해당 대상의 상세로 가는 버튼 — 운영자가 주문↔회원↔모임을 오갈 수 있게 */
   action?: React.ReactNode;
 }
 

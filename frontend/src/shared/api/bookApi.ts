@@ -110,7 +110,7 @@ export const useUpdateBookMutation = (bookPublicId?: string) => {
       void queryClient.invalidateQueries({
         queryKey: queryKeys.book(bookPublicId ?? ''),
       });
-      // 책방 목록 카드에도 반영 — 클럽 id가 없는 컨텍스트라 목록 전체 무효화
+      // 책방 목록 카드에도 반영 — 모임 id가 없는 컨텍스트라 목록 전체 무효화
       void queryClient.invalidateQueries({ queryKey: queryKeys.booksAll });
     },
   });

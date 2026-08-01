@@ -102,10 +102,10 @@ function AdminMembersContent() {
         // 좁은 화면에선 줄바꿈이 잦아 세로 간격을 넉넉히
         sx={{ flexWrap: 'wrap', gap: { xs: 1.5, md: 1 } }}
       >
-        {/* 이름·회원 ID·클럽명을 한 필드로 — 클럽이 늘어날수록 드롭다운은 감당이 안 된다 */}
+        {/* 이름·회원 ID·모임명을 한 필드로 — 모임이 늘어날수록 드롭다운은 감당이 안 된다 */}
         <TextField
           size="small"
-          placeholder="이름·회원 ID·클럽명·클럽 ID"
+          placeholder="이름·회원 ID·모임명·모임 ID"
           value={keyword}
           onChange={(e) => setKeyword(e.target.value)}
           onKeyDown={(e) => {
@@ -174,12 +174,12 @@ function AdminMembersContent() {
         />
       </Stack>
 
-      {/* 클럽 상세에서 넘어온 좁히기 — 지우면 전체 회원으로 돌아간다 */}
+      {/* 모임 상세에서 넘어온 좁히기 — 지우면 전체 회원으로 돌아간다 */}
       {clubId && (
         <>
           <VerticalGap size={12} />
           <Chip
-            label={`클럽 · ${activeClub?.name ?? clubId}`}
+            label={`모임 · ${activeClub?.name ?? clubId}`}
             onDelete={clearClub}
             size="small"
             sx={{ alignSelf: 'flex-start' }}

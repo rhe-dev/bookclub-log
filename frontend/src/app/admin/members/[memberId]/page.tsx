@@ -1,6 +1,6 @@
 'use client';
 
-// 운영자 회원 상세 — 조회 + 메모. 주문·클럽 상세와 오갈 수 있는 페이지 (D-037)
+// 운영자 회원 상세 — 조회 + 메모. 주문·모임 상세와 오갈 수 있는 페이지 (D-037)
 import { Box, Skeleton, Stack } from '@mui/material';
 import { useParams, useRouter } from 'next/navigation';
 import { useAdminMemberQuery } from '@/shared/api/adminApi';
@@ -96,7 +96,7 @@ export default function AdminMemberDetailPage() {
       <VerticalGap size={16} />
       <AdminStatRow
         stats={[
-          { label: '가입 클럽', value: `${member.clubs.length}` },
+          { label: '가입 모임', value: `${member.clubs.length}` },
           { label: '코멘트', value: `${member.commentCount}` },
           { label: '공감', value: `${member.likeCount}` },
           { label: '문집 주문', value: `${member.orderCount}` },
@@ -104,11 +104,11 @@ export default function AdminMemberDetailPage() {
       />
 
       <VerticalGap size={24} />
-      <Typo token="text_sb_16">가입 클럽</Typo>
+      <Typo token="text_sb_16">가입 모임</Typo>
       <VerticalGap size={8} />
       {member.clubs.length === 0 ? (
         <Typo token="text_r_14" color={colorChips.grayScale[500]}>
-          가입한 클럽이 없어요.
+          가입한 모임이 없어요.
         </Typo>
       ) : (
         <Stack spacing={1}>
@@ -145,7 +145,7 @@ export default function AdminMemberDetailPage() {
                 </Typo>
               </Box>
               <CommonButton
-                label="클럽 상세"
+                label="모임 상세"
                 size="small"
                 buttonColor="tertiary"
                 buttonVariant="outlined"

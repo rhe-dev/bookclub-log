@@ -1,6 +1,6 @@
 'use client';
 
-// 운영자 주문 관리 — 목록·필터(상태/클럽/검색/정렬)·상세(이력·사유)·단계 진행·CSV (PLAN 화면 6, D-029)
+// 운영자 주문 관리 — 목록·필터(상태/모임/검색/정렬)·상세(이력·사유)·단계 진행·CSV (PLAN 화면 6, D-029)
 import DownloadRoundedIcon from '@mui/icons-material/DownloadRounded';
 import { Chip, Skeleton, Stack, Tooltip } from '@mui/material';
 import {
@@ -147,12 +147,12 @@ function AdminOrdersContent() {
         onPageSizeChange={setPageSize}
       />
 
-      {/* 클럽 상세에서 넘어온 좁히기 — 지우면 전체 주문으로 돌아간다 */}
+      {/* 모임 상세에서 넘어온 좁히기 — 지우면 전체 주문으로 돌아간다 */}
       {filters.clubId && (
         <>
           <VerticalGap size={12} />
           <Chip
-            label={`클럽 · ${activeClub?.name ?? filters.clubId}`}
+            label={`모임 · ${activeClub?.name ?? filters.clubId}`}
             onDelete={() => setFilters({ ...filters, clubId: undefined })}
             size="small"
             sx={{ alignSelf: 'flex-start' }}

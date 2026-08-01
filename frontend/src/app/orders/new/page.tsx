@@ -46,7 +46,7 @@ export default function OrderNewPage() {
   const club = session?.club;
   const booksQuery = useBooksQuery(club?.publicId);
   const createMutation = useCreateOrderMutation(club?.publicId);
-  // 부수 기본값(멤버 수)용 — 현재 클럽의 멤버 수는 내 클럽 목록에서 찾는다
+  // 부수 기본값(멤버 수)용 — 현재 모임의 멤버 수는 내 모임 목록에서 찾는다
   const myClubsQuery = useMyClubsQuery(session?.member.publicId);
   const memberCount =
     myClubsQuery.data?.find((c) => c.publicId === club?.publicId)

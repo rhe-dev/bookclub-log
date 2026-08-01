@@ -12,7 +12,7 @@ interface HeaderMemberMenuProps {
   onClose: () => void;
   /** 이름은 GNB에 없는 모바일에서만 노출 */
   memberName: string;
-  /** 내 클럽 목록은 헤더에서 미리 받아 둔다 — 메뉴를 열 때 항목이 늦게 차면 높이가 튄다 */
+  /** 내 모임 목록은 헤더에서 미리 받아 둔다 — 메뉴를 열 때 항목이 늦게 차면 높이가 튄다 */
   myClubs: MyClub[] | undefined;
   currentClubId: string | undefined;
   onSelectClub: (club: MyClub) => void;
@@ -21,7 +21,7 @@ interface HeaderMemberMenuProps {
 }
 
 /**
- * 멤버 메뉴 팝업 — 내 클럽 전환 · 마이페이지 · 로그아웃.
+ * 멤버 메뉴 팝업 — 내 모임 전환 · 마이페이지 · 로그아웃.
  *
  * 헤더에서 분리해 지연 로딩한다. Menu는 Popover·Modal·List를 끌고 오는데,
  * 아바타를 눌러야 열리는 화면이라 첫 로드에 있을 이유가 없다.
@@ -44,7 +44,7 @@ export const HeaderMemberMenu = ({
       anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
       transformOrigin={{ vertical: 'top', horizontal: 'right' }}
     >
-      {/* 이름은 GNB에 없는 모바일에서만 — 역할은 클럽별로 다르므로 내 클럽 목록에서 확인 */}
+      {/* 이름은 GNB에 없는 모바일에서만 — 역할은 모임별로 다르므로 내 모임 목록에서 확인 */}
       <Box sx={{ px: 2, py: 1, display: { xs: 'block', sm: 'none' } }}>
         <Typo token="text_sb_14" color={colorChips.grayScale[800]}>
           {memberName}
@@ -53,7 +53,7 @@ export const HeaderMemberMenu = ({
       <Divider sx={{ display: { xs: 'block', sm: 'none' } }} />
       <Box sx={{ px: 2, pt: 1, pb: 0.5 }}>
         <Typo token="text_m_12" color={colorChips.grayScale[500]}>
-          내 클럽
+          내 모임
         </Typo>
       </Box>
       {myClubs?.map((c) => {

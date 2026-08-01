@@ -40,7 +40,7 @@ interface AdminOrderFilterBarProps {
  * 주문 관리 필터.
  *
  * 윗줄은 '어느 범위를 볼지'(기간·정렬·표시 건수), 아랫줄은 '무엇을 찾을지'(검색·상태·처리 대기)로
- * 나눈다. 클럽은 드롭다운 대신 검색으로 — 클럽이 늘어날수록 드롭다운은 감당이 안 된다.
+ * 나눈다. 모임은 드롭다운 대신 검색으로 — 모임이 늘어날수록 드롭다운은 감당이 안 된다.
  */
 export const AdminOrderFilterBar = ({
   filters,
@@ -135,7 +135,7 @@ export const AdminOrderFilterBar = ({
       >
         <TextField
           size="small"
-          placeholder="문집 제목·주문자·주문번호·클럽명"
+          placeholder="문집 제목·주문자·주문번호·모임명"
           value={keyword}
           onChange={(e) => setKeyword(e.target.value)}
           onKeyDown={(e) => {

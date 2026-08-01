@@ -59,7 +59,7 @@ export const OrderCard = ({ order }: { order: Order }) => {
       >
         {/*
          * 주문번호가 먼저 — 고객센터 문의·조회의 기준이라 카드에서 가장 먼저 찾는 값이다.
-         * 클럽명은 강조 없이 메타로만 (카드마다 색 태그가 늘어나 산만해지는 것 방지)
+         * 모임명은 강조 없이 메타로만 (카드마다 색 태그가 늘어나 산만해지는 것 방지)
          */}
         <Typo token="text_r_12" color={colorChips.grayScale[500]}>
           {order.publicId} · {formatDate(order.createdAt)} 주문 ·{' '}

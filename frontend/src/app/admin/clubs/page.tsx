@@ -1,6 +1,6 @@
 'use client';
 
-// 운영자 클럽 관리 — 조회 + 메모 (D-030 개정). 클럽 상세로 들어가는 목록
+// 운영자 모임 관리 — 조회 + 메모 (D-030 개정). 모임 상세로 들어가는 목록
 import SearchRoundedIcon from '@mui/icons-material/SearchRounded';
 import StickyNote2OutlinedIcon from '@mui/icons-material/StickyNote2Outlined';
 import { Box, InputAdornment, Skeleton, Stack, TextField } from '@mui/material';
@@ -52,7 +52,7 @@ function AdminClubsContent() {
     <CommonContainer maxWidth={1400} sx={{ py: { xs: 3, md: 5 } }}>
       <Stack direction="row" spacing={1} sx={{ alignItems: 'baseline' }}>
         <Typo token="text_b_24" sx={{ fontSize: { xs: 20, md: 24 } }}>
-          클럽 관리
+          모임 관리
         </Typo>
         <Typo token="text_m_14" color={colorChips.grayScale[500]}>
           {clubs.length}개
@@ -60,7 +60,7 @@ function AdminClubsContent() {
       </Stack>
       <VerticalGap size={4} />
       <Typo token="text_r_12" color={colorChips.grayScale[500]}>
-        클럽 정보는 조회만 합니다. 응대 기록은 클럽 상세의 운영자 메모에 남겨
+        모임 정보는 조회만 합니다. 응대 기록은 모임 상세의 운영자 메모에 남겨
         주세요.
       </Typo>
 
@@ -72,7 +72,7 @@ function AdminClubsContent() {
       >
         <TextField
           size="small"
-          placeholder="클럽명·클럽 ID"
+          placeholder="모임명·모임 ID"
           value={keyword}
           onChange={(e) => setKeyword(e.target.value)}
           onKeyDown={(e) => {
@@ -128,7 +128,7 @@ function AdminClubsContent() {
       <VerticalGap size={16} />
       {clubsQuery.isError ? (
         <ErrorView
-          message="클럽 목록을 불러오지 못했어요."
+          message="모임 목록을 불러오지 못했어요."
           onRetry={() => void clubsQuery.refetch()}
         />
       ) : clubsQuery.isLoading ? (
@@ -148,12 +148,12 @@ function AdminClubsContent() {
           message={
             // 조건 때문에 비었는지, 정말 하나도 없는지를 구분해야 다음 행동이 정해진다
             q || from || to
-              ? '조건에 맞는 클럽이 없어요.'
-              : '아직 개설된 클럽이 없어요.'
+              ? '조건에 맞는 모임이 없어요.'
+              : '아직 개설된 모임이 없어요.'
           }
         />
       ) : (
-        /* 클럽은 수가 적고 소개 문구가 있어 테이블보다 카드가 읽힌다 */
+        /* 모임은 수가 적고 소개 문구가 있어 테이블보다 카드가 읽힌다 */
         <Box
           sx={{
             display: 'grid',

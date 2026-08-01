@@ -7,13 +7,13 @@ import { resetSession } from '@/shared/stores/resetSession';
 import { toast } from '@/shared/stores/toastStore';
 import type { MyClub } from '@/shared/types/club';
 
-/** GNB·마이페이지가 공유하는 세션 동작 — 클럽 이동·로그아웃 (동선·문구 단일화) */
+/** GNB·마이페이지가 공유하는 세션 동작 — 모임 이동·로그아웃 (동선·문구 단일화) */
 export const useSessionActions = () => {
   const router = useRouter();
   const club = useMemberStore((s) => s.club);
   const switchClub = useMemberStore((s) => s.switchClub);
 
-  /** 클럽 선택 — 다른 클럽이면 컨텍스트 전환, 어느 쪽이든 그 클럽 책방으로 */
+  /** 모임 선택 — 다른 모임이면 컨텍스트 전환, 어느 쪽이든 그 모임 책방으로 */
   const goClub = (target: MyClub) => {
     if (target.publicId !== club?.publicId) {
       switchClub({

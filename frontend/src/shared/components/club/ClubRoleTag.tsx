@@ -3,7 +3,7 @@ import { Typo } from '@/shared/components/ui/Typo';
 import { colorChips } from '@/shared/styles/colors';
 import type { ClubRole } from '@/shared/types/club';
 
-/** 클럽 내 역할 태그 — 역할은 클럽마다 다르므로 항상 클럽명 옆에 붙여 쓴다 (D-024) */
+/** 모임 내 역할 태그 — 역할은 모임마다 다르므로 항상 모임명 옆에 붙여 쓴다 (D-024) */
 export const ClubRoleTag = ({ role }: { role: ClubRole }) => {
   const isLeader = role === 'LEADER';
   return (

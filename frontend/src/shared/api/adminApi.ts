@@ -211,7 +211,7 @@ export const useAdminOrdersQuery = (
     placeholderData: keepPreviousData,
   });
 
-/** 클럽 목록 — 필터 없이 부르면 주문 관리의 클럽 드롭다운용 전체 목록 */
+/** 모임 목록 — 필터 없이 부르면 주문 관리의 모임 드롭다운용 전체 목록 */
 export const useAdminClubsQuery = (filters: AdminClubFilters = {}) =>
   useQuery({
     queryKey: queryKeys.adminClubs(filters),
@@ -315,7 +315,7 @@ export const useAdminPendingCountQuery = (enabled: boolean) =>
     enabled,
   });
 
-/** 회원 목록 필터 — 클럽 목록 화면을 두지 않고 이 필터로 '이 모임의 회원들'을 본다 */
+/** 회원 목록 필터 — 모임 목록 화면을 두지 않고 이 필터로 '이 모임의 회원들'을 본다 */
 export interface AdminMemberFilters {
   clubId?: string;
   q?: string;
@@ -324,7 +324,7 @@ export interface AdminMemberFilters {
   to?: string;
 }
 
-/** 클럽 목록 필터 — 드롭다운용 호출은 필터 없이 부른다 */
+/** 모임 목록 필터 — 드롭다운용 호출은 필터 없이 부른다 */
 export interface AdminClubFilters {
   q?: string;
   from?: string;
@@ -363,7 +363,7 @@ export const useAdminClubQuery = (clubPublicId?: string) =>
     enabled: Boolean(clubPublicId),
   });
 
-/** 운영자 메모 저장 — 회원·클럽이 같은 계약을 쓴다 */
+/** 운영자 메모 저장 — 회원·모임이 같은 계약을 쓴다 */
 export const useAdminNoteMutation = (
   target: 'member' | 'club',
   publicId?: string,

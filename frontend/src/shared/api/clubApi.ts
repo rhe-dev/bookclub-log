@@ -20,7 +20,7 @@ const clubApi = {
   },
 };
 
-/** 내가 가입한 클럽 목록 — GNB 클럽 변경·마이페이지 프로필용 */
+/** 내가 가입한 모임 목록 — GNB 모임 변경·마이페이지 프로필용 */
 export const useMyClubsQuery = (memberPublicId?: string) =>
   useQuery({
     queryKey: queryKeys.clubsMine(memberPublicId ?? ''),

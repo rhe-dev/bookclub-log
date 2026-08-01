@@ -81,7 +81,7 @@ export const useAdminMemberParams = () => {
   };
 };
 
-/** 클럽 목록 — 페이지네이션 예외라 검색·기간만 (D-026) */
+/** 모임 목록 — 페이지네이션 예외라 검색·기간만 (D-026) */
 export const useAdminClubParams = () => {
   const searchParams = useSearchParams();
   const apply = useApplyParams('clubs');

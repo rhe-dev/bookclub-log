@@ -1,6 +1,6 @@
 'use client';
 
-// 운영자 클럽 상세 — 조회 + 메모. 목록 화면 없이 주문·회원 상세에서 링크로 진입한다 (D-030 개정)
+// 운영자 모임 상세 — 조회 + 메모. 목록 화면 없이 주문·회원 상세에서 링크로 진입한다 (D-030 개정)
 import { Box, Skeleton, Stack } from '@mui/material';
 import { useParams, useRouter } from 'next/navigation';
 import { useAdminClubQuery } from '@/shared/api/adminApi';
@@ -38,12 +38,12 @@ export default function AdminClubDetailPage() {
       <AdminDetailShell>
         <QueryErrorView
           error={error}
-          notFoundMessage="클럽 정보를 찾을 수 없어요. 클럽 ID가 잘못되었을 수 있어요."
-          failMessage="클럽 정보를 불러오지 못했어요."
+          notFoundMessage="모임 정보를 찾을 수 없어요. 모임 ID가 잘못되었을 수 있어요."
+          failMessage="모임 정보를 불러오지 못했어요."
           onRetry={() => void refetch()}
         >
           <CommonButton
-            label="클럽 관리로"
+            label="모임 관리로"
             buttonColor="tertiary"
             onClick={() => router.push(ROUTES.adminClubs)}
           />
@@ -61,7 +61,7 @@ export default function AdminClubDetailPage() {
 
   return (
     <AdminDetailShell>
-      <AdminBackLink listLabel="클럽 관리" listHref={ROUTES.adminClubs} />
+      <AdminBackLink listLabel="모임 관리" listHref={ROUTES.adminClubs} />
       <VerticalGap size={12} />
 
       <Typo token="text_b_24" sx={{ fontSize: { xs: 20, md: 24 } }}>
@@ -81,7 +81,7 @@ export default function AdminClubDetailPage() {
       </Typo>
 
       <VerticalGap size={12} />
-      <CopyableId label="클럽 ID" value={club.publicId} />
+      <CopyableId label="모임 ID" value={club.publicId} />
 
       <VerticalGap size={16} />
       <AdminStatRow
@@ -100,7 +100,7 @@ export default function AdminClubDetailPage() {
       >
         <Typo token="text_sb_16">멤버 {club.members.length}명</Typo>
         <CommonButton
-          label="이 클럽 회원 목록"
+          label="이 모임 회원 목록"
           size="small"
           buttonColor="tertiary"
           buttonVariant="outlined"
@@ -180,7 +180,7 @@ export default function AdminClubDetailPage() {
       >
         <Typo token="text_sb_16">최근 문집 주문</Typo>
         <CommonButton
-          label="이 클럽 주문 목록"
+          label="이 모임 주문 목록"
           size="small"
           buttonColor="tertiary"
           buttonVariant="outlined"

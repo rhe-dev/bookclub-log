@@ -20,11 +20,11 @@ interface MiniOrder {
   status: OrderStatus;
   copies: number;
   createdAt: string;
-  /** 오른쪽에 곁들일 한 줄 — 회원 상세는 클럽명, 클럽 상세는 주문자명 */
+  /** 오른쪽에 곁들일 한 줄 — 회원 상세는 모임명, 모임 상세는 주문자명 */
   meta: string;
 }
 
-/** 회원·클럽 상세의 최근 주문 — 주문 상세로 넘어가는 진입점 */
+/** 회원·모임 상세의 최근 주문 — 주문 상세로 넘어가는 진입점 */
 export const AdminOrderMiniList = ({
   orders,
   emptyMessage,

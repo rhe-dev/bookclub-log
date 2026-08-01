@@ -4,7 +4,7 @@ import { Box } from '@mui/material';
 import { Typo } from '@/shared/components/ui/Typo';
 import { colorChips } from '@/shared/styles/colors';
 
-/** 상세 상단 활동 요약 — 회원·클럽이 같은 모양을 쓴다 */
+/** 상세 상단 활동 요약 — 회원·모임이 같은 모양을 쓴다 */
 export const AdminStatRow = ({
   stats,
 }: {

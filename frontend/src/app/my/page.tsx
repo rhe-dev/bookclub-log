@@ -1,6 +1,6 @@
 'use client';
 
-// 마이페이지 — 프로필(클럽별 역할)·로그아웃 + 내 코멘트/내 문집 주문 탭 (PLAN 화면 5, D-024)
+// 마이페이지 — 프로필(모임별 역할)·로그아웃 + 내 코멘트/내 문집 주문 탭 (PLAN 화면 5, D-024)
 import { Box, Stack } from '@mui/material';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Suspense, useState } from 'react';

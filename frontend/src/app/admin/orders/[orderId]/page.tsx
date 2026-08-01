@@ -1,6 +1,6 @@
 'use client';
 
-// 운영자 주문 상세 — 모달이 아닌 페이지. 회원·클럽 상세와 오갈 수 있어야 하므로 (D-037)
+// 운영자 주문 상세 — 모달이 아닌 페이지. 회원·모임 상세와 오갈 수 있어야 하므로 (D-037)
 import { Box, Skeleton, Stack } from '@mui/material';
 import { useParams, useRouter } from 'next/navigation';
 import { useState } from 'react';
@@ -124,10 +124,10 @@ export default function AdminOrderDetailPage() {
       </Typo>
 
       <VerticalGap size={12} />
-      {/* 클럽·주문자는 각자의 상세로 — 이 왕복이 모달을 페이지로 바꾼 이유다 */}
+      {/* 모임·주문자는 각자의 상세로 — 이 왕복이 모달을 페이지로 바꾼 이유다 */}
       <Stack direction="row" spacing={1} sx={{ flexWrap: 'wrap', gap: 1 }}>
         <CommonButton
-          label={`클럽 · ${order.club.name}`}
+          label={`모임 · ${order.club.name}`}
           size="small"
           buttonColor="tertiary"
           buttonVariant="outlined"
@@ -149,7 +149,7 @@ export default function AdminOrderDetailPage() {
       <VerticalGap size={12} />
       <Stack spacing={0.25}>
         <CopyableId label="주문번호" value={order.publicId} />
-        <CopyableId label="클럽 ID" value={order.club.publicId} />
+        <CopyableId label="모임 ID" value={order.club.publicId} />
         <CopyableId label="주문자 ID" value={order.member.publicId} />
       </Stack>
 

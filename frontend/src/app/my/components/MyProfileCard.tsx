@@ -23,7 +23,7 @@ interface MyProfileCardProps {
   onLogout: () => void;
 }
 
-/** 마이페이지 프로필 카드 — 아바타·이름·로그아웃 + 가입 클럽(역할·이동) */
+/** 마이페이지 프로필 카드 — 아바타·이름·로그아웃 + 가입 모임(역할·이동) */
 export const MyProfileCard = ({
   member,
   clubs,
@@ -58,12 +58,12 @@ export const MyProfileCard = ({
 
     <VerticalGap size={16} />
     <Typo token="text_m_12" color={colorChips.grayScale[500]}>
-      가입한 클럽
+      가입한 모임
     </Typo>
     <VerticalGap size={8} />
-    {/* 클럽 목록만 실패해도 프로필·활동 탭은 유지 */}
+    {/* 모임 목록만 실패해도 프로필·활동 탭은 유지 */}
     {isError ? (
-      <ErrorView message="클럽 목록을 불러오지 못했어요." onRetry={onRetry} />
+      <ErrorView message="모임 목록을 불러오지 못했어요." onRetry={onRetry} />
     ) : (
       <Stack spacing={1}>
         {clubs?.map((club) => (

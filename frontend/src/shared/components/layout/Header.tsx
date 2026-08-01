@@ -80,7 +80,7 @@ const ADMIN_NAV = [
     prefixes: [ROUTES.adminMembers],
   },
   {
-    label: '클럽 관리',
+    label: '모임 관리',
     href: ROUTES.adminClubs,
     prefixes: [ROUTES.adminClubs],
   },
@@ -88,7 +88,7 @@ const ADMIN_NAV = [
 
 /**
  * 공통 헤더 — 로고(로그인 시 책방, 비로그인 시 서비스 소개) + 내비 메뉴(책방·문집 만들기)
- * + 멤버 메뉴(내 클럽 전환·마이페이지·로그아웃). 비로그인 시에는 로그인 버튼 (D-024).
+ * + 멤버 메뉴(내 모임 전환·마이페이지·로그아웃). 비로그인 시에는 로그인 버튼 (D-024).
  * 반응형: 모바일 56px/데스크탑 64px, 모바일은 로고·메뉴만 남고 이름은 멤버 메뉴 상단에서.
  */
 export const Header = () => {

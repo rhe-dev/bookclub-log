@@ -6,7 +6,7 @@ import { cardSurface } from '@/shared/styles/mixins';
 
 /**
  * 마이페이지 로딩 스켈레톤 — 프로필 카드 + 활동 탭 + 목록 자리.
- * 고정 문구('가입한 클럽')는 실텍스트로 두고 서버 데이터 영역만 스켈레톤으로 표시한다.
+ * 고정 문구('가입한 모임')는 실텍스트로 두고 서버 데이터 영역만 스켈레톤으로 표시한다.
  */
 export const MyPageSkeleton = () => (
   <>
@@ -24,7 +24,7 @@ export const MyPageSkeleton = () => (
 
       <VerticalGap size={16} />
       <Typo token="text_m_12" color={colorChips.grayScale[500]}>
-        가입한 클럽
+        가입한 모임
       </Typo>
       <VerticalGap size={8} />
       <Stack spacing={1}>

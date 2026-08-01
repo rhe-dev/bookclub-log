@@ -17,7 +17,7 @@ import { lineClamp } from '@/shared/styles/mixins';
 import type { AdminMember } from '@/shared/types/member';
 import { formatDate } from '@/shared/utils/date';
 
-const COLUMNS = ['회원', '가입 클럽', '코멘트', '문집 주문', '가입일', ''];
+const COLUMNS = ['회원', '가입 모임', '코멘트', '문집 주문', '가입일', ''];
 
 /** 회원 목록 — 주문 관리와 같은 테이블 문법 (좁은 화면에서도 가로 스크롤, D-031) */
 export const AdminMemberTable = ({
