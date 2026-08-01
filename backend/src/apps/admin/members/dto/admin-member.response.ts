@@ -2,7 +2,7 @@ import { ApiProperty } from '@nestjs/swagger';
 import { ClubRole, OrderStatus } from '@prisma/client';
 import { PageMetaResponse } from '../../../../shared/dto/page-meta.response';
 
-/** 회원이 가입한 클럽 — 클럽 상세로 넘어가는 진입점 */
+/** 회원이 가입한 모임 — 모임 상세로 넘어가는 진입점 */
 export class AdminMemberClubResponse {
   publicId: string;
   name: string;

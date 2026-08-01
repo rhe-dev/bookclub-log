@@ -77,7 +77,7 @@ export class CommentsService {
     };
   }
 
-  /** 내가 쓴 코멘트 — 클럽 무관 전체, 최신순 (삭제된 코멘트·삭제된 책 제외) */
+  /** 내가 쓴 코멘트 — 모임 무관 전체, 최신순 (삭제된 코멘트·삭제된 책 제외) */
   async listMine(memberPublicId: string | undefined, query: PaginationQuery) {
     const member = await this.clubsService.getMemberOrThrow(memberPublicId);
     const page = query.page ?? 1;

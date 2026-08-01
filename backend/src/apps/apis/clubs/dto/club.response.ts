@@ -1,7 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { ClubRole } from '@prisma/client';
 
-/** 내가 가입한 클럽 — 클럽별 내 역할 포함 */
+/** 내가 가입한 모임 — 모임별 내 역할 포함 */
 export class MyClubResponse {
   publicId: string;
   name: string;

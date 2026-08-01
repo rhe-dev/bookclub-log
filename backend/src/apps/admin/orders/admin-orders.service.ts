@@ -104,7 +104,7 @@ export class AdminOrdersService {
     const header = [
       '주문번호',
       '주문일시',
-      '클럽',
+      '모임',
       '주문자',
       '문집 제목',
       '부수',
@@ -176,7 +176,7 @@ const ACTION_REQUIRED_STATUSES = [
   OrderStatus.REMAKE_REQUESTED,
 ];
 
-/** 화면 필터(상태·클럽·검색어·기간·처리대기)를 Prisma 조건으로 — 목록과 CSV가 같은 기준을 쓴다 */
+/** 화면 필터(상태·모임·검색어·기간·처리대기)를 Prisma 조건으로 — 목록과 CSV가 같은 기준을 쓴다 */
 const toWhere = (query: AdminOrdersQuery): Prisma.OrderWhereInput => {
   const keyword = query.q?.trim();
   // 종료일은 '당일 포함'이 자연스러우므로 다음 날 0시 직전까지
@@ -206,7 +206,7 @@ const toWhere = (query: AdminOrdersQuery): Prisma.OrderWhereInput => {
                 name: { contains: keyword, mode: 'insensitive' as const },
               },
             },
-            // 클럽도 한 필드에서 — 클럽이 늘어날수록 드롭다운은 감당이 안 된다
+            // 모임도 한 필드에서 — 모임이 늘어날수록 드롭다운은 감당이 안 된다
             {
               club: {
                 name: { contains: keyword, mode: 'insensitive' as const },

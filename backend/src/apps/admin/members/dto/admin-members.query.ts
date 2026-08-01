@@ -5,14 +5,14 @@ import { PaginationQuery } from '../../../../shared/dto/pagination.query';
 
 /**
  * 회원 목록 필터.
- * 클럽 목록 화면을 따로 두지 않고, 이 클럽 필터로 "이 모임의 회원들"을 본다.
+ * 모임 목록 화면을 따로 두지 않고, 이 모임 필터로 "이 모임의 회원들"을 본다.
  */
 export class AdminMembersQuery extends PaginationQuery {
   @IsOptional()
   @IsString({ message: `${ErrorCode.COMMON_INVALID_INPUT}|$property` })
   clubId?: string;
 
-  /** 이름·회원 ID·클럽명·클럽 ID 검색 */
+  /** 이름·회원 ID·모임명·모임 ID 검색 */
   @IsOptional()
   @Type(() => String)
   @IsString({ message: `${ErrorCode.COMMON_INVALID_INPUT}|$property` })

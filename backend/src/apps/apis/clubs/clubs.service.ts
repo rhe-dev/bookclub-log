@@ -12,7 +12,7 @@ import { PrismaService } from '../../../shared/prisma/prisma.service';
 export class ClubsService {
   constructor(private readonly prisma: PrismaService) {}
 
-  /** 멤버가 가입한 클럽 + 클럽별 역할 — 역할은 클럽마다 다를 수 있다 */
+  /** 멤버가 가입한 모임 + 모임별 역할 — 역할은 모임마다 다를 수 있다 */
   async findMine(memberPublicId?: string) {
     const member = await this.getMemberOrThrow(memberPublicId);
     const memberships = await this.prisma.clubMember.findMany({

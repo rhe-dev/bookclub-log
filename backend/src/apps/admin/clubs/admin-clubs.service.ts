@@ -4,8 +4,8 @@ import { AdminClubsQuery } from './dto/admin-clubs.query';
 import { PrismaService } from '../../../shared/prisma/prisma.service';
 
 /**
- * 운영자 관점의 클럽 조회 (D-030 개정).
- * 클럽도 조회만 한다 — 목록 화면은 두지 않고, 주문·회원 상세에서 링크로 들어온다.
+ * 운영자 관점의 모임 조회 (D-030 개정).
+ * 모임도 조회만 한다 — 목록 화면은 두지 않고, 주문·회원 상세에서 링크로 들어온다.
  */
 @Injectable()
 export class AdminClubsService {
@@ -54,7 +54,7 @@ export class AdminClubsService {
     }));
   }
 
-  /** 클럽 상세 — 멤버·책·주문 요약 + 최근 주문 (주문 상세로 넘어가는 진입점) */
+  /** 모임 상세 — 멤버·책·주문 요약 + 최근 주문 (주문 상세로 넘어가는 진입점) */
   async detail(clubPublicId: string) {
     const club = await this.prisma.club.findUnique({
       where: { publicId: clubPublicId },

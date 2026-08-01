@@ -31,7 +31,7 @@ import { UpdateCommentDto } from './dto/update-comment.dto';
 export class CommentsController {
   constructor(private readonly commentsService: CommentsService) {}
 
-  /** 내가 쓴 코멘트 — 마이페이지 모아보기용 (클럽 무관 전체, 최신순) */
+  /** 내가 쓴 코멘트 — 마이페이지 모아보기용 (모임 무관 전체, 최신순) */
   @Get('comments/mine')
   listMine(
     @Headers('x-member-id') memberId: string | undefined,

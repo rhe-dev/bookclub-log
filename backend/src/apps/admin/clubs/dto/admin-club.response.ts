@@ -1,7 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { ClubRole, OrderStatus } from '@prisma/client';
 
-/** 운영자 클럽 목록 한 줄 */
+/** 운영자 모임 목록 한 줄 */
 export class AdminClubResponse {
   publicId: string;
   name: string;
@@ -14,7 +14,7 @@ export class AdminClubResponse {
   hasAdminNote: boolean;
 }
 
-/** 클럽 상세의 멤버 — 회원 상세로 이동 */
+/** 모임 상세의 멤버 — 회원 상세로 이동 */
 export class AdminClubMemberResponse {
   publicId: string;
   name: string;
@@ -27,7 +27,7 @@ export class AdminClubMemberResponse {
   joinedAt: Date;
 }
 
-/** 클럽 상세의 최근 주문 — 주문 상세로 이동 */
+/** 모임 상세의 최근 주문 — 주문 상세로 이동 */
 export class AdminClubOrderResponse {
   publicId: string;
   title: string;

@@ -1,5 +1,5 @@
-// 시드: 모임 2(멀티 클럽 시연 — 서지원·김민준이 두 클럽에 가입, 역할이 다름), 회원 8,
-// 책 16(읽는 중 3·예정 1·완독 12), 코멘트·답글 46, 주문 17(상태·클럽·기간 분산 — 어드민 필터·페이지네이션 확인용)
+// 시드: 모임 2(멀티 모임 시연 — 서지원·김민준이 두 모임에 가입, 역할이 다름), 회원 8,
+// 책 16(읽는 중 3·예정 1·완독 12), 코멘트·답글 46, 주문 17(상태·모임·기간 분산 — 어드민 필터·페이지네이션 확인용)
 // 컨테이너 기동 시 자동 실행되므로 멱등해야 한다 — 데이터가 있으면 건너뜀
 const { PrismaClient } = require('@prisma/client');
 
@@ -16,7 +16,7 @@ const MEMBERS = [
   { key: 'eunchae', name: '정은채', avatarEmoji: '🌙', color: '#8B6F4E', role: 'MEMBER' },
 ];
 
-// 두 번째 클럽 멤버십 — jiwon·minjun은 기존 멤버 재사용(멀티 클럽 회원), 여기서는 일반 멤버
+// 두 번째 모임 멤버십 — jiwon·minjun은 기존 멤버 재사용(멀티 모임 회원), 여기서는 일반 멤버
 const MEMBERS2 = [
   { key: 'seojun', name: '한서준', avatarEmoji: '🐢', color: '#3D7A68', role: 'LEADER' },
   { key: 'yujin', name: '오유진', avatarEmoji: '🍀', color: '#6FA84C', role: 'MEMBER' },
@@ -232,7 +232,7 @@ const COMMENTS = [
   { key: 'c37', book: 'pachinko', by: 'seoyeon', content: '선자가 부산을 떠나는 장면에서 한참 멈춰 있었어요. 담담해서 더 슬픈 문장들.', at: '2026-04-10T22:25:00' },
   { key: 'c38', book: 'pachinko', by: 'eunchae', parent: 'c37', content: '저도 그 장면 접어뒀어요. 2권도 언젠가 같이 읽어요.', at: '2026-04-11T09:05:00' },
 
-  // ── 밑줄과 여백 (두 번째 클럽) ──
+  // ── 밑줄과 여백 (두 번째 모임) ──
   { key: 'c39', book: 'shoko', by: 'seojun', page: 33, content: '쇼코의 편지들이 담담해서 오히려 오래 남네요. 편지라는 형식 자체가 이 소설의 온도 같아요.', at: '2026-05-12T21:20:00' },
   { key: 'c40', book: 'shoko', by: 'jiwon', parent: 'c39', content: '두 모임을 병행하며 읽는 첫 책인데, 단편이라 호흡이 좋아요. 저는 마지막 문장에서 한참 멈췄습니다.', at: '2026-05-13T08:40:00' },
   { key: 'c41', book: 'shoko', by: 'yujin', quote: '씬짜오, 씬짜오', content: '표제작만큼 「씬짜오, 씬짜오」도 꼭 이야기해보고 싶어요. 사과에 대한 소설이기도 한 것 같아서.', at: '2026-05-24T22:05:00' },
@@ -324,8 +324,8 @@ async function main() {
       },
     });
   }
-  // 두 번째 클럽 — 기존 멤버(jiwon·minjun)는 사람을 재사용하고 멤버십만 추가.
-  // 창립 멤버는 개설일에, 다른 클럽에서 건너온 두 명은 나중에 합류한 것으로 둔다
+  // 두 번째 모임 — 기존 멤버(jiwon·minjun)는 사람을 재사용하고 멤버십만 추가.
+  // 창립 멤버는 개설일에, 다른 모임에서 건너온 두 명은 나중에 합류한 것으로 둔다
   const CLUB2_FOUNDERS = ['seojun', 'yujin'];
   for (const { key, role, ...data } of MEMBERS2) {
     if (!members[key]) members[key] = await prisma.member.create({ data });
@@ -451,7 +451,7 @@ async function main() {
     REMAKE_REQUESTED: 'DELIVERED',
   };
 
-  // 문집 주문 — 완결·진행 중·접수 직후·4권 수록·타 클럽 주문을 시연
+  // 문집 주문 — 완결·진행 중·접수 직후·4권 수록·타 모임 주문을 시연
   const ORDERS = [
     {
       by: 'jiwon',
@@ -508,7 +508,7 @@ async function main() {
         ['IN_PRODUCTION', '2026-07-22T09:00:00', 'ADMIN'],
       ],
     },
-    // 어드민 목록 페이지네이션·필터 확인용 — 클럽·주문자·상태·기간을 흩어 배치
+    // 어드민 목록 페이지네이션·필터 확인용 — 모임·주문자·상태·기간을 흩어 배치
     {
       by: 'minjun',
       title: '봄 문집 — 첫 계절의 기록',
@@ -643,7 +643,7 @@ async function main() {
         ['CONFIRMED', '2026-07-26T10:00:00', 'ADMIN'],
       ],
     },
-    // 다른 클럽(밑줄과 여백)의 주문 — 마이페이지 클럽 구분 표시 확인용
+    // 다른 모임(밑줄과 여백)의 주문 — 마이페이지 모임 구분 표시 확인용
     {
       club: 'margin',
       by: 'jiwon',
@@ -820,7 +820,7 @@ async function main() {
     });
   }
 
-  // 회원 가입일 = 첫 클럽 가입일 — 시드 실행 시각으로 다 같으면 가입기간 필터가 의미 없다
+  // 회원 가입일 = 첫 모임 가입일 — 시드 실행 시각으로 다 같으면 가입기간 필터가 의미 없다
   const firstJoins = await prisma.clubMember.groupBy({
     by: ['memberId'],
     _min: { joinedAt: true },

@@ -48,7 +48,7 @@ export class MyCommentClubResponse {
   name: string;
 }
 
-/** GET /comments/mine 항목 — 어느 클럽·어느 책에 썼는지 포함 */
+/** GET /comments/mine 항목 — 어느 모임·어느 책에 썼는지 포함 */
 export class MyCommentResponse {
   publicId: string;
   page: number | null;

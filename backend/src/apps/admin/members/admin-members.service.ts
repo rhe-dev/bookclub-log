@@ -9,7 +9,7 @@ import { AdminMembersQuery } from './dto/admin-members.query';
  * 운영자 관점의 회원 조회 (D-030 개정).
  *
  * 회원은 **조회만** 한다 — 상태를 바꾸거나 지우지 않는다. 이 서비스의 비즈니스 로직은
- * 문집 주문 한 축에 모으고, 회원·클럽은 주문을 이해하기 위한 참조 화면으로 둔다.
+ * 문집 주문 한 축에 모으고, 회원·모임은 주문을 이해하기 위한 참조 화면으로 둔다.
  * 운영자가 남길 수 있는 건 응대 기록인 메모뿐이다.
  */
 @Injectable()
@@ -59,7 +59,7 @@ export class AdminMembersService {
     };
   }
 
-  /** 회원 상세 — 가입 클럽·활동 요약 + 최근 주문 (주문 상세로 넘어가는 진입점) */
+  /** 회원 상세 — 가입 모임·활동 요약 + 최근 주문 (주문 상세로 넘어가는 진입점) */
   async detail(memberPublicId: string) {
     const member = await this.prisma.member.findUnique({
       where: { publicId: memberPublicId },
@@ -130,7 +130,7 @@ function toWhere(query: AdminMembersQuery): Prisma.MemberWhereInput {
     ...(query.clubId && {
       memberships: { some: { club: { publicId: query.clubId } } },
     }),
-    // 이름·회원 ID·클럽명을 한 필드로 — 클럽이 늘어날수록 드롭다운은 감당이 안 된다
+    // 이름·회원 ID·모임명을 한 필드로 — 모임이 늘어날수록 드롭다운은 감당이 안 된다
     ...(keyword && {
       OR: [
         { name: { contains: keyword, mode: 'insensitive' } },

@@ -22,7 +22,7 @@ export class AdminOrdersQuery extends PaginationQuery {
   @IsEnum(OrderStatus, { message: ErrorCode.ORDER_STATUS_INVALID })
   status?: OrderStatus;
 
-  /** 클럽 publicId */
+  /** 모임 publicId */
   @IsOptional()
   @IsString({ message: invalid('clubId') })
   clubId?: string;

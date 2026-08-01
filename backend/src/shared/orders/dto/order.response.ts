@@ -3,7 +3,7 @@ import { ActorType, OrderIssueReason, OrderStatus } from '@prisma/client';
 import { MemberSummaryResponse } from '../../dto/member-summary.response';
 import { PageMetaResponse } from '../../dto/page-meta.response';
 
-/** 주문이 속한 클럽 — 여러 클럽의 주문이 섞이는 마이페이지 구분용 */
+/** 주문이 속한 모임 — 여러 모임의 주문이 섞이는 마이페이지 구분용 */
 export class OrderClubSummaryResponse {
   publicId: string;
   name: string;
