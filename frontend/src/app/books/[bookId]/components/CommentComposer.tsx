@@ -45,6 +45,10 @@ export const CommentComposer = ({
   );
   const [errors, setErrors] = useState<{ content?: string; page?: string }>({});
 
+  /** 고치기 시작하면 그 필드의 에러는 즉시 거둔다 */
+  const clearError = (field: keyof typeof errors) =>
+    setErrors((prev) => (prev[field] ? { ...prev, [field]: undefined } : prev));
+
   const handleSubmit = async () => {
     const nextErrors: typeof errors = {};
     if (!content.trim()) nextErrors.content = '내용을 입력해 주세요.';
@@ -77,7 +81,10 @@ export const CommentComposer = ({
         minRows={onCancel ? 2 : 3}
         placeholder={placeholder}
         value={content}
-        onChange={(e) => setContent(e.target.value)}
+        onChange={(e) => {
+          clearError('content');
+          setContent(e.target.value);
+        }}
         errorMessage={errors.content}
         maxLength={10000}
         autoFocus={autoFocus}
@@ -92,7 +99,10 @@ export const CommentComposer = ({
             label="페이지"
             type="number"
             value={pageStr}
-            onChange={(e) => setPageStr(e.target.value)}
+            onChange={(e) => {
+              clearError('page');
+              setPageStr(e.target.value);
+            }}
             errorMessage={errors.page}
             sx={{ width: 90, flexShrink: 0 }}
             size="small"

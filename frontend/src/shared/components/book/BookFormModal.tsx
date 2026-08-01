@@ -87,8 +87,13 @@ export const BookFormModal = ({
   const [errors, setErrors] = useState<{
     title?: string;
     author?: string;
+    period?: string;
     participants?: string;
   }>({});
+
+  /** 고치기 시작하면 그 필드의 에러는 즉시 거둔다 — 붉은 문구를 붙잡아 두지 않는다 */
+  const clearError = (field: keyof typeof errors) =>
+    setErrors((prev) => (prev[field] ? { ...prev, [field]: undefined } : prev));
 
   // 열 때마다 초기화 — 수정 모드는 기존 값, 추가 모드는 기본값(참여 회원 전체 선택).
   // 이펙트 대신 렌더 중 상태 조정 — members가 재검증돼도 입력 중인 폼이 리셋되지 않는다
@@ -114,8 +119,7 @@ export const BookFormModal = ({
   }
 
   const toggleParticipant = (publicId: string) => {
-    if (errors.participants)
-      setErrors((prev) => ({ ...prev, participants: undefined }));
+    clearError('participants');
     setParticipantIds((prev) =>
       prev.includes(publicId)
         ? prev.filter((id) => id !== publicId)
@@ -127,6 +131,9 @@ export const BookFormModal = ({
     const nextErrors: typeof errors = {};
     if (!title.trim()) nextErrors.title = '책 제목을 입력해 주세요.';
     if (!author.trim()) nextErrors.author = '저자를 입력해 주세요.';
+    // 시작이 끝보다 뒤면 책방·문집 표지에 '2026.12.01 ~ 2026.01.01'로 그대로 찍힌다
+    if (periodFrom && periodTo && periodFrom > periodTo)
+      nextErrors.period = '함께 읽기 끝은 시작보다 앞설 수 없어요.';
     // 참여 회원이 없으면 문집에 실을 사람도, 토론할 사람도 정해지지 않는다
     if (participantIds.length === 0)
       nextErrors.participants = '참여 회원을 한 명 이상 선택해 주세요.';
@@ -198,7 +205,10 @@ export const BookFormModal = ({
         <CommonInput
           label="책 제목 *"
           value={title}
-          onChange={(e) => setTitle(e.target.value)}
+          onChange={(e) => {
+            clearError('title');
+            setTitle(e.target.value);
+          }}
           errorMessage={errors.title}
           maxLength={200}
         />
@@ -206,7 +216,10 @@ export const BookFormModal = ({
           <CommonInput
             label="저자 *"
             value={author}
-            onChange={(e) => setAuthor(e.target.value)}
+            onChange={(e) => {
+              clearError('author');
+              setAuthor(e.target.value);
+            }}
             errorMessage={errors.author}
             maxLength={100}
           />
@@ -313,29 +326,48 @@ export const BookFormModal = ({
         </Box>
 
         {/* 좁은 화면에서 날짜 3개를 가로로 두면 라벨·값이 모두 잘린다 */}
-        <Stack direction={{ xs: 'column', sm: 'row' }} spacing={1.5}>
-          <CommonInput
-            label="함께 읽기 시작"
-            type="date"
-            value={periodFrom}
-            onChange={(e) => setPeriodFrom(e.target.value)}
-            slotProps={{ inputLabel: { shrink: true } }}
-          />
-          <CommonInput
-            label="함께 읽기 끝"
-            type="date"
-            value={periodTo}
-            onChange={(e) => setPeriodTo(e.target.value)}
-            slotProps={{ inputLabel: { shrink: true } }}
-          />
-          <CommonInput
-            label="모임일"
-            type="date"
-            value={meetingDate}
-            onChange={(e) => setMeetingDate(e.target.value)}
-            slotProps={{ inputLabel: { shrink: true } }}
-          />
-        </Stack>
+        <Box>
+          <Stack direction={{ xs: 'column', sm: 'row' }} spacing={1.5}>
+            <CommonInput
+              label="함께 읽기 시작"
+              type="date"
+              value={periodFrom}
+              onChange={(e) => {
+                clearError('period');
+                setPeriodFrom(e.target.value);
+              }}
+              hasError={Boolean(errors.period)}
+              slotProps={{ inputLabel: { shrink: true } }}
+            />
+            <CommonInput
+              label="함께 읽기 끝"
+              type="date"
+              value={periodTo}
+              onChange={(e) => {
+                clearError('period');
+                setPeriodTo(e.target.value);
+              }}
+              hasError={Boolean(errors.period)}
+              slotProps={{ inputLabel: { shrink: true } }}
+            />
+            <CommonInput
+              label="모임일"
+              type="date"
+              value={meetingDate}
+              onChange={(e) => setMeetingDate(e.target.value)}
+              slotProps={{ inputLabel: { shrink: true } }}
+            />
+          </Stack>
+          {/* 두 칸이 함께 틀린 것이라 문구는 아래 한 줄로 모은다 */}
+          {errors.period && (
+            <>
+              <VerticalGap size={6} />
+              <Typo token="text_r_12" color={colorChips.system.error}>
+                {errors.period}
+              </Typo>
+            </>
+          )}
+        </Box>
 
         <Box>
           {/* 다른 필드의 인라인 에러와 같은 문법 — 라벨도 함께 붉어진다 */}
