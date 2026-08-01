@@ -95,7 +95,8 @@
 
 ## 제출물
 
-- [ ] README.md (안내문 §README 가이드 7개 섹션 전부) — **`BACKEND_PORT` 변경 시 `--build` 필요** 반드시 포함
+- [x] README.md (안내문 §README 가이드 7개 섹션 전부) — `BACKEND_PORT` 변경 시 `--build` 조건 포함. 스크린샷·레포 URL만 남음
+- [x] 앱별 README(backend·frontend) 스캐폴드 보일러플레이트 교체
 - [ ] 주요 화면 스크린샷
 - [x] 클린 클론 → docker compose up --build 테스트 (다른 폴더에 새로 clone해서) — 통과, 발견 사항은 HISTORY 참고
 - [x] QA.md 갱신 + §F 회귀 스크립트(`scripts/regression-api.sh`) 37항목 통과
