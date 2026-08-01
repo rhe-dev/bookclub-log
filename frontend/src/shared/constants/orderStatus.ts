@@ -55,7 +55,7 @@ export const ORDER_STATUS_LOG_LABEL: Record<OrderStatus, string> = {
   REMAKE_REQUESTED: '재제작 접수',
 };
 
-/** 8단계를 사용자 눈높이의 4그룹으로 묶은 진행 스텝 */
+/** 7단계를 사용자 눈높이의 4그룹으로 묶은 진행 스텝 */
 export const ORDER_STEP_GROUPS = ['접수', '제작', '배송', '완료'] as const;
 
 const STEP_INDEX_BY_STATUS: Partial<Record<OrderStatus, number>> = {
