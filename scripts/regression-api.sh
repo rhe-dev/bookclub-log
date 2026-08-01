@@ -44,8 +44,21 @@ done
 [ -z "$HIT" ] && ok "랜딩 초기 청크에 Dialog·Tabs·Popover 없음" || bad "랜딩 초기 청크" "$HIT"
 
 echo
+echo "── 잘못된 경로·없는 대상"
+curl -s -o /dev/null -w "%{http_code}" $WEB/nope | grep -q 404 && ok "없는 경로 404 응답" || bad "없는 경로" "404가 아님"
+NOTFOUND_HTML=$(curl -s $WEB/nope)
+printf '%s' "$NOTFOUND_HTML" | grep -q "찾을 수 없는 페이지" && ok "404 화면이 한국어 공통 페이지" || bad "404 화면" "기본 영문 페이지"
+printf '%s' "$NOTFOUND_HTML" | grep -q "북클럽 로그" && ok "404에도 GNB·푸터 유지" || bad "404 레이아웃" "헤더 없음"
+# 경로는 맞지만 대상이 없는 경우 — 화면이 도메인 문구로 갈라내려면 404여야 한다
+MEMBER_ID=$(curl -s $API/members | node -e "let d='';process.stdin.on('data',c=>d+=c).on('end',()=>console.log(JSON.parse(d)[0].publicId))")
+for p in "books/nope-id" "admin/orders/nope-id" "admin/members/nope-id" "admin/clubs/nope-id"; do
+  c=$(curl -s -o /dev/null -w "%{http_code}" -H "X-Member-Id: $MEMBER_ID" "$API/$p")
+  [ "$c" = "404" ] && ok "$p → 404" || bad "$p" "$c"
+done
+
+echo
 echo "── 에러 계약"
-expect_code "없는 경로 → NOT_FOUND" "NOT_FOUND" "$(curl -s $API/nope)"
+expect_code "없는 API 경로 → NOT_FOUND" "NOT_FOUND" "$(curl -s $API/nope)"
 expect_code "헤더 누락 → MEMBER_HEADER_REQUIRED" "MEMBER_HEADER_REQUIRED" "$(curl -s $API/orders/mine)"
 expect_code "잘못된 쿼리 값 → PAGE_INVALID" "PAGE_INVALID" "$(curl -s "$API/admin/orders?page=abc")"
 
