@@ -8,9 +8,9 @@ export const metadata: Metadata = {
   title: { default: '북클럽 로그', template: '%s | 북클럽 로그' },
   description: '모임이 함께 읽은 책과 토론이 쌓이는 우리 모임 책방',
   /*
-   * iOS 사파리가 전화번호·주소를 자동으로 링크로 바꾸면서 React가 붙기 전에 DOM을 고친다.
-   * 그러면 서버 HTML과 클라이언트 트리가 어긋나 하이드레이션 경고가 뜬다 —
-   * 푸터의 사업자 정보(전화·사업자등록번호)가 그 대상이었다.
+   * iOS 사파리가 전화번호·날짜·주소로 보이는 문자열을 자동으로 링크로 바꾸면서
+   * React가 붙기 전에 DOM을 고친다. 그러면 서버 HTML과 클라이언트 트리가 어긋나
+   * 하이드레이션 경고가 뜬다 — 주문번호·모임 일정처럼 숫자가 이어지는 값이 그 대상이다.
    */
   formatDetection: { telephone: false, date: false, address: false },
   openGraph: {

@@ -6,16 +6,13 @@ import { Typo } from '@/shared/components/ui/Typo';
 import { colorChips } from '@/shared/styles/colors';
 import { CommonContainer } from './CommonContainer';
 
-// 실제 사업자 정보 확정 전 플레이스홀더
-const COMPANY_INFO_LINES = [
-  '서울특별시 ○○구 ○○로 00, 0층',
-  '대표: 홍길동 | 사업자등록번호: 000-00-00000',
-  '통신판매업신고: 제0000-서울○○-0000호',
-  '전화 00-0000-0000 | 팩스 00-0000-0000',
-  '이메일 hello@bookclublog.example',
-];
-
-/** 공통 푸터 — 로고·서비스 소개·사업자 정보(플레이스홀더)·카피라이트 */
+/**
+ * 공통 푸터 — 로고·서비스 소개·데모 고지·카피라이트.
+ *
+ * 실제 서비스라면 전자상거래법상 사업자 정보(상호·사업자등록번호·통신판매업신고)가
+ * 들어갈 자리다. 다만 값이 전부 플레이스홀더면 화면에서는 미완성으로만 읽히므로,
+ * 무엇이 빠졌는지 밝히는 한 줄로 대신한다.
+ */
 export const Footer = () => {
   return (
     <Stack
@@ -50,18 +47,14 @@ export const Footer = () => {
           </Typo>
         </Stack>
 
-        <Stack spacing={0.5}>
-          {COMPANY_INFO_LINES.map((line) => (
-            <Typo
-              key={line}
-              token="text_r_12"
-              color={colorChips.grayScale[500]}
-              sx={{ wordBreak: 'keep-all' }}
-            >
-              {line}
-            </Typo>
-          ))}
-        </Stack>
+        <Typo
+          token="text_r_12"
+          color={colorChips.grayScale[500]}
+          sx={{ wordBreak: 'keep-all' }}
+        >
+          채용 과제로 만든 데모입니다. 결제·실제 제작은 연결되어 있지 않고,
+          사업자 정보와 약관은 넣지 않았어요.
+        </Typo>
 
         <Divider sx={{ borderColor: colorChips.grayScale[300] }} />
 
