@@ -844,7 +844,7 @@ async function main() {
     where: { id: members.jiwon.id },
     data: {
       adminNote:
-        '두 모임 모두 모임장. 문집 주문이 잦아 발주 전 사양 확인 요청이 자주 들어옴.',
+        "'페이지 너머' 모임장 (밑줄과 여백에는 일반 회원). 문집 주문이 잦아 발주 전 사양 확인 요청이 자주 들어옴.",
     },
   });
   await prisma.club.update({
