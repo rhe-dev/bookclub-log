@@ -144,7 +144,14 @@ function AdminClubsContent() {
           ))}
         </Box>
       ) : clubs.length === 0 ? (
-        <CommonEmptyState message="아직 개설된 클럽이 없어요." />
+        <CommonEmptyState
+          message={
+            // 조건 때문에 비었는지, 정말 하나도 없는지를 구분해야 다음 행동이 정해진다
+            q || from || to
+              ? '조건에 맞는 클럽이 없어요.'
+              : '아직 개설된 클럽이 없어요.'
+          }
+        />
       ) : (
         /* 클럽은 수가 적고 소개 문구가 있어 테이블보다 카드가 읽힌다 */
         <Box
