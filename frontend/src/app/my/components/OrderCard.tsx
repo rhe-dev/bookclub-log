@@ -28,7 +28,7 @@ import { colorChips } from '@/shared/styles/colors';
 import { cardSurface } from '@/shared/styles/mixins';
 import type { Order } from '@/shared/types/order';
 import { formatDate } from '@/shared/utils/date';
-import { describeDelivery } from '@/shared/utils/orderDelivery';
+import { describeOrderGuide } from '@/shared/utils/orderDelivery';
 import { ACTIONS_BY_STATUS, type OrderAction } from './orderActions';
 import { OrderActionModal } from './OrderActionModal';
 
@@ -44,7 +44,7 @@ export const OrderCard = ({ order }: { order: Order }) => {
   const stepIndex = getOrderStepIndex(order.status);
   const chip = ORDER_STATUS_CHIP[order.status];
   const actions = ACTIONS_BY_STATUS[order.status] ?? [];
-  const deliveryNote = describeDelivery(order);
+  const guideNote = describeOrderGuide(order);
 
   return (
     <Box sx={{ ...cardSurface, minWidth: 300 }}>
@@ -155,11 +155,11 @@ export const OrderCard = ({ order }: { order: Order }) => {
         </>
       )}
 
-      {deliveryNote && (
+      {guideNote && (
         <>
           <VerticalGap size={4} />
           <Typo token="text_m_12" color={colorChips.primary[700]}>
-            {deliveryNote}
+            {guideNote}
           </Typo>
         </>
       )}
