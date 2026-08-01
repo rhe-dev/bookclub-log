@@ -14,6 +14,9 @@ type OrderHistoryEntry = components['schemas']['OrderHistoryResponse'];
 /** 환불·재제작 요청 사유 */
 export type OrderIssueReason = NonNullable<OrderHistoryEntry['reason']>;
 
+/** 전이를 일으킨 주체 — 주문자 / 운영자 / 제작처 웹훅 */
+export type ActorType = OrderHistoryEntry['actor'];
+
 /** POST /clubs/:id/orders 바디 */
 export type CreateOrderBody = components['schemas']['CreateOrderDto'];
 

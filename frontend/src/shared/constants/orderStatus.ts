@@ -1,5 +1,9 @@
 import { colorChips } from '@/shared/styles/colors';
-import type { OrderIssueReason, OrderStatus } from '@/shared/types/order';
+import type {
+  ActorType,
+  OrderIssueReason,
+  OrderStatus,
+} from '@/shared/types/order';
 
 /** 주문 상태의 사용자 언어 라벨 (QA 루브릭 ② — 코드가 아니라 사용자 말로) */
 export const ORDER_STATUS_LABEL: Record<OrderStatus, string> = {
@@ -23,6 +27,17 @@ export const ORDER_ISSUE_REASON_LABEL: Record<OrderIssueReason, string> = {
   DAMAGED_IN_TRANSIT: '배송 중 파손·훼손',
   WRONG_CONTENT: '주문 내용과 다르게 제작됨',
   OTHER: '기타 (직접 입력)',
+};
+
+/**
+ * 전이를 일으킨 주체 — 운영자 이력에만 노출한다.
+ * 제작처(VENDOR)는 웹훅으로 상태를 밀어 올리므로, 사람이 한 것과 구분되어야
+ * "왜 아무도 안 눌렀는데 단계가 넘어갔지?"를 설명할 수 있다 (D-034·D-036).
+ */
+export const ORDER_ACTOR_LABEL: Record<ActorType, string> = {
+  USER: '주문자',
+  ADMIN: '운영자',
+  VENDOR: '제작처',
 };
 
 /** 진행 이력·관리자용 명사형 라벨 — 타임라인은 짧은 명사형이 훑기 좋다 */

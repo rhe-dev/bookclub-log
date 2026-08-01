@@ -2,6 +2,7 @@ import SubdirectoryArrowRightRoundedIcon from '@mui/icons-material/SubdirectoryA
 import { Box, Stack } from '@mui/material';
 import { Typo } from '@/shared/components/ui/Typo';
 import {
+  ORDER_ACTOR_LABEL,
   ORDER_ISSUE_REASON_LABEL,
   ORDER_STATUS_LOG_LABEL,
 } from '@/shared/constants/orderStatus';
@@ -65,9 +66,7 @@ export const OrderHistoryList = ({
           </Typo>
           <Typo token="text_r_12" color={colorChips.grayScale[700]}>
             {formatDateTime(entry.changedAt)}
-            {adminView
-              ? ` · ${entry.actor === 'ADMIN' ? '운영자' : '주문자'}`
-              : ''}
+            {adminView ? ` · ${ORDER_ACTOR_LABEL[entry.actor]}` : ''}
           </Typo>
         </Stack>
         {/* 운영자 메모는 내부 처리 기록 — 주문자 화면에는 노출하지 않는다 */}
