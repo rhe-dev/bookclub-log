@@ -35,8 +35,8 @@ export default function GlobalError({
         align="center"
         sx={{ wordBreak: 'keep-all' }}
       >
-        잠시 후 다시 시도해 주세요. 계속 같은 화면이 보이면 처음부터 다시
-        들어와 주세요.
+        잠시 후 다시 시도해 주세요. 계속 같은 화면이 보이면 처음부터 다시 들어와
+        주세요.
       </Typo>
       <VerticalGap size={24} />
       <CommonButton label="다시 시도" onClick={reset} />

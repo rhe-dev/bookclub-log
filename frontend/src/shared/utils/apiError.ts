@@ -7,7 +7,8 @@ import type { ApiErrorItem } from '@/shared/types/common';
  */
 export function getApiErrors(error: unknown): ApiErrorItem[] {
   if (axios.isAxiosError(error)) {
-    const errors = (error.response?.data as { errors?: ApiErrorItem[] })?.errors;
+    const errors = (error.response?.data as { errors?: ApiErrorItem[] })
+      ?.errors;
     if (errors?.length) return errors;
     if (!error.response)
       return [{ code: 'UNKNOWN', message: '네트워크 연결을 확인해 주세요.' }];
