@@ -5,8 +5,9 @@ import axios, {
 } from 'axios';
 import { useMemberStore } from '@/shared/stores/memberStore';
 import { resetSession } from '@/shared/stores/resetSession';
-import type { ApiErrorItem, ErrorCode } from '@/shared/types/common';
+import type { ErrorCode } from '@/shared/types/common';
 import { toast } from '@/shared/stores/toastStore';
+import { getApiErrors } from '@/shared/utils/apiError';
 
 /** API 베이스 — 파일 다운로드처럼 axios를 거치지 않는 링크에서도 쓴다 */
 export const API_BASE_URL = `${process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:4000'}/api`;
@@ -16,23 +17,6 @@ const apiInstance = axios.create({
   timeout: 10000,
   headers: { 'Content-Type': 'application/json' },
 });
-
-/** 백엔드 전역 에러 포맷에서 에러 목록을 꺼낸다 — 네트워크·미상 오류는 UNKNOWN으로 합성 */
-function getApiErrors(error: unknown): ApiErrorItem[] {
-  if (axios.isAxiosError(error)) {
-    const errors = (error.response?.data as { errors?: ApiErrorItem[] })
-      ?.errors;
-    if (errors?.length) return errors;
-    if (!error.response)
-      return [{ code: 'UNKNOWN', message: '네트워크 연결을 확인해 주세요.' }];
-  }
-  return [
-    {
-      code: 'UNKNOWN',
-      message: '요청에 실패했습니다. 잠시 후 다시 시도해 주세요.',
-    },
-  ];
-}
 
 // Request: 무인증 멤버 컨텍스트 — 선택된 멤버의 publicId를 X-Member-Id로 전달 (D-017)
 apiInstance.interceptors.request.use((config) => {

@@ -6,7 +6,7 @@ import { useParams, useRouter } from 'next/navigation';
 import { useAdminMemberQuery } from '@/shared/api/adminApi';
 import { CommonButton } from '@/shared/components/ui/CommonButton';
 import { CopyableId } from '@/shared/components/ui/CopyableId';
-import { ErrorView } from '@/shared/components/ui/ErrorView';
+import { QueryErrorView } from '@/shared/components/ui/QueryErrorView';
 import { Typo } from '@/shared/components/ui/Typo';
 import { VerticalGap } from '@/shared/components/ui/VerticalGap';
 import { ROUTES } from '@/shared/constants/routes';
@@ -27,6 +27,7 @@ export default function AdminMemberDetailPage() {
     data: member,
     isLoading,
     isError,
+    error,
     refetch,
   } = useAdminMemberQuery(memberId);
 
@@ -35,10 +36,18 @@ export default function AdminMemberDetailPage() {
   if (isError)
     return (
       <AdminDetailShell>
-        <ErrorView
-          message="회원 정보를 불러오지 못했어요."
+        <QueryErrorView
+          error={error}
+          notFoundMessage="회원 정보를 찾을 수 없어요. 회원 ID가 잘못되었을 수 있어요."
+          failMessage="회원 정보를 불러오지 못했어요."
           onRetry={() => void refetch()}
-        />
+        >
+          <CommonButton
+            label="회원 관리로"
+            buttonColor="tertiary"
+            onClick={() => router.push(ROUTES.adminMembers)}
+          />
+        </QueryErrorView>
       </AdminDetailShell>
     );
 

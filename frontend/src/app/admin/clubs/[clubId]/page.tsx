@@ -6,7 +6,7 @@ import { useParams, useRouter } from 'next/navigation';
 import { useAdminClubQuery } from '@/shared/api/adminApi';
 import { CommonButton } from '@/shared/components/ui/CommonButton';
 import { CopyableId } from '@/shared/components/ui/CopyableId';
-import { ErrorView } from '@/shared/components/ui/ErrorView';
+import { QueryErrorView } from '@/shared/components/ui/QueryErrorView';
 import { Typo } from '@/shared/components/ui/Typo';
 import { VerticalGap } from '@/shared/components/ui/VerticalGap';
 import { ROUTES } from '@/shared/constants/routes';
@@ -23,17 +23,31 @@ export default function AdminClubDetailPage() {
   const isAdmin = useRequireAdmin();
   const router = useRouter();
   const { clubId } = useParams<{ clubId: string }>();
-  const { data: club, isLoading, isError, refetch } = useAdminClubQuery(clubId);
+  const {
+    data: club,
+    isLoading,
+    isError,
+    error,
+    refetch,
+  } = useAdminClubQuery(clubId);
 
   if (!isAdmin) return null;
 
   if (isError)
     return (
       <AdminDetailShell>
-        <ErrorView
-          message="클럽 정보를 불러오지 못했어요."
+        <QueryErrorView
+          error={error}
+          notFoundMessage="클럽 정보를 찾을 수 없어요. 클럽 ID가 잘못되었을 수 있어요."
+          failMessage="클럽 정보를 불러오지 못했어요."
           onRetry={() => void refetch()}
-        />
+        >
+          <CommonButton
+            label="클럽 관리로"
+            buttonColor="tertiary"
+            onClick={() => router.push(ROUTES.adminClubs)}
+          />
+        </QueryErrorView>
       </AdminDetailShell>
     );
 

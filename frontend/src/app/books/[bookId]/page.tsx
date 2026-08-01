@@ -14,7 +14,7 @@ import { BookFormModal } from '@/shared/components/book/BookFormModal';
 import { CommonContainer } from '@/shared/components/layout/CommonContainer';
 import { CommonButton } from '@/shared/components/ui/CommonButton';
 import { CommonConfirmModal } from '@/shared/components/ui/CommonConfirmModal';
-import { ErrorView } from '@/shared/components/ui/ErrorView';
+import { QueryErrorView } from '@/shared/components/ui/QueryErrorView';
 import { Typo } from '@/shared/components/ui/Typo';
 import { COMMENT_PLACEHOLDER } from '@/shared/constants/bookStatus';
 import { ROUTES } from '@/shared/constants/routes';
@@ -52,8 +52,10 @@ export default function BookDetailPage() {
     <>
       <CommonContainer maxWidth={760} sx={{ py: { xs: 2.5, md: 4 }, gap: 2.5 }}>
         {isError ? (
-          <ErrorView
-            message="책을 불러오지 못했어요. 삭제되었거나 잘못된 주소일 수 있어요."
+          <QueryErrorView
+            error={bookQuery.error ?? commentsQuery.error}
+            notFoundMessage="책 정보를 찾을 수 없어요. 삭제되었거나 잘못된 주소일 수 있어요."
+            failMessage="책을 불러오지 못했어요."
             onRetry={() => {
               void bookQuery.refetch();
               void commentsQuery.refetch();
@@ -64,7 +66,7 @@ export default function BookDetailPage() {
               buttonColor="tertiary"
               onClick={() => router.push(ROUTES.bookshelf)}
             />
-          </ErrorView>
+          </QueryErrorView>
         ) : isLoading || !book ? (
           <BookDetailSkeleton />
         ) : (

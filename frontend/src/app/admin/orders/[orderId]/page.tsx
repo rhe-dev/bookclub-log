@@ -14,7 +14,7 @@ import { CommonButton } from '@/shared/components/ui/CommonButton';
 import { CommonInput } from '@/shared/components/ui/CommonInput';
 import { CommonModal } from '@/shared/components/ui/CommonModal';
 import { CopyableId } from '@/shared/components/ui/CopyableId';
-import { ErrorView } from '@/shared/components/ui/ErrorView';
+import { QueryErrorView } from '@/shared/components/ui/QueryErrorView';
 import { Typo } from '@/shared/components/ui/Typo';
 import { VerticalGap } from '@/shared/components/ui/VerticalGap';
 import {
@@ -49,6 +49,7 @@ export default function AdminOrderDetailPage() {
     data: order,
     isLoading,
     isError,
+    error,
     refetch,
   } = useAdminOrderQuery(orderId);
   const transitionMutation = useAdminTransitionMutation();
@@ -61,10 +62,18 @@ export default function AdminOrderDetailPage() {
   if (isError)
     return (
       <AdminDetailShell>
-        <ErrorView
-          message="주문을 불러오지 못했어요."
+        <QueryErrorView
+          error={error}
+          notFoundMessage="주문 정보를 찾을 수 없어요. 주문번호가 잘못되었을 수 있어요."
+          failMessage="주문을 불러오지 못했어요."
           onRetry={() => void refetch()}
-        />
+        >
+          <CommonButton
+            label="주문 관리로"
+            buttonColor="tertiary"
+            onClick={() => router.push(ROUTES.adminOrders)}
+          />
+        </QueryErrorView>
       </AdminDetailShell>
     );
 
